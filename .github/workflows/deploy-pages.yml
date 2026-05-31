@@ -50,9 +50,14 @@ jobs:
   terraform-validate:
     name: Terraform validate
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir:
+          - terraform/github-pages
+          - terraform/cloudflare
     defaults:
       run:
-        working-directory: terraform/github-pages
+        working-directory: ${{ matrix.dir }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
