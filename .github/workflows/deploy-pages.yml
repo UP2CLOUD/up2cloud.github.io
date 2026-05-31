@@ -119,6 +119,9 @@ jobs:
           cp robots.txt  public/robots.txt  2>/dev/null || true
           cp sitemap.xml public/sitemap.xml 2>/dev/null || true
           cp _headers    public/_headers    2>/dev/null || true
+          cp _redirects  public/_redirects  2>/dev/null || true
+          # Custom domain — must be present so GitHub Pages keeps up2cloud.tech on every deploy
+          cp CNAME       public/CNAME
           # Copy subpages and assets
           cp -r about   public/about   2>/dev/null || true
           cp -r privacy public/privacy 2>/dev/null || true
@@ -163,7 +166,7 @@ jobs:
     if: github.event_name != 'pull_request'
     environment:
       name: github-pages
-      url: https://up2cloud.github.io
+      url: https://up2cloud.tech
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
