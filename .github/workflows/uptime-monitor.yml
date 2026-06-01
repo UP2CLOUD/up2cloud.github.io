@@ -1,0 +1,38 @@
+name: Uptime Monitor — up2cloud.tech
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 minutes
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check up2cloud.tech
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS check
+        id: dns
+        run: |
+          if host up2cloud.tech 1.1.1.1 >/dev/null 2>&1; then
+            echo "dns=ok" >> "$GITHUB_OUTPUT"
+          else
+            echo "dns=fail" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: HTTP check
+        id: http
+        run: |
+          STATUS=$(curl -sIL --max-time 10 https://up2cloud.tech -o /dev/null -w "%{http_code}")
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "HTTP status: $STATUS"
+
+      - name: Report result
+        run: |
+          DNS="${{ steps.dns.outputs.dns }}"
+          HTTP="${{ steps.http.outputs.status }}"
+          if [ "$DNS" = "ok" ] && [ "$HTTP" = "200" ]; then
+            echo "✅ up2cloud.tech is UP (HTTP $HTTP)"
+          else
+            echo "❌ up2cloud.tech is DOWN — DNS: $DNS | HTTP: $HTTP"
+            exit 1
+          fi
