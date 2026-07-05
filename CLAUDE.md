@@ -127,9 +127,9 @@ Copy `.env.example` to `.env` for local development:
 |---|---|---|
 | `GROQ_API_KEY` | Groq AI chatbot API key | `.env` locally (read by `serve.js`); Cloudflare Pages env var in production (read by `functions/api/chat.js`) — **not** a GitHub secret, CI never touches it |
 | `FORM_ENDPOINT` | FormSubmit.co contact form URL | `.env` locally; hardcoded in `deploy-pages.yml` workflow `env:` block (not a GitHub secret) |
-| `BREVO_API_KEY` | Brevo newsletter API key | Cloudflare Pages env vars only |
-| `BREVO_LIST_ID` | Brevo contact list ID (integer) | Cloudflare Pages env vars only |
-| `BREVO_SENDER_EMAIL` | Verified Brevo sender email | Cloudflare Pages env vars only |
+| `BREVO_API_KEY` | Brevo newsletter API key | `.dev.vars` locally (for `wrangler pages dev`); Cloudflare Pages env vars in production |
+| `BREVO_LIST_ID` | Brevo contact list ID (integer) | `.dev.vars` locally (for `wrangler pages dev`); Cloudflare Pages env vars in production |
+| `BREVO_SENDER_EMAIL` | Verified Brevo sender email | Cloudflare Pages env vars only (not in `.dev.vars` template) |
 | `PORT` | Dev server port (default 3000) | `.env` only |
 
 **Never commit `.env`.** The `.gitignore` already excludes it.
