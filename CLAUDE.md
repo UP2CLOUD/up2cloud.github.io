@@ -43,7 +43,7 @@ npm test             # htmlhint index.html (non-blocking — exit 0 always)
 node scripts/add-post.js   # interactive CLI to scaffold a new blog post
 ```
 
-**Local dev note:** `node serve.js` reads `.env` and injects secrets (GROQ_API_KEY, etc.) at request time, mirroring the production GitHub Actions injection. Never open `index.html` via `file://` for chatbot testing — the key won't be available. Direct `file://` works for layout/content review only.
+**Local dev note:** `node serve.js` reads `.env` and proxies `/api/chat` with `GROQ_API_KEY` at request time, mirroring what `functions/api/chat.js` does in production on Cloudflare Pages. Never open `index.html` via `file://` for chatbot testing — the proxy route won't exist. Direct `file://` works for layout/content review only.
 
 ---
 
@@ -125,11 +125,11 @@ Copy `.env.example` to `.env` for local development:
 
 | Variable | Purpose | Where set |
 |---|---|---|
-| `GROQ_API_KEY` | Groq AI chatbot API key | `.env` locally; GitHub Secret in CI |
-| `FORM_ENDPOINT` | FormSubmit.co contact form URL | `.env` locally; hardcoded in CI workflow env |
-| `BREVO_API_KEY` | Brevo newsletter API key | Cloudflare Pages env vars + GitHub Secret |
-| `BREVO_LIST_ID` | Brevo contact list ID (integer) | Cloudflare Pages env vars + GitHub Secret |
-| `BREVO_SENDER_EMAIL` | Verified Brevo sender email | Cloudflare Pages env vars |
+| `GROQ_API_KEY` | Groq AI chatbot API key | `.env` locally (read by `serve.js`); Cloudflare Pages env var in production (read by `functions/api/chat.js`) — **not** a GitHub secret, CI never touches it |
+| `FORM_ENDPOINT` | FormSubmit.co contact form URL | `.env` locally; hardcoded in `deploy-pages.yml` workflow `env:` block (not a GitHub secret) |
+| `BREVO_API_KEY` | Brevo newsletter API key | `.dev.vars` locally (for `wrangler pages dev`); Cloudflare Pages env vars in production |
+| `BREVO_LIST_ID` | Brevo contact list ID (integer) | `.dev.vars` locally (for `wrangler pages dev`); Cloudflare Pages env vars in production |
+| `BREVO_SENDER_EMAIL` | Verified Brevo sender email | Cloudflare Pages env vars only (not in `.dev.vars` template) |
 | `PORT` | Dev server port (default 3000) | `.env` only |
 
 **Never commit `.env`.** The `.gitignore` already excludes it.
@@ -143,11 +143,10 @@ Pipeline runs on every push to `main` and on PRs against `main`:
 1. **test** — htmlhint on `index.html` + validate required static assets
 2. **terraform-validate** — `terraform fmt -check` + `terraform validate` on both Terraform dirs
 3. **approve** — manual approval gate (GitHub Environment: `production-approval`)
-4. **build** *(push only, not PRs)* — compile Tailwind, copy assets to `public/`, inject `GROQ_API_KEY` and `FORM_ENDPOINT` via `sed`, add FormSubmit hidden fields, inject cache-busting `?v=<git-sha>` into all HTML asset URLs
+4. **build** *(push only, not PRs)* — compile Tailwind, copy assets to `public/`, inject `FORM_ENDPOINT` via `sed`, add FormSubmit hidden fields, inject cache-busting `?v=<git-sha>` into all HTML asset URLs
 5. **deploy** *(push only)* — deploy `public/` artifact to GitHub Pages
 
-**Required GitHub secrets:**
-- `GROQ_API_KEY`
+`GROQ_API_KEY` is **not** part of this pipeline — the chatbot proxy (`functions/api/chat.js`) reads it as a Cloudflare Pages runtime env var, set directly in the Cloudflare dashboard, never baked into the static build.
 
 **Required GitHub environment:** `production-approval` (Settings → Environments → required reviewers).
 
@@ -228,9 +227,9 @@ The CI pipeline validates both with `terraform fmt -check` and `terraform valida
 - `.nojekyll` must always exist. Without it, GitHub Pages runs Jekyll and may corrupt the site.
 
 ### Secrets
-- Secrets are **never** hardcoded in HTML or JS — they are injected at build time (CI) or at request time (local dev server).
-- The `GROQ_API_KEY` placeholder in `index.html` is replaced by `sed` during the GitHub Actions build step.
-- The `FORM_ENDPOINT` placeholder (`https://formspree.io/f/REPLACE_WITH_YOUR_ID`) is replaced at build time.
+- Secrets are **never** hardcoded in HTML or JS — they are injected at build time (CI) or read server-side at request time (local dev server / Cloudflare Pages Function).
+- `GROQ_API_KEY` never touches the frontend bundle: `index.html` calls the relative `/api/chat` endpoint, and `functions/api/chat.js` reads `env.GROQ_API_KEY` from the Cloudflare Pages runtime.
+- The `FORM_ENDPOINT` placeholder (`https://formspree.io/f/REPLACE_WITH_YOUR_ID`) is replaced at build time by `sed` in the GitHub Actions build step.
 
 ### Blog Posts
 - Always use `node scripts/add-post.js` — it keeps `blog/posts.json` in sync.
@@ -252,3 +251,11 @@ The CI pipeline validates both with `terraform fmt -check` and `terraform valida
 - Do not bypass the `production-approval` gate without explicit authorization.
 - Do not add `<script>` tags that inline API keys or secrets into HTML.
 - Do not modify `wrangler.toml` KV namespace IDs without updating the matching Cloudflare dashboard bindings.
+
+---
+
+## Further Reading
+
+- [`BLOG_NEWSLETTER.md`](BLOG_NEWSLETTER.md) — blog engagement (likes/comments) and newsletter subscription flows in detail.
+- [`ROBOTS_AND_SEO.md`](ROBOTS_AND_SEO.md) — `robots.txt`, `sitemap.xml`, and structured-data conventions.
+- [`SECURITY.md`](SECURITY.md) — vulnerability disclosure policy and supported scope.
