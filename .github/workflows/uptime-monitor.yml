@@ -5,6 +5,9 @@ on:
     - cron: "*/5 * * * *"   # every 5 minutes
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: Check up2cloud.tech
