@@ -4,6 +4,9 @@ on:
     branches: [main]
     paths: ['blog/posts.json']
 
+permissions:
+  contents: read
+
 jobs:
   post:
     runs-on: ubuntu-latest

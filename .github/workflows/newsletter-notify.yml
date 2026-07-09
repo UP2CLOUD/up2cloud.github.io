@@ -6,6 +6,9 @@ on:
     paths:
       - 'blog/posts.json'
 
+permissions:
+  contents: read
+
 jobs:
   notify:
     name: Send newsletter summary via Brevo
