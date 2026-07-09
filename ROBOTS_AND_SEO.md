@@ -45,9 +45,9 @@ All pages include:
 - ✅ `Person` schema (Cesar A. Nogueira, job title, social profiles)
 - ✅ `WebSite` schema (site search potential)
 - ✅ `BlogPosting` schema (active for all 8 blog posts)
+- ✅ `Service` schema (ItemList of 6 service offerings, homepage `#services`)
 
 **Next phase improvements:**
-- [ ] Add `Service` schema for each service offering
 - [ ] Add `Review` schema once client testimonials are expanded
 
 ## Performance & Core Web Vitals
