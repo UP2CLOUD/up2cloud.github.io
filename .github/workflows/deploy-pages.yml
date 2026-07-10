@@ -22,7 +22,7 @@ env:
   FORM_ENDPOINT: https://formsubmit.co/ajax/cesarnogueira1210@gmail.com
   # Analytics / Search Console / Ads — placeholders are a harmless no-op
   # (dead script URL / bogus meta tag) until replaced with real IDs.
-  GA_MEASUREMENT_ID: GA_MEASUREMENT_ID # https://analytics.google.com → Admin → Data Streams → Measurement ID (G-XXXXXXXXXX)
+  GA_MEASUREMENT_ID: G-JVQKLM1R3Q # https://analytics.google.com → Admin → Data Streams → Measurement ID (G-XXXXXXXXXX)
   GOOGLE_ADS_ID: GOOGLE_ADS_ID # https://ads.google.com → Tools → Conversions → Conversion ID (AW-XXXXXXXXX). Optional — only if running Ads.
   GOOGLE_SITE_VERIFICATION_ID: GOOGLE_SITE_VERIFICATION_ID # https://search.google.com/search-console → Settings → Ownership verification → HTML tag → content value
 
