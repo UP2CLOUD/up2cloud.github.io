@@ -20,6 +20,11 @@ concurrency:
 
 env:
   FORM_ENDPOINT: https://formsubmit.co/ajax/cesarnogueira1210@gmail.com
+  # Analytics / Search Console / Ads — placeholders are a harmless no-op
+  # (dead script URL / bogus meta tag) until replaced with real IDs.
+  GA_MEASUREMENT_ID: GA_MEASUREMENT_ID # https://analytics.google.com → Admin → Data Streams → Measurement ID (G-XXXXXXXXXX)
+  GOOGLE_ADS_ID: GOOGLE_ADS_ID # https://ads.google.com → Tools → Conversions → Conversion ID (AW-XXXXXXXXX). Optional — only if running Ads.
+  GOOGLE_SITE_VERIFICATION_ID: GOOGLE_SITE_VERIFICATION_ID # https://search.google.com/search-console → Settings → Ownership verification → HTML tag → content value
 
 jobs:
   test:
@@ -135,6 +140,11 @@ jobs:
 
           # Runtime production patch: make the static contact form use FormSubmit.
           sed -i "s#https://formspree.io/f/REPLACE_WITH_YOUR_ID#${FORM_ENDPOINT}#g" public/index.html
+
+          # Runtime production patch: Google Analytics / Ads / Search Console IDs.
+          sed -i "s#GA_MEASUREMENT_ID#${GA_MEASUREMENT_ID}#g" public/index.html
+          sed -i "s#GOOGLE_ADS_ID#${GOOGLE_ADS_ID}#g" public/index.html
+          sed -i "s#GOOGLE_SITE_VERIFICATION_ID#${GOOGLE_SITE_VERIFICATION_ID}#g" public/index.html
 
           # Add FormSubmit hidden fields into the deployed artifact if not already present.
           if ! grep -q 'name="_subject" value="New UP2CLOUD Lead"' public/index.html; then
