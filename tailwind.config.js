@@ -5,6 +5,8 @@ module.exports = {
     './about/index.html',
     './privacy/index.html',
     './404.html',
+    './blog/index.html',
+    './blog/*/index.html',
   ],
   theme: {
     extend: {
