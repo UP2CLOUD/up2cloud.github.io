@@ -7,6 +7,13 @@
   2. Create a new form → use email: cesarnogueira1210@gmail.com
   3. Copy your form endpoint (looks like: https://formspree.io/f/xyzabcde)
   4. Replace FORMSPREE_ENDPOINT below with that URL
+
+  ANALYTICS / SEARCH CONSOLE / ADS SETUP:
+  The GA_MEASUREMENT_ID / GOOGLE_ADS_ID / GOOGLE_SITE_VERIFICATION_ID
+  placeholders below are replaced at build time by `sed`, same as
+  FORMSPREE_ENDPOINT above — set the real values in the `env:` block of
+  .github/workflows/deploy-pages.yml, not in this file. See that workflow's
+  comments for where to get each ID.
 -->
 <html lang="en">
 <head>
@@ -16,7 +23,7 @@
   <meta name="description" content="Specialized Platform Engineering, FinOps, and DevOps consultancy for AWS, Azure, and Google Cloud. We build immutable infrastructure and automated governance for global engineering teams." />
   <meta name="author" content="Cesar A. Nogueira" />
   <meta name="robots" content="index, follow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com; script-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.groq.com https://formspree.io https://static.hotjar.com https://script.hotjar.com https://cloudflareinsights.com; frame-src 'self' https://vars.hotjar.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self' https://formspree.io; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com https://www.googletagmanager.com; script-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.groq.com https://formspree.io https://static.hotjar.com https://script.hotjar.com https://cloudflareinsights.com https://www.google-analytics.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com; frame-src 'self' https://vars.hotjar.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self' https://formspree.io; object-src 'none'" />
 
   <meta property="og:title" content="UP2CLOUD — Enterprise Platform Engineering" />
   <meta property="og:description" content="Build cloud platforms that scale, ship, and pay for themselves. Expert Platform Engineering and FinOps for AWS, Azure, and Google Cloud." />
@@ -4982,6 +4989,108 @@ nav.scrolled + #tech-stack,
   }
 }
 </style>
+
+<!-- Google Search Console ownership verification — see setup comment at top of file -->
+<meta name="google-site-verification" content="GOOGLE_SITE_VERIFICATION_ID" />
+
+<!--
+  Google tag (gtag.js) — GA4 + Google Ads.
+  Loaded after idle/interaction for performance, same pattern as the Hotjar
+  loader above. Web Vitals metrics can fire before gtag is ready (e.g. LCP on
+  a bounce visit with no interaction), so they're queued in
+  window.__up2cloudVitalsQueue and flushed once gtag becomes available —
+  nothing is silently dropped.
+-->
+<script>
+  window.__up2cloudVitalsQueue = window.__up2cloudVitalsQueue || [];
+
+  window.addEventListener('load', function () {
+    var GA_ID = 'GA_MEASUREMENT_ID';
+    var ADS_ID = 'GOOGLE_ADS_ID';
+
+    var loadGtag = function () {
+      if (window.__up2cloudGtagLoaded || location.protocol !== 'https:') return;
+      // Unconfigured placeholder (build-time sed hasn't run) — skip entirely
+      // rather than firing a request for a fake ID. Checked by SHAPE
+      // (real GA4 IDs start "G-"), not by comparing against the placeholder
+      // string: sed does a blind global replace, so a literal placeholder-vs-
+      // placeholder comparison would ALSO get substituted and always match,
+      // permanently disabling analytics even after a real ID is configured.
+      if (!/^G-/.test(GA_ID)) return;
+      window.__up2cloudGtagLoaded = true;
+
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, { anonymize_ip: true });
+      if (/^AW-/.test(ADS_ID)) {
+        gtag('config', ADS_ID);
+      }
+
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+
+      // Guard: the web-vitals module (fetched from unpkg) may not have
+      // finished loading/executing yet when this fires.
+      if (typeof window.__up2cloudSendVital === 'function') {
+        window.__up2cloudVitalsQueue.splice(0).forEach(function (metric) {
+          window.__up2cloudSendVital(metric);
+        });
+      }
+    };
+
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (eventName) {
+      window.addEventListener(eventName, loadGtag, { once: true, passive: true });
+    });
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadGtag, { timeout: 6000 });
+    } else {
+      setTimeout(loadGtag, 6000);
+    }
+  });
+</script>
+
+<!-- Core Web Vitals → GA4 performance events (LCP, CLS, INP, FCP, TTFB) -->
+<script type="module">
+  import { onCLS, onLCP, onINP, onFCP, onTTFB } from 'https://unpkg.com/web-vitals@4?module';
+
+  // Defensive re-init in case this module executes before the gtag script's
+  // top-level code (e.g. if that script were ever moved) — keeps both sides
+  // of the queue handshake independent of markup order.
+  window.__up2cloudVitalsQueue = window.__up2cloudVitalsQueue || [];
+
+  window.__up2cloudSendVital = function (metric) {
+    if (typeof window.gtag !== 'function') {
+      window.__up2cloudVitalsQueue.push(metric);
+      return;
+    }
+    window.gtag('event', metric.name, {
+      value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+      metric_id: metric.id,
+      metric_value: metric.value,
+      metric_rating: metric.rating,
+      event_category: 'Web Vitals',
+      non_interaction: true,
+    });
+  };
+
+  // Flush immediately if gtag already loaded before this module finished
+  // fetching (the module script's own network round-trip can be slower
+  // than the interaction/idle-gated gtag loader in rare cases).
+  if (typeof window.gtag === 'function') {
+    window.__up2cloudVitalsQueue.splice(0).forEach(window.__up2cloudSendVital);
+  }
+
+  onCLS(window.__up2cloudSendVital);
+  onLCP(window.__up2cloudSendVital);
+  onINP(window.__up2cloudSendVital);
+  onFCP(window.__up2cloudSendVital);
+  onTTFB(window.__up2cloudSendVital);
+</script>
 
 </head>
 <body>
