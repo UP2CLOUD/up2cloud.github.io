@@ -5005,25 +5005,41 @@ nav.scrolled + #tech-stack,
   window.__up2cloudVitalsQueue = window.__up2cloudVitalsQueue || [];
 
   window.addEventListener('load', function () {
+    var GA_ID = 'GA_MEASUREMENT_ID';
+    var ADS_ID = 'GOOGLE_ADS_ID';
+
     var loadGtag = function () {
       if (window.__up2cloudGtagLoaded || location.protocol !== 'https:') return;
+      // Unconfigured placeholder (build-time sed hasn't run) — skip entirely
+      // rather than firing a request for a fake ID. Checked by SHAPE
+      // (real GA4 IDs start "G-"), not by comparing against the placeholder
+      // string: sed does a blind global replace, so a literal placeholder-vs-
+      // placeholder comparison would ALSO get substituted and always match,
+      // permanently disabling analytics even after a real ID is configured.
+      if (!/^G-/.test(GA_ID)) return;
       window.__up2cloudGtagLoaded = true;
 
       window.dataLayer = window.dataLayer || [];
       function gtag() { dataLayer.push(arguments); }
       window.gtag = gtag;
       gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID', { anonymize_ip: true });
-      gtag('config', 'GOOGLE_ADS_ID');
+      gtag('config', GA_ID, { anonymize_ip: true });
+      if (/^AW-/.test(ADS_ID)) {
+        gtag('config', ADS_ID);
+      }
 
       var s = document.createElement('script');
       s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
       document.head.appendChild(s);
 
-      window.__up2cloudVitalsQueue.splice(0).forEach(function (metric) {
-        window.__up2cloudSendVital(metric);
-      });
+      // Guard: the web-vitals module (fetched from unpkg) may not have
+      // finished loading/executing yet when this fires.
+      if (typeof window.__up2cloudSendVital === 'function') {
+        window.__up2cloudVitalsQueue.splice(0).forEach(function (metric) {
+          window.__up2cloudSendVital(metric);
+        });
+      }
     };
 
     ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (eventName) {
@@ -5042,6 +5058,11 @@ nav.scrolled + #tech-stack,
 <script type="module">
   import { onCLS, onLCP, onINP, onFCP, onTTFB } from 'https://unpkg.com/web-vitals@4?module';
 
+  // Defensive re-init in case this module executes before the gtag script's
+  // top-level code (e.g. if that script were ever moved) — keeps both sides
+  // of the queue handshake independent of markup order.
+  window.__up2cloudVitalsQueue = window.__up2cloudVitalsQueue || [];
+
   window.__up2cloudSendVital = function (metric) {
     if (typeof window.gtag !== 'function') {
       window.__up2cloudVitalsQueue.push(metric);
@@ -5056,6 +5077,13 @@ nav.scrolled + #tech-stack,
       non_interaction: true,
     });
   };
+
+  // Flush immediately if gtag already loaded before this module finished
+  // fetching (the module script's own network round-trip can be slower
+  // than the interaction/idle-gated gtag loader in rare cases).
+  if (typeof window.gtag === 'function') {
+    window.__up2cloudVitalsQueue.splice(0).forEach(window.__up2cloudSendVital);
+  }
 
   onCLS(window.__up2cloudSendVital);
   onLCP(window.__up2cloudSendVital);
