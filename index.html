@@ -3550,20 +3550,20 @@ section:has([data-i18n="about_title"]) {
 }
 
 #navbar a[href^="#"]:not([aria-label="UP2CLOUD Home"]),
-#navbar a[href="/about"],
-#navbar a[href="/blog"],
+#navbar a[href="/about/"],
+#navbar a[href="/blog/"],
 #mobile-menu a[href^="#"],
-#mobile-menu a[href="/about"],
-#mobile-menu a[href="/blog"] {
+#mobile-menu a[href="/about/"],
+#mobile-menu a[href="/blog/"] {
   position: relative;
 }
 
 #navbar a[href^="#"]:not([aria-label="UP2CLOUD Home"])::after,
-#navbar a[href="/about"]::after,
-#navbar a[href="/blog"]::after,
+#navbar a[href="/about/"]::after,
+#navbar a[href="/blog/"]::after,
 #mobile-menu a[href^="#"]::after,
-#mobile-menu a[href="/about"]::after,
-#mobile-menu a[href="/blog"]::after {
+#mobile-menu a[href="/about/"]::after,
+#mobile-menu a[href="/blog/"]::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -3581,12 +3581,12 @@ section:has([data-i18n="about_title"]) {
 
 #navbar a[href^="#"]:not([aria-label="UP2CLOUD Home"]):hover::after,
 #navbar a[href^="#"]:not([aria-label="UP2CLOUD Home"]).nav-targeting::after,
-#navbar a[href="/about"]:hover::after,
-#navbar a[href="/blog"]:hover::after,
+#navbar a[href="/about/"]:hover::after,
+#navbar a[href="/blog/"]:hover::after,
 #mobile-menu a[href^="#"]:hover::after,
 #mobile-menu a[href^="#"].nav-targeting::after,
-#mobile-menu a[href="/about"]:hover::after,
-#mobile-menu a[href="/blog"]:hover::after {
+#mobile-menu a[href="/about/"]:hover::after,
+#mobile-menu a[href="/blog/"]:hover::after {
   left: 0;
   right: 0;
   opacity: 1;
@@ -5122,8 +5122,8 @@ nav.scrolled + #tech-stack,
       <li><a href="#how-we-work" class="text-sm font-medium text-white/80 hover:text-white transition-colors" data-i18n="nav_delivery">Delivery</a></li>
       <li><a href="#ai" class="text-sm font-medium text-white/80 hover:text-white transition-colors" data-i18n="nav_ai">AI</a></li>
       <li><a href="#portfolio" class="text-sm font-medium text-white/80 hover:text-white transition-colors" data-i18n="nav_portfolio">Portfolio</a></li>
-      <li><a href="/about" class="text-sm font-medium text-white/80 hover:text-white transition-colors">About</a></li>
-      <li><a href="/blog" class="text-sm font-medium text-white/80 hover:text-white transition-colors">Blog</a></li>
+      <li><a href="/about/" class="text-sm font-medium text-white/80 hover:text-white transition-colors">About</a></li>
+      <li><a href="/blog/" class="text-sm font-medium text-white/80 hover:text-white transition-colors">Blog</a></li>
       <li><a href="#contact" class="text-sm font-medium text-white/80 hover:text-white transition-colors" data-i18n="nav_contact">Contact</a></li>
     </ul>
     <div class="flex items-center gap-3">
@@ -5165,8 +5165,8 @@ nav.scrolled + #tech-stack,
       <a href="#ai" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()" data-i18n="nav_ai">AI Solutions</a>
       <a href="#portfolio" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()" data-i18n="nav_portfolio">Portfolio</a>
       <a href="#testimonials" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()">Clients</a>
-      <a href="/about" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()">About</a>
-      <a href="/blog" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()">Blog</a>
+      <a href="/about/" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()">About</a>
+      <a href="/blog/" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()">Blog</a>
       <a href="#contact" class="block px-4 py-3 text-white/90 hover:text-white hover:bg-white/10 rounded-lg transition-colors" onclick="closeMobileMenu()" data-i18n="nav_contact">Contact</a>
     </div>
   </div>
@@ -5364,7 +5364,7 @@ nav.scrolled + #tech-stack,
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span data-i18n="hero_cta_secondary">Explore Services</span>
       </a>
-      <a href="/blog" class="btn-outline text-base w-full sm:w-auto justify-center" style="border-color:rgba(255,255,255,.22);color:rgba(255,255,255,.78)">
+      <a href="/blog/" class="btn-outline text-base w-full sm:w-auto justify-center" style="border-color:rgba(255,255,255,.22);color:rgba(255,255,255,.78)">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 21v-8H7v8M7 3v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span data-i18n="hero_cta_blog">Read Cloud Insights</span>
       </a>
@@ -6713,8 +6713,8 @@ nav.scrolled + #tech-stack,
           <li><a href="#how-we-work" class="hover:text-white transition-colors">How We Work</a></li>
           <li><a href="#global-delivery" class="hover:text-white transition-colors">Global Delivery</a></li>
           <li><a href="#portfolio" class="hover:text-white transition-colors">Portfolio</a></li>
-          <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
-          <li><a href="/blog" class="hover:text-white transition-colors">Engineering Blog</a></li>
+          <li><a href="/about/" class="hover:text-white transition-colors">About</a></li>
+          <li><a href="/blog/" class="hover:text-white transition-colors">Engineering Blog</a></li>
           <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
         </ul>
       </nav>
@@ -6750,9 +6750,9 @@ nav.scrolled + #tech-stack,
     <div class="border-t border-white/[.08] pt-5 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-white/30">
       <p data-i18n="footer_copyright">&copy; <span id="year"></span> UP2CLOUD · Cesar A. Nogueira. All rights reserved.</p>
       <div class="flex gap-5 flex-wrap justify-center">
-        <a href="/blog" class="hover:text-white/55 transition-colors">Blog</a>
-        <a href="/about" class="hover:text-white/55 transition-colors">About</a>
-        <a href="/privacy" class="hover:text-white/55 transition-colors">Privacy</a>
+        <a href="/blog/" class="hover:text-white/55 transition-colors">Blog</a>
+        <a href="/about/" class="hover:text-white/55 transition-colors">About</a>
+        <a href="/privacy/" class="hover:text-white/55 transition-colors">Privacy</a>
         <a href="https://github.com/UP2CLOUD" target="_blank" rel="noopener noreferrer" class="hover:text-white/55 transition-colors">GitHub</a>
         <a href="#contact" class="hover:text-white/55 transition-colors">Contact</a>
       </div>
@@ -7488,7 +7488,7 @@ Critical rules:
           article.className = `service-card bg-white rounded-2xl p-7 sm:p-8 shadow-sm border border-slate-100/80 reveal cursor-pointer`;
           article.style.transitionDelay = `${index * 0.05}s`;
           article.innerHTML = `
-            <a href="/blog/${post.slug}" class="block">
+            <a href="/blog/${post.slug}/" class="block">
               <span class="badge badge-${post.badgeClass}" style="margin-bottom: 1rem; display: inline-block;">${post.category}</span>
               <h3 class="font-heading font-700 text-[1.1rem] text-navy mb-2">${post.title}</h3>
               <p class="text-slate-500 text-sm leading-relaxed mb-4">${post.excerpt}</p>
@@ -8327,7 +8327,7 @@ function floatCardAt(leftPx, topPx, persist){
       <p id="nl-status" role="status" aria-live="assertive" style="font-size:.8rem;margin:0;min-height:1.2em"></p>
       <p style="color:rgba(255,255,255,.3);font-size:.72rem;line-height:1.5;margin:0">
         By subscribing you agree to receive UP2CLOUD updates. Your email is never shared.
-        <a href="/privacy" style="color:rgba(14,165,233,.7);text-decoration:none">Privacy policy</a>.
+        <a href="/privacy/" style="color:rgba(14,165,233,.7);text-decoration:none">Privacy policy</a>.
       </p>
     </form>
   </div>
