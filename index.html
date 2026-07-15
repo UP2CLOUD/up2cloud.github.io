@@ -1075,11 +1075,29 @@
     }
 
     #hero .command-chip,
-    #hero .money-cloud,
-    #hero .hero-3d-orbit {
+    #hero .money-cloud {
       z-index: 1 !important;
       opacity: .24 !important;
       pointer-events: none;
+    }
+
+    /* Mount for the real-3D cloud-operations core (assets/js/hero-3d.js).
+       Sits behind the right visual column so the glass Infrastructure Health
+       card (z-35) frosts over it; above the flat background layers (z 1-2),
+       below the command chips. The JS only ever mounts a canvas here on lg+
+       pointers with motion allowed — otherwise this stays an empty,
+       invisible div and the CSS hero is unchanged. */
+    #hero .hero-3d-orbit {
+      position: absolute;
+      right: 26%;
+      bottom: -4%;
+      width: min(33vw, 480px);
+      height: min(54vh, 500px);
+      z-index: 3;
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #hero .hero-3d-orbit { display: none; }
     }
 
     #hero .ambient-cloud-layer {
@@ -5180,20 +5198,14 @@ nav.scrolled + #tech-stack,
 <div class="orb-ring w-[640px] h-[640px] -right-48 top-16 opacity-35 parallax-layer-bg" aria-hidden="true"></div>
 <div class="hero-network-wave hidden lg:block" aria-hidden="true"></div>
 
-<!-- 3D cloud operations core — lightweight CSS-only hero depth -->
-<div class="hero-3d-orbit hidden lg:block" aria-hidden="true">
-  <div class="hero-3d-core">
-    <span class="core-face core-face-front">AWS</span>
-    <span class="core-face core-face-back">GCP</span>
-    <span class="core-face core-face-right">Azure</span>
-    <span class="core-face core-face-left">K8s</span>
-    <span class="core-face core-face-top">IaC</span>
-    <span class="core-face core-face-bottom">FinOps</span>
-  </div>
-  <span class="orbit orbit-one"></span>
-  <span class="orbit orbit-two"></span>
-  <span class="orbit orbit-three"></span>
-</div>
+<!-- 3D cloud operations core — WebGL canvas mounted here by
+     assets/js/hero-3d.js (capability cube: AWS/GCP/Azure/K8s/IaC/FinOps,
+     orbit rings, satellites). The old CSS-cube spans that lived here lost
+     their base styles long ago and rendered as stray text fragments; the
+     real scene now carries the same six capability labels on its faces.
+     Empty by design when the scene doesn't load (mobile, reduced motion,
+     no WebGL) — the CSS hero needs nothing from it. -->
+<div class="hero-3d-orbit hidden lg:block" aria-hidden="true"></div>
 
 <div class="float-shape command-chip hidden lg:flex items-center gap-2.5 rounded-2xl px-4 py-3 text-white/75 text-xs right-[7%] top-[22%]" style="animation-delay:.5s;z-index:12" aria-hidden="true">
   <span class="font-mono text-green-400 font-bold text-[.8rem]">✓</span>
@@ -9302,6 +9314,9 @@ window.addEventListener('load', () => {
   document.getElementById('hero')?.classList.add('loaded');
 });
 </script>
+
+<!-- Real-3D hero core (lazy, decorative, self-degrading — see file header) -->
+<script src="/assets/js/hero-3d.js" defer></script>
 
 </body>
 </html>
