@@ -164,8 +164,14 @@ jobs:
       - name: Inject cache-busting version into asset URLs
         run: |
           GIT_SHA=$(git rev-parse --short HEAD)
+          # Anchors on the ="..." attribute quote and tolerates relative
+          # (assets/..., ../assets/...) as well as absolute (/assets/...)
+          # references — the site's own stylesheet link is the relative
+          # "assets/css/tailwind.min.css", which the previous
+          # leading-slash-only pattern silently missed, leaving the most
+          # layout-critical asset un-versioned.
           find public -name "*.html" | while read f; do
-            sed -i "s|\(/assets/[^\"'?]*\)|\1?v=${GIT_SHA}|g" "$f"
+            sed -i "s|\(=[\"']\)\(\(\.\./\)*/\{0,1\}assets/[^\"'?]*\)\([\"']\)|\1\2?v=${GIT_SHA}\4|g" "$f"
           done
           echo "Cache-busting version: ${GIT_SHA}"
 
