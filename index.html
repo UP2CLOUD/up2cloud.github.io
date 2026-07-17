@@ -3472,6 +3472,20 @@ section[aria-label="Trusted by"] {
   margin-top: -1rem !important;
 }
 
+/* The -1rem pull above is a DESKTOP-only optical correction (side-by-side
+   columns, vertical centering). On stacked mobile layout it was overriding
+   the intended `margin-top: 2rem` from the max-width:1023px rules earlier
+   in the file (same specificity, later in cascade wins), dragging the
+   Infrastructure Health card 16px up over the hero's trust-badge row —
+   and the row's own .reveal animation (translateY 32px) then slid the
+   text a further 32px down THROUGH the card while scrolling. 2rem keeps
+   clear space in the settled state and absorbs the full reveal travel. */
+@media (max-width: 1023px) {
+  #hero .hero-visual-column {
+    margin-top: 2rem !important;
+  }
+}
+
 @media (min-width: 1024px) and (max-height: 900px) {
   #hero {
     padding-top: 1.9rem !important;
