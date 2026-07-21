@@ -10,6 +10,9 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Wrangler local dev state
+.wrangler/
+
 # Asset files (user-uploaded, not committed)
 assets/img/cesar.jpg
 

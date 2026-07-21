@@ -1,5 +1,8 @@
-# www → apex
-https://www.up2cloud.tech/* https://up2cloud.tech/:splat 301
+# www → apex: handled by functions/_middleware.js, NOT here — Cloudflare
+# Pages' `_redirects` file does not support hostname-based matching (only
+# path matching), so a rule like
+#   https://www.up2cloud.tech/* https://up2cloud.tech/:splat 301
+# is silently ignored. See functions/_middleware.js for the real redirect.
 
 # Block sensitive files
 /package.json /404.html 404
