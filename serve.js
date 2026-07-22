@@ -9,6 +9,7 @@
 const http = require('http');
 const fs   = require('fs');
 const path = require('path');
+const { resolveIncludes } = require('./scripts/resolve-includes');
 
 /* ── Load .env ─────────────────────────────────────────────────── */
 function loadEnv(file = '.env') {
@@ -106,7 +107,14 @@ http.createServer((req, res) => {
       res.writeHead(500); return res.end('Server error');
     }
 
-    const body = raw;
+    let body = raw;
+    if (ext === '.html') {
+      try {
+        body = Buffer.from(resolveIncludes(raw.toString('utf8')));
+      } catch (e) {
+        res.writeHead(500); return res.end('Include resolution error: ' + e.message);
+      }
+    }
     res.writeHead(200, {
       'Content-Type':   contentType,
       'Content-Length': body.length,

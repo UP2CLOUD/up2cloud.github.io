@@ -49,11 +49,7 @@ function postTemplate({ slug, title, excerpt, date, category, badgeClass, badgeC
   <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
   <meta property="article:published_time" content="${date}" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16.png" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
+  <!-- include: _includes/favicon.html -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
