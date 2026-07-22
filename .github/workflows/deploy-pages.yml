@@ -138,6 +138,11 @@ jobs:
           cp -r blog    public/blog    2>/dev/null || true
           cp -r assets  public/assets  2>/dev/null || true
 
+      - name: Resolve HTML includes (_includes/*.html)
+        run: node scripts/resolve-includes.js public
+
+      - name: Apply runtime production patches
+        run: |
           # Runtime production patch: make the static contact form use FormSubmit.
           sed -i "s#https://formspree.io/f/REPLACE_WITH_YOUR_ID#${FORM_ENDPOINT}#g" public/index.html
 
