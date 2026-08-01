@@ -49,6 +49,15 @@ function postTemplate({ slug, title, excerpt, date, category, badgeClass, badgeC
   <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
   <meta property="article:published_time" content="${date}" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@up2cloud" />
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q', { anonymize_ip: true });
+  </script>
   <!-- include: _includes/favicon.html -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -7766,7 +7766,6 @@ Critical rules:
         this.cache[lang] = await r.json();
         return this.cache[lang];
       } catch(e) {
-        console.warn(`[i18n] Could not load ${lang}, falling back to EN`);
         return this.load('en');
       }
     },
