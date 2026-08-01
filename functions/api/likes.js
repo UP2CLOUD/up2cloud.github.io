@@ -54,7 +54,8 @@ export async function onRequestPost(context) {
 
   // Origin guard
   const origin = request.headers.get('Origin') || '';
-  if (!origin.includes('up2cloud.tech') && !origin.includes('up2cloud-tech.pages.dev')) {
+  const ALLOWED_ORIGINS = ['https://up2cloud.tech', 'https://up2cloud-tech.pages.dev'];
+  if (!ALLOWED_ORIGINS.includes(origin)) {
     return json({ error: 'Forbidden' }, 403);
   }
 

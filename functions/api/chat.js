@@ -34,6 +34,23 @@ export async function onRequestPost(context) {
     });
   }
 
+  // Whitelist only the fields the proxy should relay; enforce model and cap tokens
+  const messages = Array.isArray(body.messages) ? body.messages.slice(0, 50) : [];
+  const maxTokens = typeof body.max_tokens === "number"
+    ? Math.min(Math.max(Math.round(body.max_tokens), 1), 500)
+    : 350;
+  const temperature = typeof body.temperature === "number"
+    ? Math.min(Math.max(body.temperature, 0), 2)
+    : 0.7;
+
+  const safeBody = {
+    model: "llama-3.1-8b-instant",
+    messages,
+    max_tokens: maxTokens,
+    temperature,
+    stream: false,
+  };
+
   try {
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -41,7 +58,7 @@ export async function onRequestPost(context) {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(safeBody),
     });
 
     const data = await groqResponse.json();
