@@ -1,6 +1,16 @@
+const ALLOWED_ORIGINS = ["https://up2cloud.tech", "https://up2cloud-tech.pages.dev"];
+
 export async function onRequestPost(context) {
   const { env, request } = context;
   const apiKey = env.GROQ_API_KEY;
+
+  const origin = request.headers.get("Origin") || "";
+  if (!ALLOWED_ORIGINS.includes(origin)) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   if (!apiKey) {
     return new Response(JSON.stringify({ error: "Groq API key not configured on server." }), {
