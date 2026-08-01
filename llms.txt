@@ -1,0 +1,40 @@
+# UP2CLOUD
+
+> Principal Cloud Architecture and FinOps consultancy led by Cesar Augusto Nogueira.
+> Specializes in multi-cloud architecture, Platform Engineering, DevOps, and cloud cost
+> optimization for enterprise teams worldwide.
+
+## Pages
+
+- [Home](https://up2cloud.tech): Services overview, capabilities, case studies, and contact.
+- [About](https://up2cloud.tech/about/): Cesar Nogueira's background, certifications, and consulting approach.
+- [Blog](https://up2cloud.tech/blog/): Technical articles on FinOps, platform engineering, cloud architecture, and DevOps.
+
+## Blog Posts
+
+- [FinOps in Practice: How We Reduced Cloud Costs by 42% for a Global Retailer](https://up2cloud.tech/blog/finops-cloud-cost-reduction/)
+- [Platform Engineering + FinOps in 2026](https://up2cloud.tech/blog/platform-engineering-finops-2026/)
+- [Cloud Cost Anomaly Detection with AI](https://up2cloud.tech/blog/cloud-cost-anomaly-detection-ai/)
+- [OpenClaw: Autonomous Infrastructure Operations](https://up2cloud.tech/blog/openclaw-autonomous-infra-ops/)
+- [Terraform IaC Best Practices](https://up2cloud.tech/blog/terraform-iac-best-practices/)
+- [AI Incident Response Automation](https://up2cloud.tech/blog/ai-incident-response-automation/)
+- [Kubernetes Security Checklist](https://up2cloud.tech/blog/kubernetes-security-checklist/)
+- [Platform Engineering vs DevOps](https://up2cloud.tech/blog/platform-engineering-vs-devops/)
+- [DevSecOps Business Case](https://up2cloud.tech/blog/devsecops-business-case/)
+
+## About
+
+UP2CLOUD is an independent consultancy founded in 2022 by Cesar Augusto Nogueira, a
+principal-level cloud architect with 10+ years of experience. Services span:
+
+- Multi-cloud architecture (GCP, AWS, Azure)
+- Platform Engineering and Kubernetes
+- FinOps and cloud cost optimization
+- DevOps, CI/CD, and Infrastructure as Code (Terraform)
+- Cloud migration and governance
+
+## Optional
+
+- [LinkedIn](https://www.linkedin.com/in/cesarnog/)
+- [GitHub](https://github.com/cesarnog)
+- [César's Portfolio](https://cesarnogueira.tech)
