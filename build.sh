@@ -5,12 +5,20 @@ set -e
 npm ci
 ./node_modules/.bin/tailwindcss -i src/input.css -o assets/css/tailwind.min.css --minify
 
-# 2. Inject form endpoint into index.html
+# 2. Resolve `<!-- include: _includes/foo.html -->` markers (e.g. the shared
+# favicon block). The GitHub Pages workflow runs this too, but production
+# deploys through Cloudflare Pages running THIS script — which never called
+# it, so every page silently kept the raw unresolved comment instead of the
+# actual favicon <link> tags. Must run before cache-busting below, since the
+# tags it inlines reference assets/... paths that also need versioning.
+node scripts/resolve-includes.js .
+
+# 3. Inject form endpoint into index.html
 if [ -n "$FORM_ENDPOINT" ]; then
   sed -i "s|https://formspree.io/f/REPLACE_WITH_YOUR_ID|${FORM_ENDPOINT}|g" index.html
 fi
 
-# 3. Cache-bust asset URLs in every HTML page.
+# 4. Cache-bust asset URLs in every HTML page.
 #
 # Why: _headers marks HTML as no-cache but assets (notably
 # assets/css/tailwind.min.css, which this script REGENERATES on every
