@@ -157,6 +157,12 @@ warns 14 days ahead; `cli.js status` reports token health on every run.
 
 ## Configuration
 
+**Until `ANTHROPIC_API_KEY` is set, the workflow is dormant.** Scheduled runs
+exit green with a notice rather than failing every 6 hours — a pipeline nobody
+has turned on yet is not a broken pipeline, and a workflow that is always red is
+a workflow nobody reads. A manual `workflow_dispatch` still fails loudly: you
+asked for a run, so you should hear why you did not get one.
+
 Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 
 | Secret | Needed for |

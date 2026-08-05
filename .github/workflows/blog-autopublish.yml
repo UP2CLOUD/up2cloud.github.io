@@ -90,7 +90,32 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check the pipeline is configured
+        id: configured
+        # Until secrets are provisioned this workflow is dormant, and a dormant
+        # pipeline is not a broken one. Failing the scheduled run every 6 hours
+        # would just train everyone to ignore this workflow's red X — which is
+        # exactly when a genuine failure needs to be noticed. A human who
+        # clicked "Run workflow", though, gets a loud error: they asked for a
+        # run and deserve to know why they did not get one.
+        env:
+          HAS_ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+        run: |
+          set -euo pipefail
+          if [ "$HAS_ANTHROPIC_KEY" = "true" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=true" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "::notice::Autopublish is not configured yet (no ANTHROPIC_API_KEY secret). Nothing to do — see automation/publishing/README.md to enable it."
+            exit 0
+          fi
+          echo "::error::ANTHROPIC_API_KEY is not set. See automation/publishing/README.md for setup."
+          exit 1
+
       - name: Report current schedule state
+        if: steps.configured.outputs.skip != 'true'
         env:
           STATE_BACKEND: ${{ vars.STATE_BACKEND || 'file' }}
           LINKEDIN_TOKEN_EXPIRES_AT: ${{ vars.LINKEDIN_TOKEN_EXPIRES_AT }}
@@ -99,6 +124,7 @@ jobs:
 
       - name: Run publishing pipeline
         id: publish
+        if: steps.configured.outputs.skip != 'true'
         env:
           # ── Mode / control ────────────────────────────────────────────────
           PUBLISH_MODE: ${{ inputs.mode || vars.PUBLISH_MODE || 'auto' }}
@@ -138,7 +164,7 @@ jobs:
         # The ledger is the durable record of what was published and when; it
         # must land on the default branch even when the article itself went out
         # on its own PR branch, otherwise the 48h clock never advances.
-        if: always() && (vars.STATE_BACKEND || 'file') == 'file'
+        if: always() && steps.configured.outputs.skip != 'true' && (vars.STATE_BACKEND || 'file') == 'file'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -164,7 +190,7 @@ jobs:
           echo "::warning::Could not push the state ledger after 4 attempts"
 
       - name: Summarise run
-        if: always()
+        if: always() && steps.configured.outputs.skip != 'true'
         run: |
           {
             echo "### Autopublish run"
