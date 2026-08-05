@@ -1,0 +1,161 @@
+name: Blog — Autopublish + LinkedIn
+
+# The cron is only a WAKE-UP, never the source of truth. Whether a run actually
+# publishes is decided by state (`now >= last_successful_publication_at + 48h`),
+# so a missed tick, a delayed runner, or a manual re-run cannot double-publish
+# or silently skip a cycle. See automation/publishing/src/schedule.js.
+on:
+  schedule:
+    # Every 6 hours: frequent enough that a delayed/missed tick still lands the
+    # 48h cadence closely, cheap because a not-due run exits in seconds.
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Publish mode'
+        type: choice
+        default: draft
+        options: [dry-run, draft, review, auto]
+      force:
+        description: 'Bypass the 48h interval (kill switch still applies)'
+        type: boolean
+        default: false
+      topic:
+        description: 'Force a topic domain id (e.g. finops, kubernetes-gitops)'
+        type: string
+        required: false
+      resume:
+        description: 'Resume an incomplete run id'
+        type: string
+        required: false
+
+concurrency:
+  # A second-layer guard. The durable lock in the state ledger is authoritative
+  # (it also covers manual runs on other refs), but this stops the common case
+  # cheaply without spinning up the pipeline at all.
+  group: blog-autopublish
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    name: Test automation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Run pipeline unit tests
+        # The publishing logic gates real spend and a public LinkedIn post, so
+        # a red suite must stop the run before any model call.
+        run: node --test "automation/publishing/test/*.test.js"
+
+  publish:
+    name: Generate, publish, promote
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.0
+        with:
+          fetch-depth: 0
+          # Persist credentials so the pipeline can push its content branch.
+          persist-credentials: true
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Report current schedule state
+        env:
+          STATE_BACKEND: ${{ vars.STATE_BACKEND || 'file' }}
+          LINKEDIN_TOKEN_EXPIRES_AT: ${{ vars.LINKEDIN_TOKEN_EXPIRES_AT }}
+          AUTOPUBLISH_DISABLED: ${{ vars.AUTOPUBLISH_DISABLED }}
+        run: node automation/publishing/src/cli.js status
+
+      - name: Run publishing pipeline
+        id: publish
+        env:
+          # ── Mode / control ────────────────────────────────────────────────
+          PUBLISH_MODE: ${{ inputs.mode || vars.PUBLISH_MODE || 'auto' }}
+          AUTOPUBLISH_DISABLED: ${{ vars.AUTOPUBLISH_DISABLED }}
+          FORCE_TOPIC: ${{ inputs.topic }}
+          RESUME_RUN_ID: ${{ inputs.resume }}
+          PUBLISH_INTERVAL_HOURS: ${{ vars.PUBLISH_INTERVAL_HOURS || '48' }}
+          TOPIC_COOLDOWN_DAYS: ${{ vars.TOPIC_COOLDOWN_DAYS || '45' }}
+
+          # ── Model ─────────────────────────────────────────────────────────
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-opus-4-6' }}
+
+          # ── LinkedIn ──────────────────────────────────────────────────────
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_ORGANIZATION_URN: ${{ vars.LINKEDIN_ORGANIZATION_URN }}
+          LINKEDIN_TOKEN_EXPIRES_AT: ${{ vars.LINKEDIN_TOKEN_EXPIRES_AT }}
+          LINKEDIN_API_VERSION: ${{ vars.LINKEDIN_API_VERSION || '202508' }}
+
+          # ── Git / state ───────────────────────────────────────────────────
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GIT_BASE_BRANCH: ${{ github.event.repository.default_branch }}
+          STATE_BACKEND: ${{ vars.STATE_BACKEND || 'file' }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+
+          UTM_CAMPAIGN: ${{ vars.UTM_CAMPAIGN || 'up2cloud_blog' }}
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL || 'https://up2cloud.tech' }}
+        run: |
+          node automation/publishing/src/cli.js publish \
+            --trigger "${{ github.event_name }}" \
+            ${{ (inputs.force == true || inputs.force == 'true') && '--force' || '' }}
+
+      - name: Commit updated state ledger
+        # The ledger is the durable record of what was published and when; it
+        # must land on the default branch even when the article itself went out
+        # on its own PR branch, otherwise the 48h clock never advances.
+        if: always() && (vars.STATE_BACKEND || 'file') == 'file'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+          if [ -z "$(git status --porcelain automation/publishing/state)" ]; then
+            echo "No ledger changes to commit."
+            exit 0
+          fi
+          git config user.name  "up2cloud-autopublish[bot]"
+          git config user.email "automation@up2cloud.tech"
+          git stash push --include-untracked -- automation/publishing/state
+          git checkout "$DEFAULT_BRANCH"
+          git pull --rebase origin "$DEFAULT_BRANCH"
+          git stash pop || true
+          git add automation/publishing/state
+          git commit -m "chore(autopublish): update publication ledger [skip ci]" || exit 0
+          for attempt in 1 2 3 4; do
+            if git push origin "$DEFAULT_BRANCH"; then exit 0; fi
+            sleep $((2 ** attempt))
+            git pull --rebase origin "$DEFAULT_BRANCH" || true
+          done
+          echo "::warning::Could not push the state ledger after 4 attempts"
+
+      - name: Summarise run
+        if: always()
+        run: |
+          {
+            echo "### Autopublish run"
+            echo ""
+            echo "- **Mode:** \`${{ inputs.mode || vars.PUBLISH_MODE || 'auto' }}\`"
+            echo "- **Run id:** \`${{ steps.publish.outputs.run_id }}\`"
+            echo "- **Published:** ${{ steps.publish.outputs.published || 'false' }}"
+            if [ -n "${{ steps.publish.outputs.blog_url }}" ]; then
+              echo "- **Article:** ${{ steps.publish.outputs.blog_url }}"
+            fi
+            if [ -n "${{ steps.publish.outputs.linkedin_urn }}" ]; then
+              echo "- **LinkedIn:** \`${{ steps.publish.outputs.linkedin_urn }}\`"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
