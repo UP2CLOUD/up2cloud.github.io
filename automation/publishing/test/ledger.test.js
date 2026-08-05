@@ -14,7 +14,6 @@ const {
   LINKEDIN_STATUS,
   firstIncompleteStage,
   isStageComplete,
-  createRunRecord,
   contentHash,
 } = require('../src/state/ledger');
 const { STAGES } = require('../src/config');

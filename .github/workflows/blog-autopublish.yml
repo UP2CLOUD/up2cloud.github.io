@@ -9,6 +9,14 @@ on:
     # Every 6 hours: frequent enough that a delayed/missed tick still lands the
     # 48h cadence closely, cheap because a not-due run exits in seconds.
     - cron: '0 */6 * * *'
+  pull_request:
+    # Run the test job — never the publish job — when the pipeline itself
+    # changes. Without this, the suite that gates real spend and a public post
+    # would only ever run at publish time, on code already merged.
+    branches: [main]
+    paths:
+      - 'automation/publishing/**'
+      - '.github/workflows/blog-autopublish.yml'
   workflow_dispatch:
     inputs:
       mode:
@@ -33,8 +41,17 @@ concurrency:
   # A second-layer guard. The durable lock in the state ledger is authoritative
   # (it also covers manual runs on other refs), but this stops the common case
   # cheaply without spinning up the pipeline at all.
-  group: blog-autopublish
-  cancel-in-progress: false
+  #
+  # Every publish-capable trigger shares one group so they genuinely serialise;
+  # PR test runs get their own per-PR group, so a PR cannot queue ahead of — or
+  # behind — a scheduled publish.
+  group: >-
+    blog-autopublish-${{
+      github.event_name == 'pull_request'
+        && format('pr-{0}', github.event.number)
+        || 'publish'
+    }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: write
@@ -57,6 +74,9 @@ jobs:
   publish:
     name: Generate, publish, promote
     needs: test
+    # Hard guard: a pull_request event must never spend model credits, push a
+    # branch, or post to LinkedIn. On PRs this workflow is a test suite only.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:

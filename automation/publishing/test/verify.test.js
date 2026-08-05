@@ -68,15 +68,6 @@ function stubFetch(routes) {
 const resolver = { lookup: async () => [{ address: '93.184.216.34', family: 4 }] };
 const noSleep = async () => {};
 
-function happyRoutes(pageOverrides = {}) {
-  return [
-    ['/assets/img/og-image.png', { contentType: 'image/png', body: 'PNG' }],
-    ['/sitemap.xml', { contentType: 'application/xml', body: `<urlset><loc>${URL}</loc></urlset>` }],
-    ['/blog/', { body: `<a href="/blog/${SLUG}/">post</a>` }],
-    [`/blog/${SLUG}/`, { body: pageHtml(pageOverrides) }],
-  ];
-}
-
 /** Route order matters: the article URL must match before the generic /blog/. */
 function routesFor(pageOverrides = {}, extra = []) {
   return [

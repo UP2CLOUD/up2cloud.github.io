@@ -3,9 +3,8 @@
 const path = require('node:path');
 const fs = require('node:fs');
 
-const { STAGES, MODES } = require('../config');
+const { MODES } = require('../config');
 const { STAGE_STATUS, RUN_STATUS, LINKEDIN_STATUS, isStageComplete, contentHash } = require('../state/ledger');
-const { evaluateSchedule } = require('../schedule');
 const { loadTopics, selectTopic, loadLegacyPosts } = require('../topics');
 const { AnthropicClient } = require('../anthropic');
 const { runResearch } = require('./research');
