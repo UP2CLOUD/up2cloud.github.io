@@ -1,0 +1,161 @@
+{
+  "$comment": "Primary topic domains for rotation. `id` is the cooldown key: no article with the same primary `id` may publish within TOPIC_COOLDOWN_DAYS. `category` and `badgeClass` must match the values blog/posts.json and scripts/add-post.js already use.",
+  "domains": [
+    {
+      "id": "platform-engineering",
+      "label": "Platform Engineering",
+      "category": "DevOps",
+      "badgeClass": "badge-sky",
+      "angles": [
+        "Internal Developer Platform design and golden paths",
+        "Backstage service catalog and software templates in practice",
+        "Platform-as-product: measuring developer experience",
+        "Self-service infrastructure provisioning guardrails"
+      ],
+      "preferredSources": [
+        "https://backstage.io/docs",
+        "https://www.cncf.io",
+        "https://platformengineering.org"
+      ]
+    },
+    {
+      "id": "devsecops",
+      "label": "DevOps & DevSecOps",
+      "category": "Security",
+      "badgeClass": "badge-orange",
+      "angles": [
+        "Supply-chain security: SLSA levels and provenance attestation",
+        "Shift-left scanning: SAST, DAST and IaC policy gates",
+        "Secrets management and short-lived credentials in CI",
+        "SBOM generation and vulnerability triage workflows"
+      ],
+      "preferredSources": [
+        "https://slsa.dev",
+        "https://csrc.nist.gov/publications",
+        "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+        "https://owasp.org"
+      ]
+    },
+    {
+      "id": "finops",
+      "label": "FinOps & Cloud Economics",
+      "category": "FinOps",
+      "badgeClass": "badge-green",
+      "angles": [
+        "FOCUS specification and multi-cloud cost normalisation",
+        "Unit economics: cost per request, per tenant, per feature",
+        "Commitment strategy: reserved capacity vs savings plans vs spot",
+        "Anomaly detection and showback/chargeback accountability"
+      ],
+      "preferredSources": [
+        "https://www.finops.org/framework",
+        "https://focus.finops.org",
+        "https://docs.aws.amazon.com/cost-management",
+        "https://cloud.google.com/docs/finops"
+      ]
+    },
+    {
+      "id": "cloud-platforms",
+      "label": "Cloud Platform Architecture",
+      "category": "Cloud",
+      "badgeClass": "badge-sky",
+      "angles": [
+        "Landing zone design and multi-account governance",
+        "Cross-cloud identity federation and workload identity",
+        "Network architecture: private connectivity and egress control",
+        "Well-architected trade-offs across AWS, GCP and Azure"
+      ],
+      "preferredSources": [
+        "https://docs.aws.amazon.com/wellarchitected",
+        "https://cloud.google.com/architecture/framework",
+        "https://learn.microsoft.com/azure/well-architected"
+      ]
+    },
+    {
+      "id": "terraform-iac",
+      "label": "Terraform & OpenTofu",
+      "category": "DevOps",
+      "badgeClass": "badge-sky",
+      "angles": [
+        "State management, backends and drift detection at scale",
+        "Module design: composition, versioning and testing",
+        "Policy as code with OPA/Conftest and Sentinel",
+        "Migrating between Terraform and OpenTofu"
+      ],
+      "preferredSources": [
+        "https://developer.hashicorp.com/terraform/docs",
+        "https://opentofu.org/docs",
+        "https://www.openpolicyagent.org/docs"
+      ]
+    },
+    {
+      "id": "kubernetes-gitops",
+      "label": "Kubernetes & GitOps",
+      "category": "Cloud",
+      "badgeClass": "badge-sky",
+      "angles": [
+        "Progressive delivery with Argo Rollouts or Flagger",
+        "Multi-cluster reconciliation patterns with Argo CD or Flux",
+        "Pod Security Standards and admission policy enforcement",
+        "Resource management: requests, limits and autoscaling signals"
+      ],
+      "preferredSources": [
+        "https://kubernetes.io/docs",
+        "https://argo-cd.readthedocs.io",
+        "https://fluxcd.io/flux",
+        "https://opengitops.dev"
+      ]
+    },
+    {
+      "id": "cicd",
+      "label": "CI/CD Engineering",
+      "category": "DevOps",
+      "badgeClass": "badge-sky",
+      "angles": [
+        "Pipeline performance: caching, parallelism and fan-out",
+        "Deployment strategies: blue/green, canary and feature flags",
+        "Reproducible builds and hermetic pipelines",
+        "Release engineering metrics from DORA research"
+      ],
+      "preferredSources": [
+        "https://docs.github.com/actions",
+        "https://dora.dev",
+        "https://slsa.dev/spec"
+      ]
+    },
+    {
+      "id": "sre-observability",
+      "label": "SRE & Observability",
+      "category": "DevOps",
+      "badgeClass": "badge-sky",
+      "angles": [
+        "SLOs, error budgets and burn-rate alerting",
+        "OpenTelemetry adoption: traces, metrics and logs correlation",
+        "Incident response: on-call design and blameless retrospectives",
+        "Cardinality control and observability cost management"
+      ],
+      "preferredSources": [
+        "https://sre.google/books",
+        "https://opentelemetry.io/docs",
+        "https://prometheus.io/docs"
+      ]
+    },
+    {
+      "id": "ai-assisted-ops",
+      "label": "AI-Assisted Operations",
+      "category": "AI",
+      "badgeClass": "badge-purple",
+      "angles": [
+        "LLM-assisted incident triage with human-in-the-loop guardrails",
+        "Securing AI agents that hold infrastructure credentials",
+        "Evaluating AI coding assistants against DORA outcomes",
+        "Cost and capacity planning for inference workloads"
+      ],
+      "preferredSources": [
+        "https://www.nist.gov/itl/ai-risk-management-framework",
+        "https://owasp.org/www-project-top-10-for-large-language-model-applications",
+        "https://www.cncf.io"
+      ]
+    }
+  ]
+}
