@@ -38,7 +38,20 @@
     .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#c4b5fd; background:rgba(124,58,237,.12); padding:.1rem .35rem; border-radius:4px }
     .timeline-step { background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.25); border-radius:12px; padding:1rem 1.25rem; margin-bottom:.75rem }
     .stat-pill { background:rgba(124,58,237,.15); border:1px solid rgba(167,139,250,.2); border-radius:12px; padding:1.25rem; text-align:center }
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(167,139,250,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -153,7 +166,7 @@
       <span class="text-white/25">/</span>
       <span class="badge badge-purple">AI</span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
       AI-Powered Incident Response: From Alert to Resolution in <span style="color:#A78BFA">Under 60 Seconds</span>
     </h1>
     <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
@@ -169,24 +182,34 @@
     <div class="grid grid-cols-3 gap-4 mb-8">
       <div class="stat-pill">
         <p class="font-heading font-bold text-2xl" style="color:#A78BFA">47s</p>
-        <p class="text-white/50 text-xs mt-1">Avg Resolution</p>
+        <p class="text-white/50 text-xs mt-1 stat-label">Avg Resolution</p>
       </div>
       <div class="stat-pill">
         <p class="font-heading font-bold text-2xl" style="color:#A78BFA">10×</p>
-        <p class="text-white/50 text-xs mt-1">Faster MTTR</p>
+        <p class="text-white/50 text-xs mt-1 stat-label">Faster MTTR</p>
       </div>
       <div class="stat-pill">
         <p class="font-heading font-bold text-2xl" style="color:#A78BFA">0</p>
-        <p class="text-white/50 text-xs mt-1">3AM Pages</p>
+        <p class="text-white/50 text-xs mt-1 stat-label">3AM Pages</p>
       </div>
     </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Timeline showing incident resolution dropping from a 38 minute human-only MTTR to 47 seconds with AI agent response">
+      <g class="bar" style="animation-delay:.1s" fill="#A78BFA" opacity=".85"><rect x="10" y="10" width="34" height="70"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#A78BFA" opacity=".6"><rect x="60" y="55" width="34" height="25"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#7C3AED" opacity=".9"><rect x="110" y="74" width="34" height="6"/></g>
+      <path class="draw" d="M10 12 L44 57 L127 76" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="150" y="60" fill="#FB923C" font-size="10" font-family="Space Grotesk,sans-serif" font-weight="700">47s</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">alert</text>
+      <text x="60" y="88" fill="rgba(255,255,255,.4)" font-size="7" font-family="DM Sans,sans-serif">correlate</text>
+      <text x="105" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">resolved</text>
+    </svg>
   </div>
 </section>
 
 <!-- ARTICLE BODY -->
 <article class="py-12" style="background:#0F172A">
   <div class="max-w-3xl mx-auto px-6 prose reveal">
-
+  <div id="article-body-content">
     <p>
       It's 3:47 AM. A disk on your production database host has hit 94% utilisation. In a traditional on-call setup, an alert fires, someone's phone rings, they pull up a laptop still half-asleep, try to remember the runbook location, and 45 minutes later — if they're fast — the issue is resolved. In an AI-augmented setup, the disk is cleaned, the runbook is executed, the incident is logged, and the on-call engineer wakes up to a Slack summary. Total elapsed time: 47 seconds.
     </p>
@@ -228,7 +251,7 @@
     <p>
       During the live PoC, we simulated a production-like scenario on a GKE node: artificially filled the disk to 94% using a synthetic log generator. Here's the agent's actual timeline:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>T+0s</strong> — Prometheus alert fires: <code>node_disk_usage &gt; 90%</code>.</li>
       <li><strong>T+3s</strong> — OpenClaw correlates: no recent deployments, no related pod anomalies. Isolated disk pressure.</li>
       <li><strong>T+8s</strong> — Agent identifies largest consumers via <code>du</code> analysis: 14 GB of unrotated application logs.</li>
@@ -257,6 +280,37 @@
     <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
       Looking to implement these strategies? Explore our <a href="/#services" class="text-sky-light hover:underline">Cloud & DevOps services</a> or learn more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
     </p>
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-white/5">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://sre.google/sre-book/table-of-contents/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Google — Site Reliability Engineering Book</span>
+      </a>
+      <a href="https://developer.pagerduty.com/docs/events-api-v2-overview" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">PagerDuty — Events API v2</span>
+      </a>
+      <a href="https://opentelemetry.io/docs/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">OpenTelemetry — Observability Docs</span>
+      </a>
+      <a href="https://prometheus.io/docs/alerting/latest/overview/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Prometheus — Alerting Overview</span>
+      </a>
+      <a href="https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Kubernetes — Debugging Running Pods</span>
+      </a>
+      <a href="https://slack.dev/bolt-js/concepts" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Slack — Bolt SDK Concepts</span>
+      </a>
+    </div>
+  </div>
 </div>
 </article>
 
@@ -327,7 +381,7 @@
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
   }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
 </script>
 <script>
 (function(){
@@ -350,6 +404,32 @@
       if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
     });
   }
+  const POST_SLUG = 'ai-incident-response-automation';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
   async function setArticleLang(lang) {
     document.getElementById('article-lang-menu')?.classList.add('hidden');
     document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
@@ -364,6 +444,8 @@
     });
     const t = await loadLang(lang);
     applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
   }
   function toggleArticleLang(e) {

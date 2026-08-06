@@ -43,7 +43,20 @@
     .roi-bar { background:rgba(5,150,105,.08); border:1px solid rgba(52,211,153,.18); border-radius:12px; padding:1rem 1.25rem; margin-bottom:.75rem }
     .check-item { display:flex; gap:.75rem; align-items:flex-start; padding:.875rem 1rem; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:10px; margin-bottom:.5rem }
     .check-icon { width:22px; height:22px; min-width:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(251,146,60,.15); margin-top:.1rem }
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(251,146,60,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -158,7 +171,7 @@
       <span class="text-white/25">/</span>
       <span class="badge badge-orange">Security</span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
       The Business Case for <span style="color:#FB923C">DevSecOps</span>: Ship Faster Without Sacrificing Security
     </h1>
     <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
@@ -174,24 +187,34 @@
     <div class="grid grid-cols-3 gap-4 mb-8">
       <div class="text-center" style="background:rgba(234,88,12,.08);border:1px solid rgba(251,146,60,.2);border-radius:14px;padding:1.25rem">
         <p class="font-heading font-bold text-2xl" style="color:#FB923C">30×</p>
-        <p class="text-white/50 text-xs mt-1">Cost to fix in prod vs dev</p>
+        <p class="text-white/50 text-xs mt-1 stat-label">Cost to fix in prod vs dev</p>
       </div>
       <div class="text-center" style="background:rgba(234,88,12,.08);border:1px solid rgba(251,146,60,.2);border-radius:14px;padding:1.25rem">
         <p class="font-heading font-bold text-2xl" style="color:#FB923C">$4.88M</p>
-        <p class="text-white/50 text-xs mt-1">Avg breach cost (IBM 2024)</p>
+        <p class="text-white/50 text-xs mt-1 stat-label">Avg breach cost (IBM 2024)</p>
       </div>
       <div class="text-center" style="background:rgba(234,88,12,.08);border:1px solid rgba(251,146,60,.2);border-radius:14px;padding:1.25rem">
         <p class="font-heading font-bold text-2xl" style="color:#FB923C">2.5×</p>
-        <p class="text-white/50 text-xs mt-1">Faster MTTR with automation</p>
+        <p class="text-white/50 text-xs mt-1 stat-label">Faster MTTR with automation</p>
       </div>
     </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Bar chart showing the cost of fixing a vulnerability rising sharply from code review to production, a 95 times multiplier">
+      <g class="bar" style="animation-delay:.1s" fill="#22C55E"><rect x="10" y="76" width="34" height="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#EAB308"><rect x="70" y="68" width="34" height="12"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#EF4444"><rect x="130" y="10" width="34" height="70"/></g>
+      <path class="draw" d="M27 74 L87 66 L147 12" fill="none" stroke="#FB923C" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="175" y="25" fill="#FB923C" font-size="10" font-family="Space Grotesk,sans-serif" font-weight="700">95×</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">code review</text>
+      <text x="70" y="88" fill="rgba(255,255,255,.4)" font-size="7" font-family="DM Sans,sans-serif">staging</text>
+      <text x="130" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">production</text>
+    </svg>
   </div>
 </section>
 
 <!-- ARTICLE BODY -->
 <article class="py-12" style="background:#0F172A">
   <div class="max-w-3xl mx-auto px-6 prose reveal">
-
+  <div id="article-body-content">
     <p>
       Security teams and engineering teams have traditionally operated in opposition: security slows things down, engineering wants to move fast, and the result is a negotiated compromise that satisfies nobody. DevSecOps reframes that relationship — not by removing security, but by moving it left so that it becomes an accelerator rather than a bottleneck.
     </p>
@@ -233,7 +256,7 @@
     <p>
       Shift-left means embedding security checks as early as possible — ideally in the developer's IDE and in every pull request, not at the end of a sprint in a dedicated security review. A mature shift-left pipeline has four layers:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Pre-commit hooks</strong> — secret scanning (gitleaks), dependency audit, lightweight SAST rules in the developer's local environment.</li>
       <li><strong>SAST in CI</strong> — runs on every pull request, blocks merge on Critical findings.</li>
       <li><strong>IaC and container scanning</strong> — gates on Terraform plan and Docker image build.</li>
@@ -244,7 +267,7 @@
     <p>
       Static Application Security Testing scans source code for known vulnerability patterns without executing it. Two tools dominate:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Snyk Code</strong> — developer-friendly, deep language support (JS/TS, Python, Java, Go), integrates as a PR check. IDE plugin provides inline fix suggestions.</li>
       <li><strong>Semgrep</strong> — open source, extremely fast, rule-based. Write custom Rego-like rules to enforce organisation-specific security patterns alongside community rulesets.</li>
     </ul>
@@ -277,7 +300,7 @@
     <p>
       Infrastructure as Code is code — and it can carry security misconfigurations just like application code. A Terraform resource that opens port 22 to 0.0.0.0/0, or an S3 bucket with public access, is preventable with a 30-second scan.
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Checkov</strong> (Bridgecrew/Palo Alto) — 1,000+ built-in policies for Terraform, CloudFormation, K8s manifests, Dockerfiles. Free to self-host.</li>
       <li><strong>tfsec / Trivy config</strong> — Terraform-specific, extremely fast for pre-commit hooks. <code>trivy config .</code> also scans Kubernetes YAML.</li>
     </ul>
@@ -337,6 +360,37 @@
     <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
       Looking to implement these strategies? Explore our <a href="/#services" class="text-sky-light hover:underline">Cloud & DevOps services</a> or learn more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
     </p>
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-white/5">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://owasp.org/www-project-devsecops-guideline/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">OWASP — DevSecOps Guideline</span>
+      </a>
+      <a href="https://csrc.nist.gov/Projects/ssdf" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">NIST — Secure Software Development Framework</span>
+      </a>
+      <a href="https://www.ibm.com/reports/data-breach" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">IBM — Cost of a Data Breach Report</span>
+      </a>
+      <a href="https://semgrep.dev/docs/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Semgrep — Documentation</span>
+      </a>
+      <a href="https://www.zaproxy.org/docs/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">OWASP ZAP — Documentation</span>
+      </a>
+      <a href="https://www.checkov.io/1.Welcome/What%20is%20Checkov.html" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Checkov — IaC Scanning Docs</span>
+      </a>
+    </div>
+  </div>
 </div>
 </article>
 
@@ -407,7 +461,7 @@
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
   }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
 </script>
 <script>
 (function(){
@@ -430,6 +484,32 @@
       if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
     });
   }
+  const POST_SLUG = 'devsecops-business-case';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
   async function setArticleLang(lang) {
     document.getElementById('article-lang-menu')?.classList.add('hidden');
     document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
@@ -444,6 +524,8 @@
     });
     const t = await loadLang(lang);
     applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
   }
   function toggleArticleLang(e) {

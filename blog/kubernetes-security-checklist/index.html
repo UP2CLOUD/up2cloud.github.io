@@ -33,7 +33,21 @@
     .prose pre{background:#020617;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:1.25rem 1.5rem;overflow-x:auto;margin-bottom:1.5rem;font-size:.875rem;line-height:1.7;color:#94A3B8}
     .check-item{display:flex;gap:.75rem;align-items:flex-start;padding:.875rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:.5rem}
     .check-icon{width:20px;height:20px;border-radius:50%;background:rgba(34,197,94,.15);border:1.5px solid rgba(34,197,94,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.check-ul{list-style:none;padding-left:0}
+    .prose ul.reveal-list li{opacity:0;transform:translateX(-10px);transition:opacity .5s ease, transform .5s ease}
+    .prose ul.reveal-list.visible li{opacity:1;transform:none}
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw{stroke-dasharray:600;stroke-dashoffset:600;animation:drawline 2s ease-out .3s forwards}
+    .hero-diagram .bar{transform:scaleY(0);transform-origin:bottom;animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards}
+    @keyframes drawline{to{stroke-dashoffset:0}}
+    @keyframes growbar{to{transform:scaleY(1)}}
+    .ref-list a{display:flex;align-items:flex-start;gap:.6rem;padding:.85rem 1rem;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);transition:border-color .2s ease, background .2s ease}
+    .ref-list a:hover{border-color:rgba(251,146,60,.4);background:rgba(255,255,255,.07)}
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -147,10 +161,10 @@
       <span class="text-white/40 text-sm">·</span>
       <span class="text-white/40 text-sm">7 <span data-i18n="blog_min_read">min read</span></span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight mb-6">
       Kubernetes Security Hardening: A <span class="gradient-text">Production Checklist</span> for 2025
     </h1>
-    <p class="text-white/60 text-lg leading-relaxed">Running Kubernetes without a security baseline is not a calculated risk — it is an incident waiting to happen. This checklist covers what we verify on every cluster we inherit or build from scratch.</p>
+    <p id="article-hero-lede" class="text-white/60 text-lg leading-relaxed">Running Kubernetes without a security baseline is not a calculated risk — it is an incident waiting to happen. This checklist covers what we verify on every cluster we inherit or build from scratch.</p>
     <div class="flex items-center gap-3 mt-8 pt-8 border-t border-white/10">
       <img src="/assets/img/cesar.webp" alt="Cesar A. Nogueira" width="48" height="48" loading="lazy" class="w-10 h-10 rounded-full object-cover" style="object-position:64% 62%;transform:scale(1.5);transform-origin:center" />
       <div>
@@ -158,10 +172,20 @@
         <p class="text-white/40 text-xs">Platform Engineer · UP2CLOUD</p>
       </div>
     </div>
+    <svg class="hero-diagram" viewBox="0 0 400 60" width="100%" height="60" role="img" aria-label="Row of security checklist items lighting up green as each control is verified">
+      <g class="bar" style="animation-delay:.1s" fill="#22C55E" opacity=".9"><circle cx="26" cy="30" r="18"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#22C55E" opacity=".85"><circle cx="92" cy="30" r="18"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#22C55E" opacity=".8"><circle cx="158" cy="30" r="18"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#22C55E" opacity=".75"><circle cx="224" cy="30" r="18"/></g>
+      <g class="bar" style="animation-delay:.5s" fill="#22C55E" opacity=".7"><circle cx="290" cy="30" r="18"/></g>
+      <g class="bar" style="animation-delay:.6s" fill="#FB923C" opacity=".9"><circle cx="356" cy="30" r="18"/></g>
+      <path class="draw" d="M18 30l6 6 12-12M84 30l6 6 12-12M150 30l6 6 12-12M216 30l6 6 12-12M282 30l6 6 12-12" fill="none" stroke="#020617" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="349" y="34" fill="#020617" font-size="14" font-family="Space Grotesk,sans-serif" font-weight="700">!</text>
+    </svg>
   </div>
 
   <article class="prose reveal">
-
+  <div id="article-body-content">
     <h2>Why your cluster is probably misconfigured</h2>
     <p>The majority of Kubernetes security incidents trace back to three root causes: overly permissive RBAC, workloads running as root, and secrets stored as plain environment variables. The Kubernetes default configuration is optimised for flexibility, not security. Hardening requires deliberate choices at every layer.</p>
 
@@ -257,7 +281,37 @@ spec:
 
     <h2>The bottom line</h2>
     <p>Security hardening is not a one-time task — it is an ongoing posture. Run a quarterly RBAC audit, update your Falco rules when you add new workloads, and re-scan images on a schedule even if they have not changed (new CVEs are disclosed daily). The clusters that get compromised are rarely the ones attacked by sophisticated actors — they are the ones that never closed the basics.</p>
+  </div>
 
+  <div class="mt-10 pt-8 border-t border-white/10">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://kubernetes.io/docs/concepts/security/rbac-good-practices/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Kubernetes — RBAC Good Practices</span>
+      </a>
+      <a href="https://kubernetes.io/docs/concepts/security/pod-security-standards/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Kubernetes — Pod Security Standards</span>
+      </a>
+      <a href="https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">NSA/CISA — Kubernetes Hardening Guide</span>
+      </a>
+      <a href="https://csrc.nist.gov/pubs/sp/800/190/final" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">NIST SP 800-190 — Container Security</span>
+      </a>
+      <a href="https://falco.org/docs/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Falco — Runtime Security Docs</span>
+      </a>
+      <a href="https://docs.sigstore.dev/cosign/overview/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FB923C" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Sigstore Cosign — Image Signing</span>
+      </a>
+    </div>
+  </div>
   </article>
 
   <div class="mt-16 glass rounded-2xl p-8 text-center reveal">
@@ -309,6 +363,28 @@ spec:
       if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
     });
   }
+  const POST_SLUG = 'kubernetes-security-checklist';
+  const heroEl = document.getElementById('article-hero-title');
+  const ledeEl = document.getElementById('article-hero-lede');
+  const bodyEl = document.getElementById('article-body-content');
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', lede: ledeEl ? ledeEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '' };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (ledeEl && entry.lede) ledeEl.innerHTML = entry.lede;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+  }
   async function setArticleLang(lang) {
     document.getElementById('article-lang-menu')?.classList.add('hidden');
     document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
@@ -323,6 +399,8 @@ spec:
     });
     const t = await loadLang(lang);
     applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
   }
   function toggleArticleLang(e) {

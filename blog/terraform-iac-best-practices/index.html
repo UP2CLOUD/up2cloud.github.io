@@ -40,7 +40,20 @@
     .prose pre code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#94d4f7; line-height:1.7; white-space:pre }
     .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#7dd3fc; background:rgba(14,165,233,.1); padding:.1rem .35rem; border-radius:4px }
     .prose pre code { background:none; padding:0; color:#94d4f7 }
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(56,189,248,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -155,7 +168,7 @@
       <span class="text-white/25">/</span>
       <span class="badge badge-sky">DevOps</span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
       Terraform at Scale: IaC Best Practices for <span class="gradient-text">Multi-Cloud Teams</span>
     </h1>
     <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
@@ -167,13 +180,24 @@
       <span>·</span>
       <span>8 <span data-i18n="blog_min_read">min read</span></span>
     </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Diagram of Terraform's layered module structure — resource modules, composition modules, and root configurations — flowing through a policy-gated CI/CD pipeline into production apply">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".5"><rect x="10" y="50" width="40" height="30" rx="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".65"><rect x="70" y="38" width="40" height="42" rx="4"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".8"><rect x="130" y="26" width="40" height="54" rx="4"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#7DD3FC"><rect x="190" y="12" width="40" height="68" rx="4"/></g>
+      <path class="draw" d="M250 46 L280 46 L280 22 L385 22" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="385" cy="22" r="4" fill="#F97316"/>
+      <text x="292" y="14" fill="#FB923C" font-size="9" font-family="Space Grotesk,sans-serif" font-weight="700">apply</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">modules</text>
+      <text x="190" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">environments</text>
+    </svg>
   </div>
 </section>
 
 <!-- ARTICLE BODY -->
 <article class="py-12" style="background:#0F172A">
   <div class="max-w-3xl mx-auto px-6 prose reveal">
-
+  <div id="article-body-content">
     <p>
       Terraform is the de-facto standard for cloud infrastructure — but teams that don't adopt disciplined practices early pay a steep tax later: state drift, module sprawl, untestable configurations, and the ever-present fear of <code>terraform apply</code> going wrong in production. This guide distils the patterns we apply across multi-cloud engagements at UP2CLOUD.
     </p>
@@ -182,7 +206,7 @@
     <p>
       The most common anti-pattern we see is a flat repository: one directory, hundreds of resources, everything tangled together. Treat your Terraform code like a software library with three distinct layers:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Resource modules</strong> — single-purpose, reusable wrappers around provider resources (e.g., <code>modules/gcs-bucket</code>, <code>modules/rds-instance</code>).</li>
       <li><strong>Composition modules</strong> — assemble resource modules into meaningful infrastructure units (e.g., <code>modules/web-service</code> that includes an ALB, ASG, and RDS).</li>
       <li><strong>Root configurations</strong> — environment-specific entry points that call composition modules with environment-specific variables.</li>
@@ -240,7 +264,7 @@ terraform {
     <p>
       Governance without enforcement is just documentation. Two mature policy-as-code solutions integrate with Terraform:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>HashiCorp Sentinel</strong> (Terraform Cloud/Enterprise) — runs policies as a gate between <code>plan</code> and <code>apply</code>. Excellent for organisations already on the HCP stack.</li>
       <li><strong>OPA Conftest</strong> (open source) — validate Terraform plan JSON against Rego policies in any CI system. Free, flexible, cloud-agnostic.</li>
     </ul>
@@ -294,7 +318,7 @@ jobs:
     <p>
       State drift occurs when real infrastructure diverges from Terraform state — usually because someone made a console change. Three defences:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Drift detection runs</strong> — schedule <code>terraform plan</code> nightly and alert on any diff. Terraform Cloud has this built in; for open-source stacks, use a cron-triggered GitHub Actions workflow.</li>
       <li><strong>Import-first policy</strong> — before touching any resource manually, import it into state first. Document this in your runbooks.</li>
       <li><strong>Readonly console policies</strong> — restrict IAM/GCP roles so engineers can't modify resources through the console in production environments.</li>
@@ -312,6 +336,37 @@ jobs:
     <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
       Looking to implement these strategies? Explore our <a href="/#services" class="text-sky-light hover:underline">Cloud & DevOps services</a> or learn more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
     </p>
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-white/5">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://developer.hashicorp.com/terraform/language/modules/develop/composition" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">HashiCorp Terraform — Module Composition</span>
+      </a>
+      <a href="https://developer.hashicorp.com/terraform/language/backend/s3" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">HashiCorp Terraform — Remote State Backends</span>
+      </a>
+      <a href="https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Terraform Cloud — Sentinel Policy Enforcement</span>
+      </a>
+      <a href="https://www.openpolicyagent.org/docs/latest/terraform/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Open Policy Agent — Terraform Integration</span>
+      </a>
+      <a href="https://docs.github.com/en/actions/deployment/security-hardening-your-deployments" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">GitHub Actions — Hardening Deployments</span>
+      </a>
+      <a href="https://developer.hashicorp.com/terraform/tutorials/state/state-import" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">HashiCorp Terraform — Import &amp; Drift Detection</span>
+      </a>
+    </div>
+  </div>
 </div>
 </article>
 
@@ -382,7 +437,7 @@ jobs:
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
   }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
 </script>
 <script>
 (function(){
@@ -405,6 +460,32 @@ jobs:
       if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
     });
   }
+  const POST_SLUG = 'terraform-iac-best-practices';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
   async function setArticleLang(lang) {
     document.getElementById('article-lang-menu')?.classList.add('hidden');
     document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
@@ -419,6 +500,8 @@ jobs:
     });
     const t = await loadLang(lang);
     applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
   }
   function toggleArticleLang(e) {

@@ -46,7 +46,20 @@
     .stat-card { background:rgba(5,150,105,.1); border:1px solid rgba(52,211,153,.18); border-radius:14px; padding:1.25rem 1.5rem; text-align:center }
     .stat-num { font-family:'Space Grotesk',sans-serif; font-size:2.2rem; font-weight:800; color:#34D399; line-height:1 }
     .stat-label { color:rgba(255,255,255,.5); font-size:.8rem; margin-top:.35rem }
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(52,211,153,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -125,8 +138,22 @@
       <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
     </a>
     <div class="flex items-center gap-4">
-      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors">← All posts</a>
-      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">Get in Touch</a>
+      <div class="relative" id="article-lang-picker">
+        <button id="article-lang-btn" onclick="toggleArticleLang(event)" class="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium border border-white/20 rounded-lg px-2.5 py-1.5 transition-colors hover:border-white/40 cursor-pointer" aria-haspopup="true" aria-expanded="false">
+          <span id="article-lang-flag" class="text-sm leading-none">🇺🇸</span>
+          <span id="article-lang-code" class="font-semibold tracking-wide">EN</span>
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="article-lang-menu" class="hidden absolute right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-50 min-w-[140px]" style="background:rgba(15,23,42,.97);backdrop-filter:blur(16px)">
+          <button onclick="setArticleLang('en')" data-lang="en" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇺🇸</span><span>English</span></button>
+          <button onclick="setArticleLang('pt')" data-lang="pt" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇧🇷</span><span>Português</span></button>
+          <button onclick="setArticleLang('es')" data-lang="es" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇪🇸</span><span>Español</span></button>
+          <button onclick="setArticleLang('fr')" data-lang="fr" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇫🇷</span><span>Français</span></button>
+        </div>
+      </div>
+      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_blog">Blog</a>
+      <a href="/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_back">← Back to site</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)" data-i18n="blog_cta_touch">Get in Touch</a>
     </div>
   </div>
 </nav>
@@ -138,17 +165,17 @@
       <span class="badge badge-green" style="background:rgba(5,150,105,.18);color:#34D399">FinOps</span>
       <span class="badge" style="background:rgba(124,58,237,.18);color:#A78BFA">AI</span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
       How AI Anomaly Detection Catches Cloud Cost Spikes
       <span class="gradient-text"> Before They Hurt</span>
     </h1>
-    <p class="text-white/60 text-lg leading-relaxed mb-8">
+    <p id="article-hero-lede" class="text-white/60 text-lg leading-relaxed mb-8">
       Cloud bills spike silently for days before anyone notices. Here's how AI anomaly detection catches cost explosions in minutes, not weeks.
     </p>
     <div class="flex flex-wrap items-center gap-5 text-white/40 text-sm">
       <span>8 May 2026</span>
       <span>·</span>
-      <span>7 min read</span>
+      <span>7 <span data-i18n="blog_min_read">min read</span></span>
       <span>·</span>
       <span>Cesar A. Nogueira</span>
     </div>
@@ -171,12 +198,24 @@
       <div class="stat-label">Median avoidable overspend per incident, undetected for 3 days</div>
     </div>
   </div>
+  <div class="max-w-3xl mx-auto px-6 mt-6">
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Bar chart showing average cost-anomaly detection time dropping from 72 hours without automation to 4 minutes with AI monitoring, avoiding a median $31,000 in overspend per incident">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".85"><rect x="10" y="10" width="34" height="70"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".7"><rect x="60" y="45" width="34" height="35"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".6"><rect x="110" y="60" width="34" height="20"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#34D399" opacity=".75"><rect x="160" y="68" width="34" height="12"/></g>
+      <g class="bar" style="animation-delay:.5s" fill="#34D399" opacity=".9"><rect x="210" y="74" width="34" height="6"/></g>
+      <g class="bar" style="animation-delay:.6s" fill="#34D399"><rect x="260" y="76" width="34" height="4"/></g>
+      <path class="draw" d="M10 12 L44 47 L94 62 L144 70 L194 76 L244 78 L294 78" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="305" y="52" fill="#FB923C" font-size="10" font-family="Space Grotesk,sans-serif" font-weight="700">4 min</text>
+    </svg>
+  </div>
 </div>
 
 <!-- ARTICLE -->
 <article class="py-14" style="background:#0F172A">
   <div class="max-w-3xl mx-auto px-6 prose">
-
+  <div id="article-body-content">
     <h2>The Silent Bleed Problem</h2>
     <p>
       A misconfigured autoscaling policy. A developer who left a <code>p3.16xlarge</code> GPU instance running over a long weekend. A data pipeline that suddenly started writing to S3 at 10× normal volume. These events happen constantly in production cloud environments — and in most organisations, nobody knows until the monthly bill arrives.
@@ -196,7 +235,7 @@
     <p>
       The result is one of two failure modes: teams set thresholds too low and drown in false positives until they mute the alerts entirely, or they set thresholds too high and the alert fires too late to matter. Neither is acceptable in a production environment where a runaway Lambda function can accumulate tens of thousands of dollars in hours.
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>No baseline context</strong> — a $500 spike means nothing without knowing your normal daily spend</li>
       <li><strong>No service-level granularity</strong> — account-level alerts can't tell you which service is misbehaving</li>
       <li><strong>No rate-of-change detection</strong> — a steady 200% increase over 6 hours looks normal until it isn't</li>
@@ -213,7 +252,7 @@
     <p>
       When actual spend falls outside that interval by more than a configurable number of standard deviations, an alert fires. The alert includes:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li>The service or resource causing the anomaly</li>
       <li>The magnitude of deviation (% above expected)</li>
       <li>The projected impact if the anomaly continues at current rate</li>
@@ -232,7 +271,7 @@
     <p>
       GCP's built-in anomaly detection is less configurable than AWS's but effective when combined with granular budget alerts at the project and service level. We layer three controls:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Project-level budgets</strong> at 50%, 90%, and 100% — these catch slow drifts</li>
       <li><strong>GCP Recommender anomaly insights</strong> — surface in Security Command Center and Cloud Console</li>
       <li><strong>Custom Pub/Sub → Cloud Function pipeline</strong> that monitors billing exports in BigQuery at 15-minute granularity and compares against the rolling 7-day average</li>
@@ -245,7 +284,7 @@
     <p>
       After running this pattern across a dozen client environments, the architecture that consistently performs best has three layers:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Layer 1 — Native detection:</strong> Enable the cloud provider's built-in anomaly detection (AWS CAD, GCP spend anomalies). Zero cost, near-zero setup time, catches the obvious spikes.</li>
       <li><strong>Layer 2 — Granular budget alerts:</strong> Per-service, per-environment, per-team budgets with tight thresholds. This catches slow bleeds that don't look anomalous day-to-day but compound dangerously over weeks.</li>
       <li><strong>Layer 3 — Custom time-series monitoring:</strong> For teams spending more than $50k/month, invest in a custom pipeline over billing exports (BigQuery or AWS CUR in S3) that enables root-cause attribution by tag, resource, and team. This is where you catch the subtle patterns the native tools miss.</li>
@@ -267,7 +306,7 @@
     <p>
       The final piece is the response workflow. An alert that fires but requires a human to diagnose the root cause, find the resource, and decide on an action is still too slow. Our fully automated response pipeline:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li>Anomaly detected → SNS/Pub/Sub alert fires</li>
       <li>Lambda/Cloud Function fetches the top-spend resources in the affected tag group for the last 2 hours</li>
       <li>AI agent (GPT-4o or Claude) analyses the resource list, compares against recent deployments in the CI/CD system, and generates a root-cause hypothesis</li>
@@ -282,7 +321,7 @@
     <p>
       You don't need the full three-layer architecture to start seeing results. The 80/20 action for this week:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li>Enable AWS Cost Anomaly Detection on every linked account — it's free and takes 10 minutes</li>
       <li>Create a monitor scoped to your top 3 services by spend</li>
       <li>Route alerts to a Slack channel your on-call team actually watches</li>
@@ -296,6 +335,37 @@
     <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
       Looking to implement these strategies? Explore our <a href="/#services" class="text-sky-light hover:underline">Cloud & DevOps services</a> or learn more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
     </p>
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-white/5">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">AWS Cost Anomaly Detection — User Guide</span>
+      </a>
+      <a href="https://cloud.google.com/billing/docs/how-to/budgets" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Google Cloud — Budgets &amp; Spend Alerts</span>
+      </a>
+      <a href="https://facebook.github.io/prophet/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Meta Prophet — Time-Series Forecasting</span>
+      </a>
+      <a href="https://www.finops.org/framework/capabilities/anomaly-management/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">FinOps Foundation — Anomaly Management</span>
+      </a>
+      <a href="https://www.openpolicyagent.org/docs/latest/terraform/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Open Policy Agent — Terraform Integration</span>
+      </a>
+      <a href="https://cloud.google.com/bigquery/docs/reference/billing" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Google Cloud — BigQuery Billing Export</span>
+      </a>
+    </div>
+  </div>
 </div>
 </article>
 
@@ -332,7 +402,7 @@
     <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(5,150,105,.15),rgba(3,105,161,.2));border:1px solid rgba(52,211,153,.2)">
       <div class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background:radial-gradient(circle,#34D399,transparent);top:-20%;right:-10%;filter:blur(50px)"></div>
       <span class="badge badge-green inline-block mb-4">Free FinOps Audit</span>
-      <h2 class="font-heading font-bold text-3xl text-white mb-4">Is your cloud spend leaking right now?</h2>
+      <h2 class="font-heading font-bold text-3xl text-white mb-4" data-i18n="blog_article_cta_title">Is your cloud spend leaking right now?</h2>
       <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
         Book a free 45-minute audit. We'll review your cost anomaly detection setup, tagging coverage, and alerting configuration — and give you a prioritised action plan on the spot.
       </p>
@@ -351,7 +421,7 @@
       <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
       </div>
-      <span>© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+      <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
     </div>
     <div class="flex gap-6">
       <a href="/" class="hover:text-white/70 transition-colors">Home</a>
@@ -366,7 +436,90 @@
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
   }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
+</script>
+<script>
+(function(){
+  const LANG_META = {
+    en:{flag:'🇺🇸',code:'EN'}, pt:{flag:'🇧🇷',code:'PT'},
+    es:{flag:'🇪🇸',code:'ES'}, fr:{flag:'🇫🇷',code:'FR'}
+  };
+  const cache = {};
+  async function loadLang(lang) {
+    if (cache[lang]) return cache[lang];
+    try {
+      const r = await fetch('/assets/i18n/' + lang + '.json');
+      if (!r.ok) throw 0;
+      cache[lang] = await r.json();
+    } catch(e) { cache[lang] = cache['en'] || {}; }
+    return cache[lang];
+  }
+  function applyLang(t) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+    });
+  }
+  const POST_SLUG = 'cloud-cost-anomaly-detection-ai';
+  const heroEl = document.getElementById('article-hero-title');
+  const ledeEl = document.getElementById('article-hero-lede');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', lede: ledeEl ? ledeEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (ledeEl && entry.lede) ledeEl.innerHTML = entry.lede;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
+  async function setArticleLang(lang) {
+    document.getElementById('article-lang-menu')?.classList.add('hidden');
+    document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
+    const meta = LANG_META[lang];
+    if (!meta) return;
+    localStorage.setItem('up2cloud-lang', lang);
+    document.getElementById('article-lang-flag').textContent = meta.flag;
+    document.getElementById('article-lang-code').textContent = meta.code;
+    document.querySelectorAll('.article-lang-opt').forEach(b => {
+      b.style.background = b.dataset.lang === lang ? 'rgba(14,165,233,.15)':'';
+      b.style.color = b.dataset.lang === lang ? '#fff':'';
+    });
+    const t = await loadLang(lang);
+    applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
+  }
+  function toggleArticleLang(e) {
+    e && e.stopPropagation();
+    const m = document.getElementById('article-lang-menu');
+    const open = m.classList.toggle('hidden');
+    document.getElementById('article-lang-btn').setAttribute('aria-expanded', String(!open));
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('article-lang-picker');
+    if (p && !p.contains(e.target)) document.getElementById('article-lang-menu')?.classList.add('hidden');
+  });
+  window.setArticleLang = setArticleLang;
+  window.toggleArticleLang = toggleArticleLang;
+  const saved = localStorage.getItem('up2cloud-lang') || 'en';
+  loadLang('en').then(() => setArticleLang(saved));
+})();
 </script>
 <script>const yearEl = document.getElementById("year"); if (yearEl) yearEl.textContent = new Date().getFullYear();</script></body>
 </html>

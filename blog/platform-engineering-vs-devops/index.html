@@ -40,7 +40,20 @@
     .compare-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:16px; padding:1.5rem }
     .compare-card h3 { margin-top:0 }
     .tool-chip { display:inline-flex; align-items:center; gap:.4rem; background:rgba(14,165,233,.1); border:1px solid rgba(14,165,233,.2); border-radius:8px; padding:.35rem .75rem; font-size:.8rem; color:#7dd3fc; margin:.2rem }
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(56,189,248,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -155,7 +168,7 @@
       <span class="text-white/25">/</span>
       <span class="badge badge-sky">DevOps</span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
       Platform Engineering vs DevOps: What's the Difference and <span class="gradient-text">Why It Matters</span> in 2025
     </h1>
     <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
@@ -167,13 +180,22 @@
       <span>·</span>
       <span>5 <span data-i18n="blog_min_read">min read</span></span>
     </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Two lanes comparing DevOps, engineers embedded per team, against Platform Engineering, one shared platform serving many teams">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".5"><rect x="10" y="14" width="34" height="20" rx="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".5"><rect x="55" y="14" width="34" height="20" rx="4"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".5"><rect x="100" y="14" width="34" height="20" rx="4"/></g>
+      <text x="10" y="52" fill="rgba(255,255,255,.4)" font-size="8" font-family="DM Sans,sans-serif">DevOps — per team</text>
+      <g class="bar" style="animation-delay:.4s" fill="#7DD3FC"><rect x="10" y="66" width="290" height="20" rx="6"/></g>
+      <path class="draw" d="M60 66 L60 40 M155 66 L155 40 M250 66 L250 40" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+      <text x="10" y="88" fill="rgba(255,255,255,.6)" font-size="8" font-family="DM Sans,sans-serif">Platform Engineering — one platform, many teams</text>
+    </svg>
   </div>
 </section>
 
 <!-- ARTICLE BODY -->
 <article class="py-12" style="background:#0F172A">
   <div class="max-w-3xl mx-auto px-6 prose reveal">
-
+  <div id="article-body-content">
     <p>
       "Platform Engineering" was the most-searched engineering discipline on LinkedIn in Q1 2025. Yet conversations about it often collapse into confusion: is it just DevOps with a new name? Is it an evolution, a replacement, or something entirely different? The short answer: it's a strategic evolution that makes sense at a specific organisational scale — and confusing the two leads to expensive hiring and tooling mistakes.
     </p>
@@ -198,7 +220,7 @@
     <div class="grid md:grid-cols-2 gap-4 my-8 not-prose">
       <div class="compare-card">
         <h3 class="font-heading font-bold text-sky-300 text-base mb-3">DevOps</h3>
-        <ul class="text-white/65 text-sm space-y-2 list-none p-0">
+        <ul class="text-white/65 text-sm space-y-2 list-none p-0 reveal-list">
           <li>Embedded in product teams</li>
           <li>Builds and operates CI/CD per service</li>
           <li>Handles infrastructure provisioning directly</li>
@@ -209,7 +231,7 @@
       </div>
       <div class="compare-card" style="border-color:rgba(14,165,233,.25)">
         <h3 class="font-heading font-bold text-sky-300 text-base mb-3">Platform Engineering</h3>
-        <ul class="text-white/65 text-sm space-y-2 list-none p-0">
+        <ul class="text-white/65 text-sm space-y-2 list-none p-0 reveal-list">
           <li>Centralised platform team</li>
           <li>Builds self-service IDP consumed by all teams</li>
           <li>Golden paths replace direct provisioning</li>
@@ -230,7 +252,7 @@
 
     <h2>Platform Engineering Tooling in 2025</h2>
     <p>The platform engineering ecosystem has matured rapidly. Key tools:</p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Backstage</strong> (Spotify, open source) — the dominant IDP portal. Provides service catalogue, tech docs, scaffolding templates, and plugin ecosystem. Widely adopted but requires significant investment to operate well.</li>
       <li><strong>Port</strong> — lightweight, hosted IDP alternative to Backstage. Faster time-to-value, lower operational overhead.</li>
       <li><strong>Crossplane</strong> — Kubernetes-native infrastructure orchestration. Lets platform teams define composite resources (e.g., "a production database") that developers provision via kubectl, with all the cloud-specific details abstracted away.</li>
@@ -263,6 +285,37 @@
     <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
       Looking to implement these strategies? Explore our <a href="/#services" class="text-sky-light hover:underline">Cloud & DevOps services</a> or learn more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
     </p>
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-white/5">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://platformengineering.org/blog/what-is-platform-engineering" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">platformengineering.org — What is Platform Engineering?</span>
+      </a>
+      <a href="https://backstage.io/docs/overview/what-is-backstage" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Backstage.io — What is Backstage?</span>
+      </a>
+      <a href="https://docs.crossplane.io/latest/concepts/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Crossplane — Core Concepts</span>
+      </a>
+      <a href="https://argo-cd.readthedocs.io/en/stable/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Argo CD — Documentation</span>
+      </a>
+      <a href="https://kyverno.io/docs/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Kyverno — Policy Engine Docs</span>
+      </a>
+      <a href="https://teamtopologies.com/key-concepts" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Team Topologies — Key Concepts</span>
+      </a>
+    </div>
+  </div>
 </div>
 </article>
 
@@ -333,7 +386,7 @@
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
   }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
 </script>
 <script>
 (function(){
@@ -356,6 +409,30 @@
       if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
     });
   }
+  const POST_SLUG = 'platform-engineering-vs-devops';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '' };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
   async function setArticleLang(lang) {
     document.getElementById('article-lang-menu')?.classList.add('hidden');
     document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
@@ -370,6 +447,8 @@
     });
     const t = await loadLang(lang);
     applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
   }
   function toggleArticleLang(e) {
