@@ -37,7 +37,20 @@
     .prose ul { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; padding-left:1.5rem; list-style-type:disc }
     .prose ul li { margin-bottom:.5rem }
     .prose strong { color:#fff; font-weight:600 }
-    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none}}
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(52,211,153,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
   </style>
 
   <script type="application/ld+json">
@@ -117,8 +130,22 @@
       <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
     </a>
     <div class="flex items-center gap-4">
-      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors">← All posts</a>
-      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">Get in Touch</a>
+      <div class="relative" id="article-lang-picker">
+        <button id="article-lang-btn" onclick="toggleArticleLang(event)" class="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium border border-white/20 rounded-lg px-2.5 py-1.5 transition-colors hover:border-white/40 cursor-pointer" aria-haspopup="true" aria-expanded="false">
+          <span id="article-lang-flag" class="text-sm leading-none">🇺🇸</span>
+          <span id="article-lang-code" class="font-semibold tracking-wide">EN</span>
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="article-lang-menu" class="hidden absolute right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-50 min-w-[140px]" style="background:rgba(15,23,42,.97);backdrop-filter:blur(16px)">
+          <button onclick="setArticleLang('en')" data-lang="en" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇺🇸</span><span>English</span></button>
+          <button onclick="setArticleLang('pt')" data-lang="pt" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇧🇷</span><span>Português</span></button>
+          <button onclick="setArticleLang('es')" data-lang="es" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇪🇸</span><span>Español</span></button>
+          <button onclick="setArticleLang('fr')" data-lang="fr" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇫🇷</span><span>Français</span></button>
+        </div>
+      </div>
+      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_blog">Blog</a>
+      <a href="/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_back">← Back to site</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)" data-i18n="blog_cta_touch">Get in Touch</a>
     </div>
   </div>
 </nav>
@@ -129,21 +156,31 @@
     <div class="flex items-center gap-3 mb-5">
       <span class="badge" style="background:rgba(5,150,105,.18);color:#34D399">Finops</span>
     </div>
-    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
       Platform Engineering + FinOps in 2026: How Elite Cloud Teams Reduce Costs Without Slowing Developers
     </h1>
-    <div class="flex items-center gap-4 text-white/40 text-sm">
+    <div class="flex items-center gap-4 text-white/40 text-sm mb-8">
       <span>2026-05-08</span>
       <span>·</span>
-      <span>8 min read</span>
+      <span>8 <span data-i18n="blog_min_read">min read</span></span>
     </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Bar chart showing cloud waste dropping by approximately 30 percent after platform guardrail changes">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".85"><rect x="10" y="10" width="34" height="70"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".7"><rect x="60" y="20" width="34" height="60"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".6"><rect x="110" y="30" width="34" height="50"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#34D399" opacity=".75"><rect x="160" y="38" width="34" height="42"/></g>
+      <g class="bar" style="animation-delay:.5s" fill="#34D399" opacity=".9"><rect x="210" y="44" width="34" height="36"/></g>
+      <g class="bar" style="animation-delay:.6s" fill="#34D399"><rect x="260" y="49" width="34" height="31"/></g>
+      <path class="draw" d="M10 12 L44 22 L94 32 L144 40 L194 46 L244 46 L294 51" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="310" y="55" fill="#FB923C" font-size="10" font-family="Space Grotesk,sans-serif" font-weight="700">-30%</text>
+    </svg>
   </div>
 </section>
 
 <!-- ARTICLE BODY -->
 <article class="py-14" style="background:#0F172A">
-  <div class="max-w-3xl mx-auto px-6 prose">
-
+  <div class="max-w-3xl mx-auto px-6 prose reveal">
+  <div id="article-body-content">
     <p>Modern cloud teams are no longer choosing between developer velocity and cost optimization. The organisations I work with that are pulling ahead in 2026 have stopped treating these as opposing forces — and started building internal platforms where cost awareness is as automatic as logging. In this article I want to share the patterns that are actually working: the intersection where Platform Engineering and FinOps stop being separate disciplines and start becoming one.</p>
 
     <h2>Why the Old Model Broke</h2>
@@ -175,7 +212,7 @@
     <p>
       Effective guardrails in 2026 look like:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Policy-as-code at the Terraform/Pulumi layer</strong> — OPA or Sentinel policies that block provisioning of oversized instances without a cost-justification annotation</li>
       <li><strong>Budget envelopes per namespace/team</strong> — enforced via Kubernetes admission webhooks; deployments that would breach a team's monthly envelope require explicit approval</li>
       <li><strong>Scheduled downtime as a first-class resource</strong> — dev/staging environments automatically hibernate on evenings and weekends unless a developer explicitly opts out</li>
@@ -192,7 +229,7 @@
     <p>
       Concretely, this means:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Infracost in CI/CD</strong> — every Terraform PR gets a cost diff comment showing the estimated monthly delta before it merges. A change from a <code>t3.medium</code> to an <code>m5.2xlarge</code> surfaces a "+$312/month" annotation that the engineer sees before the reviewer does</li>
       <li><strong>Per-service cost dashboards in the IDP</strong> — not a shared FinOps dashboard that nobody bookmarks, but a tab on the service detail page in your Internal Developer Platform showing yesterday's spend, 30-day trend, and comparison to team average</li>
       <li><strong>Anomaly notifications in Slack/Teams</strong> — not the weekly digest, but a real-time webhook when a service's hourly cost jumps more than 2× its 7-day baseline. Engineers fix problems they're notified about at 9 AM; they don't fix problems they read about in a report on Friday</li>
@@ -209,7 +246,7 @@
     <p>
       Patterns that work in production:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Automated rightsizing</strong> — a scheduled job compares actual CPU/memory utilisation against provisioned resources across all workloads. Items below a 20% utilisation threshold for 14 consecutive days generate a rightsizing PR in GitHub, targeting the relevant Terraform module. The engineer reviews and approves; the platform executes</li>
       <li><strong>Commitments automation</strong> — Cloud provider committed-use discounts (GCP CUDs, AWS Savings Plans, Azure Reservations) are the single highest-ROI FinOps lever, typically delivering 30–40% discounts on baseline compute. But they require accurate forecasting. In 2026, this forecasting loop is automated: a lightweight ML model trains on 90-day rolling usage data, generates commitment recommendations, and opens a monthly review ticket with suggested commitment sizes. Finance approves; the platform purchases</li>
       <li><strong>Zombie resource elimination</strong> — unattached disks, unused load balancers, empty namespaces, idle container registries. A daily scanner tags these resources and generates deletion PRs after a 7-day grace period. Teams that once manually audited for zombies quarterly are now eliminating them continuously</li>
@@ -220,7 +257,7 @@
     <p>
       Mature Platform Engineering + FinOps programmes measure outcomes, not activity. Here are the KPIs I track for clients and would use to evaluate whether a programme is genuinely working:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Cost per deployment</strong> — does provisioning a new service cost less over time as templates improve? Regression signals platform decay</li>
       <li><strong>Time-to-cost-visibility</strong> — how many minutes after a resource is provisioned until it appears in cost dashboards with correct tags? Best-in-class is under 5 minutes; industry average is still over 24 hours</li>
       <li><strong>Remediation cycle time</strong> — from anomaly detection to resolved (rightsized, deleted, or explicitly accepted). Target: under 5 business days for automated recommendations</li>
@@ -235,7 +272,7 @@
     <p>
       After running these programmes across financial services, retail, and SaaS clients, the failure modes are consistent:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Starting with showback before tagging is complete.</strong> Showing teams their costs before tagging coverage is above 85% creates distrust in the data. Fix tagging first — enforce it in the platform layer — then turn on showback</li>
       <li><strong>Building a FinOps team that doesn't code.</strong> The most effective FinOps practitioners in 2026 are engineers first. They contribute to the IDP, write the OPA policies, and build the Infracost integrations. A FinOps team that only produces reports will be ignored</li>
       <li><strong>Optimising for the wrong granularity.</strong> Hunting down individual idle VMs is satisfying but low-leverage. The largest wins come from commitment strategy (30–40% off baseline compute), rightsizing clusters (not individual pods), and eliminating entire environments that shouldn't exist (test environments that became permanent)</li>
@@ -246,7 +283,7 @@
     <p>
       If you're starting from scratch or trying to level up an existing programme, here's a phased approach that works in practice:
     </p>
-    <ul>
+    <ul class="reveal-list">
       <li><strong>Days 1–30: Instrument and tag.</strong> Get every resource tagged with team, environment, and service. Enforce tagging in the pipeline. Get cost data flowing to a dashboard every team can see. This is unglamorous but foundational</li>
       <li><strong>Days 31–60: Automate the obvious wins.</strong> Deploy Infracost in CI. Enable scheduled downtime for non-production environments. Run a commitment analysis and purchase your first round of committed-use discounts or savings plans. These three moves typically yield 25–35% cost reduction with minimal engineering effort</li>
       <li><strong>Days 61–90: Build continuous feedback.</strong> Wire anomaly detection to real-time Slack alerts. Automate rightsizing recommendations as pull requests. Build cost visibility into your IDP service pages. At this point, FinOps stops being a project and starts being a property of the platform itself</li>
@@ -267,6 +304,37 @@
     <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
       Looking to implement these strategies? Explore our <a href="/#services" class="text-sky-light hover:underline">Cloud & DevOps services</a> or learn more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
     </p>
+  </div>
+
+  <div class="mt-10 pt-8 border-t border-white/5">
+    <h2 class="font-heading font-bold text-xl text-white mb-4" data-i18n="blog_references">References &amp; Further Reading</h2>
+    <div class="grid sm:grid-cols-2 gap-3 ref-list">
+      <a href="https://www.finops.org/framework/principles/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">FinOps Foundation — Framework &amp; Principles</span>
+      </a>
+      <a href="https://backstage.io/docs/overview/what-is-backstage" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Backstage.io — Internal Developer Platforms</span>
+      </a>
+      <a href="https://www.openpolicyagent.org/docs/latest/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Open Policy Agent — Documentation</span>
+      </a>
+      <a href="https://www.infracost.io/docs/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Infracost — Cloud Cost Estimates for Terraform</span>
+      </a>
+      <a href="https://cloud.google.com/docs/cuds" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Google Cloud — Committed Use Discounts</span>
+      </a>
+      <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2" class="mt-0.5 flex-shrink-0"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg>
+        <span class="text-white/70 text-sm">Kubernetes — Admission Webhooks</span>
+      </a>
+    </div>
+  </div>
 </div>
 </article>
 
@@ -301,12 +369,12 @@
 <section class="py-16" style="background:#020617">
   <div class="max-w-3xl mx-auto px-6 reveal">
     <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(3,105,161,.15),rgba(124,58,237,.12));border:1px solid rgba(14,165,233,.2)">
-      <h2 class="font-heading font-bold text-3xl text-white mb-4">Ready to optimise your cloud?</h2>
+      <h2 class="font-heading font-bold text-3xl text-white mb-4" data-i18n="blog_article_cta_title">Ready to optimise your cloud?</h2>
       <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
-        Book a free 45-minute cloud audit. We'll identify quick wins and build a prioritised action plan — no strings attached.
+        <span data-i18n="blog_article_cta_sub">Book a free 45-minute cloud audit. We'll identify quick wins and build a prioritised action plan — no strings attached.</span>
       </p>
       <a href="/#contact" class="inline-flex items-center gap-2 font-semibold text-white px-8 py-3.5 rounded-xl transition-all hover:opacity-90" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
-        Book Free Audit
+        <span data-i18n="blog_article_cta_btn">Book Free Audit</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
@@ -320,7 +388,7 @@
       <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
       </div>
-      <span>© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+      <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
     </div>
     <div class="flex gap-6">
       <a href="/" class="hover:text-white/70 transition-colors">Home</a>
@@ -335,7 +403,88 @@
   const ro = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
   }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
+</script>
+<script>
+(function(){
+  const LANG_META = {
+    en:{flag:'🇺🇸',code:'EN'}, pt:{flag:'🇧🇷',code:'PT'},
+    es:{flag:'🇪🇸',code:'ES'}, fr:{flag:'🇫🇷',code:'FR'}
+  };
+  const cache = {};
+  async function loadLang(lang) {
+    if (cache[lang]) return cache[lang];
+    try {
+      const r = await fetch('/assets/i18n/' + lang + '.json');
+      if (!r.ok) throw 0;
+      cache[lang] = await r.json();
+    } catch(e) { cache[lang] = cache['en'] || {}; }
+    return cache[lang];
+  }
+  function applyLang(t) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+    });
+  }
+  const POST_SLUG = 'platform-engineering-finops-2026';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
+  async function setArticleLang(lang) {
+    document.getElementById('article-lang-menu')?.classList.add('hidden');
+    document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
+    const meta = LANG_META[lang];
+    if (!meta) return;
+    localStorage.setItem('up2cloud-lang', lang);
+    document.getElementById('article-lang-flag').textContent = meta.flag;
+    document.getElementById('article-lang-code').textContent = meta.code;
+    document.querySelectorAll('.article-lang-opt').forEach(b => {
+      b.style.background = b.dataset.lang === lang ? 'rgba(14,165,233,.15)':'';
+      b.style.color = b.dataset.lang === lang ? '#fff':'';
+    });
+    const t = await loadLang(lang);
+    applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
+  }
+  function toggleArticleLang(e) {
+    e && e.stopPropagation();
+    const m = document.getElementById('article-lang-menu');
+    const open = m.classList.toggle('hidden');
+    document.getElementById('article-lang-btn').setAttribute('aria-expanded', String(!open));
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('article-lang-picker');
+    if (p && !p.contains(e.target)) document.getElementById('article-lang-menu')?.classList.add('hidden');
+  });
+  window.setArticleLang = setArticleLang;
+  window.toggleArticleLang = toggleArticleLang;
+  const saved = localStorage.getItem('up2cloud-lang') || 'en';
+  loadLang('en').then(() => setArticleLang(saved));
+})();
 </script>
 <script>const yearEl = document.getElementById("year"); if (yearEl) yearEl.textContent = new Date().getFullYear();</script></body>
 </html>
