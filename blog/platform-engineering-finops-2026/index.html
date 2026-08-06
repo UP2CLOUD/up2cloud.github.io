@@ -144,22 +144,123 @@
 <article class="py-14" style="background:#0F172A">
   <div class="max-w-3xl mx-auto px-6 prose">
 
-    <p>How elite cloud teams cut costs without slowing developers, converging Platform Engineering and FinOps into self-service, cost-aware platforms.</p>
+    <p>Modern cloud teams are no longer choosing between developer velocity and cost optimization. The organisations I work with that are pulling ahead in 2026 have stopped treating these as opposing forces — and started building internal platforms where cost awareness is as automatic as logging. In this article I want to share the patterns that are actually working: the intersection where Platform Engineering and FinOps stop being separate disciplines and start becoming one.</p>
 
-    <h2>Introduction</h2>
+    <h2>Why the Old Model Broke</h2>
     <p>
-      Write your article content here. Use &lt;h2&gt; for section headings, &lt;p&gt; for paragraphs,
-      and &lt;ul&gt; / &lt;li&gt; for bullet points.
+      For years, cloud governance looked like this: a central cloud-ops team published a spreadsheet of recommendations at the end of each month, engineers ignored most of it, and finance filed a support ticket asking why the bill was up 40% again. Everyone was busy, nobody was wrong, and the waste compounded quietly.
+    </p>
+    <p>
+      Platform Engineering changed the first half of that equation. By 2023, the Gartner prediction that 80% of software engineering organisations would establish a Platform Engineering team was already tracking ahead of schedule. These teams built Internal Developer Platforms (IDPs) — self-service portals where developers provision infrastructure through golden paths: opinionated, pre-approved templates for databases, Kubernetes clusters, data pipelines, and everything in between.
+    </p>
+    <p>
+      But most first-generation IDPs had a blind spot: they optimised for <em>speed</em> and <em>consistency</em>, not cost. A developer could spin up a production-grade GKE cluster in two minutes — and leave it running over a long weekend because there was no mechanism to tell them it was costing $800/day idle.
+    </p>
+    <p>
+      FinOps filled the second half. The FinOps Foundation's framework gave finance and engineering a shared vocabulary — unit economics, cost allocation, chargeback, anomaly thresholds. But early FinOps practice was still largely reactive: look at last month's bill, find the offenders, send an email, repeat.
+    </p>
+    <p>
+      In 2026, the teams closing this gap are doing something different. They are embedding FinOps logic directly into the platform layer, so cost awareness happens at provisioning time, not billing time.
     </p>
 
-    <h2>Section Two</h2>
+    <h2>The Three Pillars of Cost-Aware Platform Engineering</h2>
+
+    <h3>1. Guardrails at the Golden Path, Not After the Fact</h3>
     <p>
-      Continue writing…
+      The highest-leverage intervention is the simplest: make the cheap option the easy option. When a developer opens your IDP and selects "new microservice," the form should default to a right-sized instance type, a spot/preemptible node pool for non-critical workloads, and auto-scaling bounds that match the service's observed traffic pattern — not the developer's anxiety about SLA.
     </p>
+    <p>
+      At Randstad Digital, where I led cloud FinOps automation, we reduced cloud waste by approximately 30% primarily by changing defaults. Not by restricting engineers — by making the <em>correct</em> choice the <em>frictionless</em> choice. A database template that previously defaulted to `db-n1-standard-8` got a new default of `db-n1-standard-2` with a one-click upgrade path if load tests demonstrated the need. Engineers who never thought about instance sizes started deploying cost-efficiently by accident.
+    </p>
+    <p>
+      Effective guardrails in 2026 look like:
+    </p>
+    <ul>
+      <li><strong>Policy-as-code at the Terraform/Pulumi layer</strong> — OPA or Sentinel policies that block provisioning of oversized instances without a cost-justification annotation</li>
+      <li><strong>Budget envelopes per namespace/team</strong> — enforced via Kubernetes admission webhooks; deployments that would breach a team's monthly envelope require explicit approval</li>
+      <li><strong>Scheduled downtime as a first-class resource</strong> — dev/staging environments automatically hibernate on evenings and weekends unless a developer explicitly opts out</li>
+      <li><strong>Tag enforcement at provision time</strong> — resources without mandatory cost-allocation tags (team, environment, product) are rejected by the pipeline, not flagged after the fact</li>
+    </ul>
+    <p>
+      The key design principle: the guardrail should be invisible when you're doing the right thing, and loud only when you're about to do something expensive.
+    </p>
+
+    <h3>2. Real-Time Cost Signals in Developer Workflows</h3>
+    <p>
+      Engineers respond to signals in their existing workflow. They respond poorly to monthly FinOps emails. The platforms that are achieving sustainable cost discipline in 2026 are surfacing cost signals where developers already live: in pull requests, in CI pipelines, and in the IDP dashboard they check every morning.
+    </p>
+    <p>
+      Concretely, this means:
+    </p>
+    <ul>
+      <li><strong>Infracost in CI/CD</strong> — every Terraform PR gets a cost diff comment showing the estimated monthly delta before it merges. A change from a <code>t3.medium</code> to an <code>m5.2xlarge</code> surfaces a "+$312/month" annotation that the engineer sees before the reviewer does</li>
+      <li><strong>Per-service cost dashboards in the IDP</strong> — not a shared FinOps dashboard that nobody bookmarks, but a tab on the service detail page in your Internal Developer Platform showing yesterday's spend, 30-day trend, and comparison to team average</li>
+      <li><strong>Anomaly notifications in Slack/Teams</strong> — not the weekly digest, but a real-time webhook when a service's hourly cost jumps more than 2× its 7-day baseline. Engineers fix problems they're notified about at 9 AM; they don't fix problems they read about in a report on Friday</li>
+      <li><strong>Unit cost metrics in SLO dashboards</strong> — the most mature teams I've seen track cost-per-request or cost-per-transaction alongside latency and error rate. When cost becomes an SLO, it gets the same engineering attention as uptime</li>
+    </ul>
+    <p>
+      At UP2CLOUD we've automated over 1,200 cloud operations monthly for clients across Europe and Latin America. A recurring finding: the single change that moves the needle most reliably is adding a cost column to the service catalogue. When teams can see what their services cost at a glance — not buried in the billing console — they optimise without being asked.
+    </p>
+
+    <h3>3. Automated Remediation, Not Automated Reporting</h3>
+    <p>
+      Reporting tells you what happened. Automation prevents it from happening again — or fixes it before it matters. The most advanced FinOps-enabled platforms in 2026 are closing the loop between detection and action.
+    </p>
+    <p>
+      Patterns that work in production:
+    </p>
+    <ul>
+      <li><strong>Automated rightsizing</strong> — a scheduled job compares actual CPU/memory utilisation against provisioned resources across all workloads. Items below a 20% utilisation threshold for 14 consecutive days generate a rightsizing PR in GitHub, targeting the relevant Terraform module. The engineer reviews and approves; the platform executes</li>
+      <li><strong>Commitments automation</strong> — Cloud provider committed-use discounts (GCP CUDs, AWS Savings Plans, Azure Reservations) are the single highest-ROI FinOps lever, typically delivering 30–40% discounts on baseline compute. But they require accurate forecasting. In 2026, this forecasting loop is automated: a lightweight ML model trains on 90-day rolling usage data, generates commitment recommendations, and opens a monthly review ticket with suggested commitment sizes. Finance approves; the platform purchases</li>
+      <li><strong>Zombie resource elimination</strong> — unattached disks, unused load balancers, empty namespaces, idle container registries. A daily scanner tags these resources and generates deletion PRs after a 7-day grace period. Teams that once manually audited for zombies quarterly are now eliminating them continuously</li>
+      <li><strong>Cross-cloud arbitrage</strong> — for workloads that are genuinely portable (batch jobs, CI runners, data processing), automated spot/preemptible utilisation with graceful fallback to on-demand when capacity is unavailable. On GCP Spot VMs for CI workloads, we routinely achieve 60–80% compute cost reduction with less than 2% pipeline failure increase due to preemption</li>
+    </ul>
+
+    <h2>What "Elite" Actually Looks Like: Metrics That Matter</h2>
+    <p>
+      Mature Platform Engineering + FinOps programmes measure outcomes, not activity. Here are the KPIs I track for clients and would use to evaluate whether a programme is genuinely working:
+    </p>
+    <ul>
+      <li><strong>Cost per deployment</strong> — does provisioning a new service cost less over time as templates improve? Regression signals platform decay</li>
+      <li><strong>Time-to-cost-visibility</strong> — how many minutes after a resource is provisioned until it appears in cost dashboards with correct tags? Best-in-class is under 5 minutes; industry average is still over 24 hours</li>
+      <li><strong>Remediation cycle time</strong> — from anomaly detection to resolved (rightsized, deleted, or explicitly accepted). Target: under 5 business days for automated recommendations</li>
+      <li><strong>Cloud unit cost trend</strong> — cost per 1,000 API calls, per GB processed, per active user. This number should fall 15–25% year-over-year on a healthy platform as efficiency compounds</li>
+      <li><strong>Coverage rate</strong> — what percentage of cloud spend is tagged, allocated, and covered by a commitment strategy? Below 80% is a red flag</li>
+    </ul>
+    <p>
+      Notice what's not on this list: total cloud spend. Total spend is a vanity metric for a growing business. Unit economics tell you whether you're getting more efficient. A business doubling in revenue while holding unit cloud cost flat is winning, even if the absolute bill grows.
+    </p>
+
+    <h2>Common Pitfalls to Avoid</h2>
+    <p>
+      After running these programmes across financial services, retail, and SaaS clients, the failure modes are consistent:
+    </p>
+    <ul>
+      <li><strong>Starting with showback before tagging is complete.</strong> Showing teams their costs before tagging coverage is above 85% creates distrust in the data. Fix tagging first — enforce it in the platform layer — then turn on showback</li>
+      <li><strong>Building a FinOps team that doesn't code.</strong> The most effective FinOps practitioners in 2026 are engineers first. They contribute to the IDP, write the OPA policies, and build the Infracost integrations. A FinOps team that only produces reports will be ignored</li>
+      <li><strong>Optimising for the wrong granularity.</strong> Hunting down individual idle VMs is satisfying but low-leverage. The largest wins come from commitment strategy (30–40% off baseline compute), rightsizing clusters (not individual pods), and eliminating entire environments that shouldn't exist (test environments that became permanent)</li>
+      <li><strong>Treating FinOps as a one-time project.</strong> Cloud costs are a living system. Commitment strategy requires monthly review. Rightsizing recommendations expire as traffic patterns change. The organisations that sustain results build continuous, automated feedback loops — not quarterly audits</li>
+    </ul>
+
+    <h2>Getting Started: A Practical 90-Day Roadmap</h2>
+    <p>
+      If you're starting from scratch or trying to level up an existing programme, here's a phased approach that works in practice:
+    </p>
+    <ul>
+      <li><strong>Days 1–30: Instrument and tag.</strong> Get every resource tagged with team, environment, and service. Enforce tagging in the pipeline. Get cost data flowing to a dashboard every team can see. This is unglamorous but foundational</li>
+      <li><strong>Days 31–60: Automate the obvious wins.</strong> Deploy Infracost in CI. Enable scheduled downtime for non-production environments. Run a commitment analysis and purchase your first round of committed-use discounts or savings plans. These three moves typically yield 25–35% cost reduction with minimal engineering effort</li>
+      <li><strong>Days 61–90: Build continuous feedback.</strong> Wire anomaly detection to real-time Slack alerts. Automate rightsizing recommendations as pull requests. Build cost visibility into your IDP service pages. At this point, FinOps stops being a project and starts being a property of the platform itself</li>
+    </ul>
 
     <h2>Conclusion</h2>
     <p>
-      Wrap up your article here.
+      The organisations winning at cloud efficiency in 2026 are not the ones with the biggest FinOps teams or the most sophisticated dashboards. They're the ones that have made cost-aware engineering the path of least resistance — where the developer doing the right thing for the business is also the developer doing the thing that's fastest and easiest.
+    </p>
+    <p>
+      Platform Engineering gives you the lever: a self-service layer where defaults matter and golden paths encode organisational knowledge. FinOps gives you the signal: real-time cost intelligence, unit economics, and the discipline to act on what the data says. Together, they create something neither achieves alone — a cloud that gets cheaper as it gets bigger, and developers who optimise costs without ever thinking about it.
+    </p>
+    <p>
+      That's not a future state. It's what the best teams are building today.
     </p>
 
   
