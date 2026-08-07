@@ -7,7 +7,7 @@ const path = require('node:path');
  *
  * Validation is split by *capability* rather than validating everything up
  * front: a `--dry-run` that never calls LinkedIn should not demand LinkedIn
- * credentials, and `verify`-only invocations should not demand an Anthropic
+ * credentials, and `verify`-only invocations should not demand a Gemini
  * key. `requireFor()` is therefore called lazily by each stage.
  */
 
@@ -49,8 +49,8 @@ const DEFAULTS = Object.freeze({
   lockTtlSeconds: 45 * 60,
   maxAttemptsPerStage: 3,
   siteBaseUrl: 'https://up2cloud.tech',
-  anthropicModel: 'claude-opus-4-6',
-  anthropicVersion: '2023-06-01',
+  geminiModel: 'gemini-2.5-pro',
+  geminiApiVersion: 'v1beta',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -77,7 +77,7 @@ class ConfigError extends Error {
  * dry run never fails on a LinkedIn credential it will never use.
  */
 const CAPABILITY_REQUIREMENTS = Object.freeze({
-  anthropic: ['ANTHROPIC_API_KEY'],
+  gemini: ['GEMINI_API_KEY'],
   linkedin: ['LINKEDIN_ACCESS_TOKEN', 'LINKEDIN_ORGANIZATION_URN'],
   linkedinOAuth: ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET'],
   git: ['GITHUB_TOKEN'],
@@ -90,7 +90,7 @@ const CAPABILITY_REQUIREMENTS = Object.freeze({
  * spend — with an article half-published and the schedule clock ambiguous.
  */
 function requiredCapabilitiesForMode(mode, stateBackend = 'file') {
-  const caps = ['anthropic'];
+  const caps = ['gemini'];
   if (mode !== MODES.DRY_RUN) caps.push('git');
   if (mode === MODES.AUTO) caps.push('linkedin');
   if (stateBackend === 'kv') caps.push('kvState');
@@ -137,14 +137,14 @@ function loadConfig(env = process.env, argv = {}) {
     lockTtlSeconds: parseIntOr(env.LOCK_TTL_SECONDS, DEFAULTS.lockTtlSeconds),
     maxAttemptsPerStage: parseIntOr(env.MAX_ATTEMPTS_PER_STAGE, DEFAULTS.maxAttemptsPerStage),
 
-    anthropic: {
-      apiKey: env.ANTHROPIC_API_KEY || '',
-      // Model is configured through ANTHROPIC_MODEL so the pinned version can be
+    gemini: {
+      apiKey: env.GEMINI_API_KEY || '',
+      // Model is configured through GEMINI_MODEL so the pinned version can be
       // rolled forward without a code change.
-      model: (env.ANTHROPIC_MODEL || DEFAULTS.anthropicModel).trim(),
-      version: env.ANTHROPIC_VERSION || DEFAULTS.anthropicVersion,
-      baseUrl: (env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/+$/, ''),
-      maxRetries: parseIntOr(env.ANTHROPIC_MAX_RETRIES, 4),
+      model: (env.GEMINI_MODEL || DEFAULTS.geminiModel).trim(),
+      apiVersion: env.GEMINI_API_VERSION || DEFAULTS.geminiApiVersion,
+      baseUrl: (env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/+$/, ''),
+      maxRetries: parseIntOr(env.GEMINI_MAX_RETRIES, 4),
     },
 
     linkedin: {

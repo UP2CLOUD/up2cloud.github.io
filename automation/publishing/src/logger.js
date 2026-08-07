@@ -11,7 +11,7 @@
  */
 
 const SECRET_ENV_KEYS = [
-  'ANTHROPIC_API_KEY',
+  'GEMINI_API_KEY',
   'LINKEDIN_CLIENT_ID',
   'LINKEDIN_CLIENT_SECRET',
   'LINKEDIN_ACCESS_TOKEN',
@@ -29,7 +29,7 @@ const MIN_REDACTABLE_LENGTH = 8;
 
 /** Token-shaped strings we scrub even if we never saw them in the environment. */
 const TOKEN_PATTERNS = [
-  /\bsk-ant-[A-Za-z0-9_-]{16,}/g, // Anthropic
+  /\bAIzaSy[A-Za-z0-9_-]{33}\b/g, // Google (Gemini) API key
   /\bAQ[A-Za-z0-9_-]{40,}/g, // LinkedIn access tokens
   /\bgh[pousr]_[A-Za-z0-9]{20,}/g, // GitHub
   /\bxkeysib-[A-Za-z0-9]{16,}/g, // Brevo

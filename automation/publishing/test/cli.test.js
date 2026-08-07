@@ -38,10 +38,10 @@ function runCli(argv, env = {}) {
 // ── Capability preflight ──────────────────────────────────────────────────
 
 test('each mode declares exactly the credentials it can actually need', () => {
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRY_RUN), ['anthropic']);
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRAFT), ['anthropic', 'git']);
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.REVIEW), ['anthropic', 'git']);
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.AUTO), ['anthropic', 'git', 'linkedin']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRY_RUN), ['gemini']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRAFT), ['gemini', 'git']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.REVIEW), ['gemini', 'git']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.AUTO), ['gemini', 'git', 'linkedin']);
 });
 
 test('a KV state backend adds its own credential requirement', () => {
@@ -66,9 +66,9 @@ test('missing credentials exit 2 (misconfiguration), not 1 (retryable failure)',
 
 test('auto mode refuses to start without a LinkedIn token', () => {
   // Catching this up front is the difference between "no article" and "an
-  // article published with no promotion and a burnt 48h slot".
+  // article published with no promotion and a burnt weekly slot".
   const r = runCli(['publish', '--mode', 'auto'], {
-    ANTHROPIC_API_KEY: 'sk-test',
+    GEMINI_API_KEY: 'test-key',
     GITHUB_TOKEN: 'ghp_test',
   });
   assert.equal(r.code, 2);
@@ -76,7 +76,7 @@ test('auto mode refuses to start without a LinkedIn token', () => {
 });
 
 test('an invalid mode exits 2 before touching any state', () => {
-  const r = runCli(['publish', '--mode', 'yolo'], { ANTHROPIC_API_KEY: 'sk-test' });
+  const r = runCli(['publish', '--mode', 'yolo'], { GEMINI_API_KEY: 'test-key' });
   assert.equal(r.code, 2);
   assert.match(`${r.stdout}${r.stderr}`, /Invalid mode/);
 });
@@ -113,12 +113,12 @@ test('an unknown command exits 2', () => {
 // ── Secrets must never reach the logs ─────────────────────────────────────
 
 test('a configured secret never appears in CLI output', () => {
-  const secret = 'sk-ant-supersecrettokenvalue-0123456789';
+  const secret = 'AIzaSySupersecrettokenvalue0123456789xyz';
   const r = runCli(['publish', '--mode', 'auto'], {
-    ANTHROPIC_API_KEY: secret,
+    GEMINI_API_KEY: secret,
     GITHUB_TOKEN: 'ghp_anothersecretvalue0123456789',
   });
   const all = `${r.stdout}${r.stderr}`;
-  assert.equal(all.includes(secret), false, 'ANTHROPIC_API_KEY leaked into output');
+  assert.equal(all.includes(secret), false, 'GEMINI_API_KEY leaked into output');
   assert.equal(all.includes('ghp_anothersecretvalue0123456789'), false, 'GITHUB_TOKEN leaked');
 });

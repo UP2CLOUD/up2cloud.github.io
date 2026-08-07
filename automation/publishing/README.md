@@ -158,7 +158,7 @@ warns 14 days ahead; `cli.js status` reports token health on every run.
 
 ## Configuration
 
-**Until `ANTHROPIC_API_KEY` is set, the workflow is dormant.** Scheduled runs
+**Until `GEMINI_API_KEY` is set, the workflow is dormant.** Scheduled runs
 exit green with a notice rather than failing every 6 hours — a pipeline nobody
 has turned on yet is not a broken pipeline, and a workflow that is always red is
 a workflow nobody reads. A manual `workflow_dispatch` still fails loudly: you
@@ -168,7 +168,7 @@ Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 
 | Secret | Needed for |
 |---|---|
-| `ANTHROPIC_API_KEY` | generation |
+| `GEMINI_API_KEY` | generation |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn posting |
 | `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_KV_NAMESPACE_ID` | only if `STATE_BACKEND=kv` |
 
@@ -179,7 +179,7 @@ Variables (→ **Variables**):
 | Variable | Default | Purpose |
 |---|---|---|
 | `PUBLISH_MODE` | `draft` | `dry-run` \| `draft` \| `review` \| `auto` |
-| `ANTHROPIC_MODEL` | `claude-opus-4-6` | model id, rolled forward without a code change |
+| `GEMINI_MODEL` | `gemini-2.5-pro` | model id, rolled forward without a code change |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
 | `PUBLISH_INTERVAL_HOURS` | `168` | cadence (weekly) |

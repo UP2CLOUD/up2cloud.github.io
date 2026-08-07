@@ -189,8 +189,8 @@ test('escapeHtml neutralises markup', () => {
 // ── Secret redaction ──────────────────────────────────────────────────────
 
 test('known secret values are redacted from logs', () => {
-  const env = { ANTHROPIC_API_KEY: 'sk-ant-supersecretvalue123456' };
-  const out = redact('call failed with key sk-ant-supersecretvalue123456 attached', env);
+  const env = { GEMINI_API_KEY: 'AIzaSysupersecretvalue123456789012345' };
+  const out = redact('call failed with key AIzaSysupersecretvalue123456789012345 attached', env);
   assert.equal(out.includes('supersecret'), false);
   assert.ok(out.includes('[REDACTED]'));
 });

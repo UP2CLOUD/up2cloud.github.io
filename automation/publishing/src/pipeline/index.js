@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const { MODES } = require('../config');
 const { STAGE_STATUS, RUN_STATUS, LINKEDIN_STATUS, isStageComplete, contentHash } = require('../state/ledger');
 const { loadTopics, selectTopic, loadLegacyPosts } = require('../topics');
-const { AnthropicClient } = require('../anthropic');
+const { GeminiClient } = require('../gemini');
 const { runResearch } = require('./research');
 const author = require('./author');
 const { localizeMetadata, verifyPreservation, SUPPORTED_LOCALES } = require('./localize');
@@ -46,8 +46,8 @@ class Pipeline {
 
   client() {
     if (!this._client) {
-      this.config.requireFor('anthropic');
-      this._client = new AnthropicClient(this.config.anthropic, {
+      this.config.requireFor('gemini');
+      this._client = new GeminiClient(this.config.gemini, {
         fetchImpl: this.deps.fetchImpl,
         logger: this.logger,
       });
