@@ -54,7 +54,7 @@ http.createServer((req, res) => {
   let pathname = new URL(req.url, 'http://localhost').pathname;
 
   // Default to index.html
-  if (pathname === '/' || pathname === '') pathname = '/index.html';
+  if (pathname === '' || pathname.endsWith('/')) pathname += 'index.html';
 
   // ── AI Chat Proxy Simulation ──────────────────────────────────
   if (req.method === 'POST' && pathname === '/api/chat') {
