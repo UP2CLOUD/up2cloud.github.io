@@ -163,8 +163,8 @@ function makePipeline(repoRoot, mode) {
     {
       REPO_ROOT: repoRoot,
       PUBLISH_MODE: mode,
-      ANTHROPIC_API_KEY: 'sk-ant-test',
-      ANTHROPIC_MODEL: 'claude-opus-4-6',
+      GEMINI_API_KEY: 'test-key',
+      GEMINI_MODEL: 'gemini-2.5-pro',
       STATE_FILE_PATH: path.join(repoRoot, 'automation', 'publishing', 'state', 'ledger.json'),
     },
     {},

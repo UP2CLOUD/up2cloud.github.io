@@ -99,19 +99,19 @@ jobs:
         # clicked "Run workflow", though, gets a loud error: they asked for a
         # run and deserve to know why they did not get one.
         env:
-          HAS_ANTHROPIC_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+          HAS_GEMINI_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
         run: |
           set -euo pipefail
-          if [ "$HAS_ANTHROPIC_KEY" = "true" ]; then
+          if [ "$HAS_GEMINI_KEY" = "true" ]; then
             echo "skip=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "skip=true" >> "$GITHUB_OUTPUT"
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "::notice::Autopublish is not configured yet (no ANTHROPIC_API_KEY secret). Nothing to do — see automation/publishing/README.md to enable it."
+            echo "::notice::Autopublish is not configured yet (no GEMINI_API_KEY secret). Nothing to do — see automation/publishing/README.md to enable it."
             exit 0
           fi
-          echo "::error::ANTHROPIC_API_KEY is not set. See automation/publishing/README.md for setup."
+          echo "::error::GEMINI_API_KEY is not set. See automation/publishing/README.md for setup."
           exit 1
 
       - name: Report current schedule state
@@ -135,8 +135,8 @@ jobs:
           TOPIC_COOLDOWN_DAYS: ${{ vars.TOPIC_COOLDOWN_DAYS || '45' }}
 
           # ── Model ─────────────────────────────────────────────────────────
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-opus-4-6' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-pro' }}
 
           # ── LinkedIn ──────────────────────────────────────────────────────
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
