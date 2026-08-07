@@ -2,7 +2,7 @@
 
 ## Reporting Security Vulnerabilities
 
-If you discover a security vulnerability in this repository, please email **hello@up2cloud.io** instead of using the public issue tracker.
+If you discover a security vulnerability in this repository, please email **hello@up2cloud.tech** instead of using the public issue tracker.
 
 Include:
 - Description of the vulnerability
@@ -100,4 +100,4 @@ node serve.js  # or python3 serve.py
 ---
 
 **Last Updated:** May 6, 2026  
-**Contact:** hello@up2cloud.io
+**Contact:** hello@up2cloud.tech

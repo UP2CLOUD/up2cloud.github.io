@@ -134,7 +134,7 @@ up2cloud.github.io/
 | | |
 |---|---|
 | 🌐 Website | [up2cloud.tech](https://up2cloud.tech) |
-| 📧 Email | [hello@up2cloud.io](mailto:hello@up2cloud.io) |
+| 📧 Email | [hello@up2cloud.tech](mailto:hello@up2cloud.tech) |
 | 📱 WhatsApp | [+351 937 471 554](https://wa.me/351937471554) |
 | 💼 LinkedIn | [linkedin.com/in/cesarnog](https://www.linkedin.com/in/cesarnog/) |
 | 🐙 GitHub Org | [github.com/UP2CLOUD](https://github.com/UP2CLOUD) |
