@@ -23,7 +23,7 @@
   <meta name="description" content="Specialized Platform Engineering, FinOps, and DevOps consultancy for AWS, Azure, and Google Cloud — immutable infrastructure, automated governance." />
   <meta name="author" content="Cesar A. Nogueira" />
   <meta name="robots" content="index, follow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com https://www.googletagmanager.com; script-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.groq.com https://formspree.io https://static.hotjar.com https://script.hotjar.com https://cloudflareinsights.com https://www.google-analytics.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com; frame-src 'self' https://vars.hotjar.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self' https://formspree.io; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com https://www.googletagmanager.com; script-src-elem 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://static.hotjar.com https://script.hotjar.com https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.groq.com https://formsubmit.co https://static.hotjar.com https://script.hotjar.com https://cloudflareinsights.com https://www.google-analytics.com https://www.googletagmanager.com https://googleads.g.doubleclick.net https://www.googleadservices.com; frame-src 'self' https://vars.hotjar.com; worker-src 'self' blob:; base-uri 'self'; form-action 'self' https://formsubmit.co; object-src 'none'" />
 
   <meta property="og:title" content="UP2CLOUD — Enterprise Platform Engineering" />
   <meta property="og:description" content="Build cloud platforms that scale, ship, and pay for themselves. Expert Platform Engineering and FinOps for AWS, Azure, and Google Cloud." />
@@ -112,7 +112,7 @@
     "logo": "https://up2cloud.tech/assets/img/og-image.png",
     "contactPoint": {
       "@type": "ContactPoint",
-      "email": "hello@up2cloud.io",
+      "email": "hello@up2cloud.tech",
       "contactType": "Sales",
       "telephone": "+351 937 471 554"
     },
@@ -133,7 +133,7 @@
       "name": "UP2CLOUD",
       "image": "https://up2cloud.tech/assets/img/og-image.png",
       "telephone": "+351 937 471 554",
-      "email": "hello@up2cloud.io",
+      "email": "hello@up2cloud.tech",
       "address": {
       "@type": "PostalAddress",
       "addressLocality": "Vila Real",
@@ -4109,7 +4109,7 @@ section[id],
    ───────────────────────────────────────────── */
 (function up2cloudChatBookingGuardrails(){
   const CONTACT_URL = '#contact';
-  const SAFE_EMAIL = 'hello@up2cloud.io';
+  const SAFE_EMAIL = 'hello@up2cloud.tech';
   const SAFE_PHONE = '+351 937 471 554';
 
   function isAuditIntent(text) {
@@ -6626,7 +6626,7 @@ nav.scrolled + #tech-stack,
           </div>
           <div>
             <p class="text-xs text-slate-500 font-medium uppercase tracking-wider" data-i18n="contact_email_label">Email</p>
-            <a href="mailto:hello@up2cloud.io" class="text-navy font-medium hover:text-sky-brand transition-colors">hello@up2cloud.io</a>
+            <a href="mailto:hello@up2cloud.tech" class="text-navy font-medium hover:text-sky-brand transition-colors">hello@up2cloud.tech</a>
           </div>
         </div>
         <div class="flex items-center gap-4">
@@ -7013,11 +7013,11 @@ nav.scrolled + #tech-stack,
         successBox.classList.remove('hidden'); this.reset();
       } else {
         const data = await res.json().catch(() => ({}));
-        errMsg.textContent = data.error || 'Submission failed. Please email us at hello@up2cloud.io';
+        errMsg.textContent = data.error || 'Submission failed. Please email us at hello@up2cloud.tech';
         errBox.classList.remove('hidden');
       }
     } catch {
-      errMsg.textContent = 'Network error. Please email hello@up2cloud.io directly.';
+      errMsg.textContent = 'Network error. Please email hello@up2cloud.tech directly.';
       errBox.classList.remove('hidden');
     } finally {
       btn.disabled = false; txt.textContent = 'Send Message';
@@ -7048,8 +7048,8 @@ You help visitors understand UP2CLOUD services: Platform Engineering, DevOps, Fi
 Critical rules:
 - Never say you sent an email, sent a booking link, scheduled an audit, created a calendar invite, or submitted a form. You do not have those automations.
 - Never use placeholders like [insert link].
-- Never recommend up2cloud.tech. For company/contact/booking references, use only https://up2cloud.tech, hello@up2cloud.io, or +351 937 471 554.
-- If the user says 'Book', 'Book free audit', or asks to schedule/contact, do not call the AI flow if possible. Answer with the contact form on this page, hello@up2cloud.io, and +351 937 471 554. Never say you can connect them to Cesar or that you sent anything.
+- Never recommend up2cloud.tech. For company/contact/booking references, use only https://up2cloud.tech, hello@up2cloud.tech, or +351 937 471 554.
+- If the user says 'Book', 'Book free audit', or asks to schedule/contact, do not call the AI flow if possible. Answer with the contact form on this page, hello@up2cloud.tech, and +351 937 471 554. Never say you can connect them to Cesar or that you sent anything.
 - Be concise, premium, and honest. Do not make up information.`;
 
   chatBtn.addEventListener('click', () => {
@@ -7143,7 +7143,7 @@ Critical rules:
       hideTyping();
       const msg = err.message === 'INVALID_KEY'
         ? '🔑 API key was invalid or expired. Please check your configuration.'
-        : '⚠️ Couldn\'t reach the AI right now. Email us at <a href="mailto:hello@up2cloud.io">hello@up2cloud.io</a> — we reply within 24h!';
+        : '⚠️ Couldn\'t reach the AI right now. Email us at <a href="mailto:hello@up2cloud.tech">hello@up2cloud.tech</a> — we reply within 24h!';
       appendMsg(msg, 'bot');
     } finally {
       setInputState(false);
@@ -9216,7 +9216,7 @@ function floatCardAt(leftPx, topPx, persist){
   }
 
   function bookingReply() {
-    return 'Great — to request the free infrastructure audit, please use the <a href="#contact">contact form on this page</a>, email <a href="mailto:hello@up2cloud.io">hello@up2cloud.io</a>, or call <a href="tel:+351937471554">+351 937 471 554</a>. Share your name, company, cloud provider, and preferred contact time, and UP2CLOUD will follow up.';
+    return 'Great — to request the free infrastructure audit, please use the <a href="#contact">contact form on this page</a>, email <a href="mailto:hello@up2cloud.tech">hello@up2cloud.tech</a>, or call <a href="tel:+351937471554">+351 937 471 554</a>. Share your name, company, cloud provider, and preferred contact time, and UP2CLOUD will follow up.';
   }
 
   function sanitize(reply) {
