@@ -1,7 +1,8 @@
 # UP2CLOUD Autopublish
 
-Publishes one technical article to the UP2CLOUD blog every 48 hours and promotes
-it through the official LinkedIn Company Page API.
+Publishes one high-impact technical article (AI, cloud infrastructure, or IT) to
+the UP2CLOUD blog every 7 days and promotes it through the official LinkedIn
+Company Page API.
 
 Zero runtime dependencies — Node 22 built-ins only, matching the rest of this
 repo. Tests run on `node --test`.
@@ -181,7 +182,7 @@ Variables (→ **Variables**):
 | `ANTHROPIC_MODEL` | `claude-opus-4-6` | model id, rolled forward without a code change |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
-| `PUBLISH_INTERVAL_HOURS` | `48` | cadence |
+| `PUBLISH_INTERVAL_HOURS` | `168` | cadence (weekly) |
 | `TOPIC_COOLDOWN_DAYS` | `45` | primary-topic repeat window |
 | `AUTOPUBLISH_DISABLED` | — | kill switch |
 | `STATE_BACKEND` | `file` | `file` (git-committed) or `kv` (Cloudflare) |

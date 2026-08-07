@@ -42,7 +42,7 @@ const STAGES = Object.freeze([
 ]);
 
 const DEFAULTS = Object.freeze({
-  publishIntervalHours: 48,
+  publishIntervalHours: 168,
   topicCooldownDays: 45,
   minWords: 1200,
   maxWords: 2200,

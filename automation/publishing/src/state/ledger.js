@@ -11,7 +11,7 @@ const { STAGES } = require('../config');
  *    resumes at the first incomplete stage rather than regenerating an article
  *    that was already written and reviewed;
  *  - a **publication** is the durable record of an article that reached the
- *    site, and it is what the 48-hour scheduler and the 45-day topic cooldown
+ *    site, and it is what the weekly scheduler and the 45-day topic cooldown
  *    read from.
  *
  * A run is only ever promoted to a publication once its blog stage succeeded,
@@ -178,7 +178,7 @@ class Ledger {
 
   /**
    * Record a published article. `lastSuccessfulPublicationAt` only advances for
-   * a genuinely live article, because that timestamp gates the next 48h cycle.
+   * a genuinely live article, because that timestamp gates the next weekly cycle.
    */
   async recordPublication(publication) {
     const ts = new Date(this.clock()).toISOString();

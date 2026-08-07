@@ -35,7 +35,7 @@ const SKIP_REASON = Object.freeze({
  */
 function evaluateSchedule({
   lastSuccessfulPublicationAt = null,
-  intervalHours = 48,
+  intervalHours = 168,
   now = Date.now(),
   force = false,
   killSwitch = false,
