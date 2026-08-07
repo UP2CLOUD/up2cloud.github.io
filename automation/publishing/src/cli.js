@@ -294,7 +294,7 @@ Commands:
 
 Options:
   --mode <m>           dry-run | draft | review | auto   (default: draft)
-  --force              Bypass the 48h interval (kill switch still applies)
+  --force              Bypass the weekly interval (kill switch still applies)
   --topic <id>         Force a topic domain id
   --resume <runId>     Resume an incomplete run at its first unfinished stage
   --trigger <name>     Label the run's trigger in the ledger
