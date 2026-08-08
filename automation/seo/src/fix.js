@@ -173,23 +173,12 @@ function addToSitemap(xml, url, lastmod) {
   return `${xml.slice(0, close)}${entry}\n${xml.slice(close)}`;
 }
 
-/** Refresh <lastmod> for a URL already in the sitemap. */
-function touchSitemapLastmod(xml, url, lastmod) {
-  const re = new RegExp(
-    `(<loc>${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</loc>\\s*<lastmod>)([^<]*)(</lastmod>)`,
-  );
-  if (!re.test(xml)) return null;
-  const updated = xml.replace(re, `$1${lastmod}$3`);
-  return updated === xml ? null : updated;
-}
-
 module.exports = {
   applyFixes,
   applyMetaFix,
   applyCanonicalFix,
   insertIntoHead,
   addToSitemap,
-  touchSitemapLastmod,
   escapeAttr,
   hasMeta,
   hasLink,

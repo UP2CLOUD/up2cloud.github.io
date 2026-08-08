@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { auditPage, urlForFile, isSitemapExcluded, SEVERITY } = require('./rules');
-const { applyFixes, addToSitemap, touchSitemapLastmod } = require('./fix');
+const { applyFixes, addToSitemap } = require('./fix');
 
 /** Directories that never contain published pages. */
 const SKIP_DIRS = new Set(['.git', 'node_modules', 'public', '_includes', 'automation', 'terraform', 'scripts']);
