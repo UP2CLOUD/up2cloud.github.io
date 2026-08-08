@@ -1,0 +1,109 @@
+name: SEO — Weekly audit + autofix
+
+# Weekly rather than per-push: SEO metadata drifts when pages are added or
+# edited, and a Monday-morning PR lands in front of someone who can act on it.
+# The audit also runs on PRs that touch site HTML, so a regression is caught on
+# the change that caused it instead of up to a week later.
+on:
+  schedule:
+    # Mondays 08:00 UTC — before the working day in UTC+1/+2.
+    - cron: '0 8 * * 1'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.html'
+      - 'sitemap.xml'
+      - 'robots.txt'
+      - 'automation/seo/**'
+      - '.github/workflows/seo-weekly.yml'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply mechanical fixes and open a PR'
+        type: boolean
+        default: true
+
+concurrency:
+  group: >-
+    seo-weekly-${{
+      github.event_name == 'pull_request'
+        && format('pr-{0}', github.event.number)
+        || 'main'
+    }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit:
+    name: Audit SEO metadata
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
+      - name: Test the auditor
+        # The auditor edits committed HTML. A red suite must stop it before it
+        # touches a single file.
+        run: node --test "automation/seo/test/*.test.js"
+
+      # ── On a PR: report only. Never rewrite a contributor's branch. ───────
+      - name: Audit (report only)
+        if: github.event_name == 'pull_request'
+        id: pr_audit
+        run: |
+          node automation/seo/src/cli.js audit --report seo-report.md
+          {
+            cat seo-report.md
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── Scheduled / manual: apply mechanical fixes and open a PR. ─────────
+      - name: Apply mechanical fixes
+        if: github.event_name != 'pull_request'
+        id: fix
+        run: |
+          node automation/seo/src/cli.js fix --report seo-report.md || true
+          cat seo-report.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$(git status --porcelain -- '*.html' sitemap.xml)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open a pull request with the fixes
+        if: github.event_name != 'pull_request' && steps.fix.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          BRANCH="automation/seo-weekly-$(date -u +%Y%m%d)"
+          git config user.name  "up2cloud-seo[bot]"
+          git config user.email "automation@up2cloud.tech"
+          git checkout -b "$BRANCH"
+          git add -- '*.html' sitemap.xml
+          git commit -m "chore(seo): weekly metadata audit — apply mechanical fixes"
+          git push -u origin "$BRANCH" --force-with-lease
+
+          # The report is the PR body: what was fixed, and what still needs a
+          # human. `gh` is preinstalled on GitHub-hosted runners.
+          gh pr create \
+            --title "chore(seo): weekly metadata audit ($(date -u +%Y-%m-%d))" \
+            --body-file seo-report.md \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$BRANCH" \
+          || gh pr edit "$BRANCH" --body-file seo-report.md
+
+      - name: Report when nothing needed changing
+        if: github.event_name != 'pull_request' && steps.fix.outputs.changed != 'true'
+        run: echo "::notice::SEO metadata is already correct — no PR opened."
+
+      # A settled site opens no PR and fails nothing. Only findings that need a
+      # human should ever turn this workflow red, and only on a PR — a weekly
+      # run that goes red for a judgement call trains people to ignore it.
+      - name: Fail the PR check on SEO errors
+        if: github.event_name == 'pull_request'
+        run: node automation/seo/src/cli.js audit > /dev/null
