@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const { MODES } = require('../config');
 const { STAGE_STATUS, RUN_STATUS, LINKEDIN_STATUS, isStageComplete, contentHash } = require('../state/ledger');
 const { loadTopics, selectTopic, loadLegacyPosts } = require('../topics');
-const { GeminiClient } = require('../gemini');
+const { ModelClient } = require('../model-client');
 const { runResearch } = require('./research');
 const author = require('./author');
 const { localizeMetadata, verifyPreservation, SUPPORTED_LOCALES } = require('./localize');
@@ -46,10 +46,11 @@ class Pipeline {
 
   client() {
     if (!this._client) {
-      this.config.requireFor('gemini');
-      this._client = new GeminiClient(this.config.gemini, {
+      this.config.requireFor('model');
+      this._client = new ModelClient(this.config, {
         fetchImpl: this.deps.fetchImpl,
         logger: this.logger,
+        sleepImpl: this.deps.sleep,
       });
     }
     return this._client;

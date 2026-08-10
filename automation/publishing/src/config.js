@@ -7,8 +7,8 @@ const path = require('node:path');
  *
  * Validation is split by *capability* rather than validating everything up
  * front: a `--dry-run` that never calls LinkedIn should not demand LinkedIn
- * credentials, and `verify`-only invocations should not demand a Gemini
- * key. `requireFor()` is therefore called lazily by each stage.
+ * credentials, and `verify`-only invocations should not demand a model
+ * provider key. `requireFor()` is therefore called lazily by each stage.
  */
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..');
@@ -51,6 +51,7 @@ const DEFAULTS = Object.freeze({
   siteBaseUrl: 'https://up2cloud.tech',
   geminiModel: 'gemini-2.5-pro',
   geminiApiVersion: 'v1beta',
+  groqModel: 'llama-3.3-70b-versatile',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -78,6 +79,8 @@ class ConfigError extends Error {
  */
 const CAPABILITY_REQUIREMENTS = Object.freeze({
   gemini: ['GEMINI_API_KEY'],
+  groq: ['GROQ_API_KEY'],
+  model: [],
   linkedin: ['LINKEDIN_ACCESS_TOKEN', 'LINKEDIN_ORGANIZATION_URN'],
   linkedinOAuth: ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET'],
   git: ['GITHUB_TOKEN'],
@@ -90,7 +93,7 @@ const CAPABILITY_REQUIREMENTS = Object.freeze({
  * spend — with an article half-published and the schedule clock ambiguous.
  */
 function requiredCapabilitiesForMode(mode, stateBackend = 'file') {
-  const caps = ['gemini'];
+  const caps = ['model'];
   if (mode !== MODES.DRY_RUN) caps.push('git');
   if (mode === MODES.AUTO) caps.push('linkedin');
   if (stateBackend === 'kv') caps.push('kvState');
@@ -145,6 +148,14 @@ function loadConfig(env = process.env, argv = {}) {
       apiVersion: env.GEMINI_API_VERSION || DEFAULTS.geminiApiVersion,
       baseUrl: (env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/+$/, ''),
       maxRetries: parseIntOr(env.GEMINI_MAX_RETRIES, 4),
+    },
+
+    groq: {
+      apiKey: env.GROQ_API_KEY || '',
+      model: (env.GROQ_MODEL || DEFAULTS.groqModel).trim(),
+      baseUrl: (env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1').replace(/\/+$/, ''),
+      maxRetries: parseIntOr(env.GROQ_MAX_RETRIES, 4),
+      maxOutputTokens: parseIntOr(env.GROQ_MAX_OUTPUT_TOKENS, 8192),
     },
 
     linkedin: {
@@ -203,6 +214,14 @@ function loadConfig(env = process.env, argv = {}) {
   config.requireFor = function requireFor(capability) {
     const required = CAPABILITY_REQUIREMENTS[capability];
     if (!required) throw new ConfigError(`Unknown capability "${capability}"`);
+    if (capability === 'model') {
+      if (!config.gemini.apiKey && !config.groq.apiKey) {
+        throw new ConfigError(
+          'Missing model credentials: set GEMINI_API_KEY or GROQ_API_KEY',
+        );
+      }
+      return true;
+    }
     const missing = required.filter((k) => !String(env[k] || '').trim());
     if (missing.length) {
       throw new ConfigError(
