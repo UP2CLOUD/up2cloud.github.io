@@ -1,9 +1,110 @@
 {
-  "version": 35,
-  "updatedAt": "2026-08-07T15:12:32.422Z",
+  "version": 43,
+  "updatedAt": "2026-08-10T15:18:57.713Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260810151840_59a3be",
+      "mode": "draft",
+      "trigger": "workflow_dispatch",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-10T15:18:40.400Z",
+      "updatedAt": "2026-08-10T15:18:57.711Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-10T15:18:40.402Z",
+          "completedAt": "2026-08-10T15:18:40.421Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 653
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-10T15:18:40.422Z",
+          "completedAt": "2026-08-10T15:18:57.711Z",
+          "error": "Gemini API 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Your project has exceeded its monthly spending cap. Please go to AI Studio at https://ai.studio/spend to manage your project spend cap. Learn more at https://ai.google.dev/gemini-api/docs/billing#project-spend-caps. \",\n    \"status\": \"RESOURCE_EXHAUSTED\"\n  }\n}\n",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260807150824_d76eef",
       "mode": "dry-run",
