@@ -92,27 +92,20 @@ jobs:
 
       - name: Check the pipeline is configured
         id: configured
-        # Until secrets are provisioned this workflow is dormant, and a dormant
-        # pipeline is not a broken one. Failing the scheduled run every 6 hours
-        # would just train everyone to ignore this workflow's red X — which is
-        # exactly when a genuine failure needs to be noticed. A human who
-        # clicked "Run workflow", though, gets a loud error: they asked for a
-        # run and deserve to know why they did not get one.
+        # A scheduled run is dormant until every credential required by its
+        # selected mode exists. A manual run still fails loudly because a human
+        # explicitly asked it to do work.
         env:
-          HAS_GEMINI_KEY: ${{ secrets.GEMINI_API_KEY != '' }}
-        run: |
-          set -euo pipefail
-          if [ "$HAS_GEMINI_KEY" = "true" ]; then
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "skip=true" >> "$GITHUB_OUTPUT"
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            echo "::notice::Autopublish is not configured yet (no GEMINI_API_KEY secret). Nothing to do — see automation/publishing/README.md to enable it."
-            exit 0
-          fi
-          echo "::error::GEMINI_API_KEY is not set. See automation/publishing/README.md for setup."
-          exit 1
+          PUBLISH_MODE: ${{ inputs.mode || vars.PUBLISH_MODE || 'auto' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_ORGANIZATION_URN: ${{ vars.LINKEDIN_ORGANIZATION_URN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATE_BACKEND: ${{ vars.STATE_BACKEND || 'file' }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+        run: node automation/publishing/src/cli.js check-config --trigger "${{ github.event_name }}"
 
       - name: Report current schedule state
         if: steps.configured.outputs.skip != 'true'

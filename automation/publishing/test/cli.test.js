@@ -18,20 +18,32 @@ const CLI = path.resolve(__dirname, '..', 'src', 'cli.js');
  */
 function runCli(argv, env = {}) {
   const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'autopub-cli-'));
+  const githubOutput = path.join(stateDir, 'github-output');
+  const options = {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: {
+      PATH: process.env.PATH,
+      HOME: process.env.HOME,
+      STATE_FILE_PATH: path.join(stateDir, 'ledger.json'),
+      GITHUB_OUTPUT: githubOutput,
+      ...env,
+    },
+  };
   try {
-    const stdout = execFileSync(process.execPath, [CLI, ...argv], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: {
-        PATH: process.env.PATH,
-        HOME: process.env.HOME,
-        STATE_FILE_PATH: path.join(stateDir, 'ledger.json'),
-        ...env,
-      },
-    });
-    return { code: 0, stdout };
+    const stdout = execFileSync(process.execPath, [CLI, ...argv], options);
+    return {
+      code: 0,
+      stdout,
+      githubOutput: fs.existsSync(githubOutput) ? fs.readFileSync(githubOutput, 'utf8') : '',
+    };
   } catch (err) {
-    return { code: err.status, stdout: err.stdout || '', stderr: err.stderr || '' };
+    return {
+      code: err.status,
+      stdout: err.stdout || '',
+      stderr: err.stderr || '',
+      githubOutput: fs.existsSync(githubOutput) ? fs.readFileSync(githubOutput, 'utf8') : '',
+    };
   }
 }
 
@@ -55,6 +67,39 @@ test('a dry run does not require LinkedIn or git credentials', () => {
   const caps = requiredCapabilitiesForMode(MODES.DRY_RUN);
   assert.equal(caps.includes('linkedin'), false);
   assert.equal(caps.includes('git'), false);
+});
+
+// ── Workflow configuration check ─────────────────────────────────────────
+
+test('a scheduled auto run skips cleanly when LinkedIn is not configured', () => {
+  const r = runCli(['check-config', '--mode', 'auto', '--trigger', 'schedule'], {
+    GEMINI_API_KEY: 'test-key',
+    GITHUB_TOKEN: 'ghp_test',
+  });
+  assert.equal(r.code, 0, `stderr: ${r.stderr}`);
+  assert.match(r.githubOutput, /^skip=true$/m);
+  assert.match(`${r.stdout}${r.stderr}`, /LINKEDIN_ACCESS_TOKEN/);
+});
+
+test('a manual auto run fails loudly when LinkedIn is not configured', () => {
+  const r = runCli(['check-config', '--mode', 'auto', '--trigger', 'workflow_dispatch'], {
+    GEMINI_API_KEY: 'test-key',
+    GITHUB_TOKEN: 'ghp_test',
+  });
+  assert.equal(r.code, 2);
+  assert.doesNotMatch(r.githubOutput, /^skip=true$/m);
+  assert.match(`${r.stdout}${r.stderr}`, /LINKEDIN_ACCESS_TOKEN/);
+});
+
+test('a fully configured scheduled auto run continues to publishing', () => {
+  const r = runCli(['check-config', '--mode', 'auto', '--trigger', 'schedule'], {
+    GEMINI_API_KEY: 'test-key',
+    GITHUB_TOKEN: 'ghp_test',
+    LINKEDIN_ACCESS_TOKEN: 'linkedin-test-token',
+    LINKEDIN_ORGANIZATION_URN: 'urn:li:organization:12345678',
+  });
+  assert.equal(r.code, 0, `stderr: ${r.stderr}`);
+  assert.match(r.githubOutput, /^skip=false$/m);
 });
 
 // ── Exit codes ────────────────────────────────────────────────────────────

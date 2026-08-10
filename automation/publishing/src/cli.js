@@ -54,6 +54,12 @@ function buildBackend(config) {
   return new FileBackend({ filePath: config.state.filePath });
 }
 
+function writeGithubOutput(name, value) {
+  if (process.env.GITHUB_OUTPUT) {
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
+  }
+}
+
 /** `--check-kill-switch`: a committed flag file also disables the pipeline. */
 function killSwitchEngaged(config) {
   if (config.killSwitch) return { engaged: true, source: 'environment' };
@@ -62,6 +68,33 @@ function killSwitchEngaged(config) {
     return { engaged: true, source: 'DISABLED file', note: fs.readFileSync(flag, 'utf8').trim().slice(0, 200) };
   }
   return { engaged: false };
+}
+
+/**
+ * Validate every credential the selected mode will certainly need.
+ *
+ * Scheduled runs treat an incomplete setup as dormant and exit green. Manual
+ * runs remain loud because an operator explicitly asked the pipeline to run.
+ */
+async function commandCheckConfig(config, args, logger) {
+  const trigger = args.trigger || process.env.GITHUB_EVENT_NAME || 'manual';
+  try {
+    for (const capability of requiredCapabilitiesForMode(config.mode, config.state.backend)) {
+      config.requireFor(capability);
+    }
+    writeGithubOutput('skip', 'false');
+    logger.info('Pipeline configuration is complete', { trigger });
+    return 0;
+  } catch (err) {
+    if (!(err instanceof ConfigError) || trigger !== 'schedule') throw err;
+
+    writeGithubOutput('skip', 'true');
+    logger.warn('Autopublish is not fully configured — scheduled run skipped', {
+      trigger,
+      reason: err.message,
+    });
+    return 0;
+  }
 }
 
 async function commandPublish(config, args, logger) {
@@ -287,6 +320,7 @@ Usage:
   node automation/publishing/src/cli.js <command> [options]
 
 Commands:
+  check-config         Validate credentials required by the selected mode
   publish              Run the pipeline if publishing is due
   status               Print schedule, lock, token and publication state
   oauth url            Print the LinkedIn consent URL
@@ -323,6 +357,8 @@ async function main(argv = process.argv.slice(2)) {
 
   try {
     switch (command) {
+      case 'check-config':
+        return await commandCheckConfig(config, args, logger);
       case 'publish':
         return await commandPublish(config, args, logger);
       case 'status':
