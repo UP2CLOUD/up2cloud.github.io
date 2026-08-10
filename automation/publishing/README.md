@@ -158,11 +158,13 @@ warns 14 days ahead; `cli.js status` reports token health on every run.
 
 ## Configuration
 
-**Until `GEMINI_API_KEY` is set, the workflow is dormant.** Scheduled runs
-exit green with a notice rather than failing every 6 hours — a pipeline nobody
-has turned on yet is not a broken pipeline, and a workflow that is always red is
-a workflow nobody reads. A manual `workflow_dispatch` still fails loudly: you
-asked for a run, so you should hear why you did not get one.
+**Until every credential required by the selected mode is set, the workflow is
+dormant.** For example, `auto` needs Gemini, GitHub, and LinkedIn configuration,
+while `draft` does not need LinkedIn. Scheduled runs exit green with a notice
+rather than failing every 6 hours — a partially configured pipeline is not a
+broken pipeline, and a workflow that is always red is a workflow nobody reads.
+A manual `workflow_dispatch` still fails loudly: you asked for a run, so you
+should hear why you did not get one.
 
 Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 
