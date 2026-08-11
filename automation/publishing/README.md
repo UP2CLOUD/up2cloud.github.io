@@ -159,7 +159,7 @@ warns 14 days ahead; `cli.js status` reports token health on every run.
 ## Configuration
 
 **Until every credential required by the selected mode is set, the workflow is
-dormant.** For example, `auto` needs Gemini, GitHub, and LinkedIn configuration,
+dormant.** For example, `auto` needs a model provider, GitHub, and LinkedIn configuration,
 while `draft` does not need LinkedIn. Scheduled runs exit green with a notice
 rather than failing every 6 hours — a partially configured pipeline is not a
 broken pipeline, and a workflow that is always red is a workflow nobody reads.
@@ -170,7 +170,8 @@ Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 
 | Secret | Needed for |
 |---|---|
-| `GEMINI_API_KEY` | generation |
+| `GEMINI_API_KEY` | primary generation provider |
+| `GROQ_API_KEY` | free-tier fallback; can also run without Gemini |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn posting |
 | `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_KV_NAMESPACE_ID` | only if `STATE_BACKEND=kv` |
 
@@ -182,6 +183,7 @@ Variables (→ **Variables**):
 |---|---|---|
 | `PUBLISH_MODE` | `draft` | `dry-run` \| `draft` \| `review` \| `auto` |
 | `GEMINI_MODEL` | `gemini-2.5-pro` | model id, rolled forward without a code change |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` | fallback model id |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
 | `PUBLISH_INTERVAL_HOURS` | `168` | cadence (weekly) |
@@ -189,6 +191,12 @@ Variables (→ **Variables**):
 | `AUTOPUBLISH_DISABLED` | — | kill switch |
 | `STATE_BACKEND` | `file` | `file` (git-committed) or `kv` (Cloudflare) |
 | `UTM_CAMPAIGN` | `up2cloud_blog` | campaign tag |
+
+Generation prefers Gemini. If Gemini is unavailable, rate-limited or over its
+spending quota, the run switches to Groq and stays there for all remaining
+stages. Schema-validation and content-quality failures do not trigger a
+provider switch. Groq's free plan has rate and daily token limits, so it is a
+continuity fallback rather than unlimited capacity.
 
 ### State backends
 

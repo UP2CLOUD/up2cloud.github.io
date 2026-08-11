@@ -50,10 +50,10 @@ function runCli(argv, env = {}) {
 // ── Capability preflight ──────────────────────────────────────────────────
 
 test('each mode declares exactly the credentials it can actually need', () => {
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRY_RUN), ['gemini']);
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRAFT), ['gemini', 'git']);
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.REVIEW), ['gemini', 'git']);
-  assert.deepEqual(requiredCapabilitiesForMode(MODES.AUTO), ['gemini', 'git', 'linkedin']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRY_RUN), ['model']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.DRAFT), ['model', 'git']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.REVIEW), ['model', 'git']);
+  assert.deepEqual(requiredCapabilitiesForMode(MODES.AUTO), ['model', 'git', 'linkedin']);
 });
 
 test('a KV state backend adds its own credential requirement', () => {
@@ -100,6 +100,20 @@ test('a fully configured scheduled auto run continues to publishing', () => {
   });
   assert.equal(r.code, 0, `stderr: ${r.stderr}`);
   assert.match(r.githubOutput, /^skip=false$/m);
+});
+
+test('Groq alone satisfies the model credential preflight', () => {
+  const r = runCli(['check-config', '--mode', 'dry-run', '--trigger', 'workflow_dispatch'], {
+    GROQ_API_KEY: 'gsk_test-key',
+  });
+  assert.equal(r.code, 0, `stderr: ${r.stderr}`);
+  assert.match(r.githubOutput, /^skip=false$/m);
+});
+
+test('model preflight fails when neither Gemini nor Groq is configured', () => {
+  const r = runCli(['check-config', '--mode', 'dry-run', '--trigger', 'workflow_dispatch'], {});
+  assert.equal(r.code, 2);
+  assert.match(`${r.stdout}${r.stderr}`, /GEMINI_API_KEY or GROQ_API_KEY/);
 });
 
 // ── Exit codes ────────────────────────────────────────────────────────────

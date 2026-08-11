@@ -17,12 +17,13 @@
 const RETRYABLE_STATUS = new Set([408, 409, 429, 500, 502, 503, 504]);
 
 class GeminiError extends Error {
-  constructor(message, { status, requestId, retryable } = {}) {
+  constructor(message, { status, requestId, retryable, fallbackEligible } = {}) {
     super(message);
     this.name = 'GeminiError';
     this.status = status;
     this.requestId = requestId;
     this.retryable = Boolean(retryable);
+    this.fallbackEligible = Boolean(fallbackEligible);
   }
 }
 
@@ -108,10 +109,23 @@ class GeminiClient {
         }
 
         const errText = await res.text().catch(() => '');
-        const retryable = RETRYABLE_STATUS.has(res.status);
+        const quotaExhausted =
+          res.status === 429 &&
+          /monthly spending cap|resource_exhausted|quota[^]*exceed|billing/i.test(errText);
+        const retryable = RETRYABLE_STATUS.has(res.status) && !quotaExhausted;
         lastError = new GeminiError(
           `Gemini API ${res.status}: ${errText.slice(0, 400)}`,
-          { status: res.status, requestId, retryable },
+          {
+            status: res.status,
+            requestId,
+            retryable,
+            fallbackEligible:
+              quotaExhausted ||
+              res.status === 408 ||
+              res.status === 409 ||
+              res.status === 429 ||
+              res.status >= 500,
+          },
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
 
@@ -135,6 +149,7 @@ class GeminiClient {
         // Network error / abort — retryable.
         lastError = new GeminiError(`Gemini request failed: ${err.message}`, {
           retryable: true,
+          fallbackEligible: true,
         });
         if (attempt === this.maxRetries) throw lastError;
         await sleep(Math.min(2 ** attempt * 1000, 30_000));
