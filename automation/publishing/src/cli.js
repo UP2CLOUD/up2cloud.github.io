@@ -107,6 +107,26 @@ async function commandPublish(config, args, logger) {
     return 0;
   }
 
+  // `auto` with no LinkedIn credentials is the expected state while the
+  // Community Management API approval is still pending. Failing the cron every
+  // few hours over it would make this workflow permanently red — and a
+  // workflow that is always red is one nobody reads, which is exactly when a
+  // genuine failure needs to be noticed.
+  //
+  // The article is still worth generating and shipping; only the promotion
+  // step is unavailable. So a *scheduled* run degrades to `draft` and says so.
+  // A human who explicitly asked for `auto` still gets a hard error, because
+  // they asked for a LinkedIn post and deserve to know why they did not get one.
+  const trigger = args.trigger || process.env.GITHUB_EVENT_NAME || 'manual';
+  if (config.mode === MODES.AUTO && !config.hasCapability('linkedin') && trigger === 'schedule') {
+    logger.warn('LinkedIn is not configured — degrading this scheduled run to draft', {
+      requestedMode: MODES.AUTO,
+      effectiveMode: MODES.DRAFT,
+      hint: 'Set LINKEDIN_ACCESS_TOKEN and LINKEDIN_ORGANIZATION_URN to enable promotion.',
+    });
+    config.mode = MODES.DRAFT;
+  }
+
   // Preflight the credentials this mode will certainly need. Discovering a
   // missing LINKEDIN_ACCESS_TOKEN at stage 10 costs a whole generation cycle
   // and leaves an article published but unpromoted; discovering it here costs
