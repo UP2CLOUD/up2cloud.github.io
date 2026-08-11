@@ -16,5 +16,13 @@
 /scripts/* /404.html 404
 /node_modules/* /404.html 404
 
+# Retired duplicate: privacy/index_old.html was a stale copy of /privacy/ that
+# canonicalised to it. Now deleted — 301 rather than letting it fall through
+# to the 404 catch-all, so any lingering index entries or inbound links land
+# on the real page instead of dead-ending. Both forms, because Cloudflare
+# rewrites the .html URL to the extensionless one before matching.
+/privacy/index_old.html /privacy/ 301
+/privacy/index_old      /privacy/ 301
+
 # 404 fallback
 /* /404.html 404
