@@ -134,6 +134,52 @@ test('auto mode refuses to start without a LinkedIn token', () => {
   assert.match(`${r.stdout}${r.stderr}`, /LINKEDIN_ACCESS_TOKEN/);
 });
 
+test('a SCHEDULED auto run degrades to draft when LinkedIn is unconfigured', () => {
+  // While the Community Management API approval is pending, `auto` with no
+  // token is the expected state. Failing the cron over it would keep this
+  // workflow permanently red, which is how a real failure gets ignored.
+  // The degrade decision happens before any model call, so point the client at
+  // a dead port and cap retries: this asserts the branch, not the pipeline,
+  // and keeps the suite fast and offline.
+  const r = runCli(['publish', '--mode', 'auto', '--trigger', 'schedule'], {
+    GEMINI_API_KEY: 'test-key',
+    GITHUB_TOKEN: 'ghp_test',
+    GEMINI_BASE_URL: 'http://127.0.0.1:1',
+    GEMINI_MAX_RETRIES: '1',
+  });
+  const all = `${r.stdout}${r.stderr}`;
+  assert.notEqual(r.code, 2, 'must not exit as misconfiguration');
+  assert.match(all, /degrading this scheduled run to draft/);
+});
+
+test('a MANUAL auto run still fails hard when LinkedIn is unconfigured', () => {
+  // Someone clicked "Run workflow" asking for a LinkedIn post; silently
+  // downgrading would leave them wondering why nothing was posted.
+  const r = runCli(['publish', '--mode', 'auto', '--trigger', 'workflow_dispatch'], {
+    GEMINI_API_KEY: 'test-key',
+    GITHUB_TOKEN: 'ghp_test',
+  });
+  assert.equal(r.code, 2);
+  assert.match(`${r.stdout}${r.stderr}`, /LINKEDIN_ACCESS_TOKEN/);
+});
+
+test('a scheduled auto run with LinkedIn configured is NOT degraded', () => {
+  const r = runCli(['publish', '--mode', 'auto', '--trigger', 'schedule'], {
+    GEMINI_API_KEY: 'test-key',
+    GITHUB_TOKEN: 'ghp_test',
+    LINKEDIN_ACCESS_TOKEN: 'li-token',
+    LINKEDIN_ORGANIZATION_URN: 'urn:li:organization:75008856',
+    GEMINI_BASE_URL: 'http://127.0.0.1:1',
+    GEMINI_MAX_RETRIES: '1',
+  });
+  assert.equal(/degrading this scheduled run to draft/.test(`${r.stdout}${r.stderr}`), false);
+});
+
+test('the default publish interval is the 48h cadence', () => {
+  const { DEFAULTS } = require('../src/config');
+  assert.equal(DEFAULTS.publishIntervalHours, 48);
+});
+
 test('an invalid mode exits 2 before touching any state', () => {
   const r = runCli(['publish', '--mode', 'yolo'], { GEMINI_API_KEY: 'test-key' });
   assert.equal(r.code, 2);

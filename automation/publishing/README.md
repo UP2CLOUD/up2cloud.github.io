@@ -166,6 +166,14 @@ broken pipeline, and a workflow that is always red is a workflow nobody reads.
 A manual `workflow_dispatch` still fails loudly: you asked for a run, so you
 should hear why you did not get one.
 
+**`auto` without a LinkedIn token degrades rather than fails.** A *scheduled*
+run set to `auto` with no `LINKEDIN_ACCESS_TOKEN` runs in `draft` and logs why.
+The article is still worth generating and shipping; only the promotion step is
+unavailable, and failing the cron every few hours while LinkedIn's Community
+Management API approval is pending would leave this workflow permanently red.
+A manual `workflow_dispatch` asking for `auto` still errors — someone clicked
+that button expecting a LinkedIn post.
+
 Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 
 | Secret | Needed for |
@@ -186,7 +194,7 @@ Variables (→ **Variables**):
 | `GROQ_MODEL` | `llama-3.3-70b-versatile` | fallback model id |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
-| `PUBLISH_INTERVAL_HOURS` | `168` | cadence (weekly) |
+| `PUBLISH_INTERVAL_HOURS` | `48` | cadence (one article every 48h) |
 | `TOPIC_COOLDOWN_DAYS` | `45` | primary-topic repeat window |
 | `AUTOPUBLISH_DISABLED` | — | kill switch |
 | `STATE_BACKEND` | `file` | `file` (git-committed) or `kv` (Cloudflare) |

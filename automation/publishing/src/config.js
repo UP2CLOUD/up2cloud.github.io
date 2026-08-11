@@ -42,7 +42,7 @@ const STAGES = Object.freeze([
 ]);
 
 const DEFAULTS = Object.freeze({
-  publishIntervalHours: 168,
+  publishIntervalHours: 48,
   topicCooldownDays: 45,
   minWords: 1200,
   maxWords: 2200,
@@ -211,6 +211,17 @@ function loadConfig(env = process.env, argv = {}) {
    * Assert the env vars for a capability are present. Called by the stage that
    * actually needs them, so unrelated missing credentials never block a run.
    */
+  /**
+   * Non-throwing counterpart to `requireFor`. Lets a caller ask "is this
+   * wired up?" and choose to degrade, rather than having to catch an
+   * exception to find out.
+   */
+  config.hasCapability = function hasCapability(capability) {
+    const required = CAPABILITY_REQUIREMENTS[capability];
+    if (!required) return false;
+    return required.every((k) => String(env[k] || '').trim());
+  };
+
   config.requireFor = function requireFor(capability) {
     const required = CAPABILITY_REQUIREMENTS[capability];
     if (!required) throw new ConfigError(`Unknown capability "${capability}"`);
