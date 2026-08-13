@@ -21,7 +21,7 @@ const CANDIDATE_SCHEMA_HINT = `{
   ]
 }`;
 
-async function proposeSources({ client, domain, angle, count = 8 }) {
+async function proposeSources({ client, domain, angle, count = 8, avoid = [] }) {
   const preferred = (domain.preferredSources || []).join('\n- ');
   const prompt = [
     `Propose authoritative, currently-existing sources for a technical article.`,
@@ -39,6 +39,15 @@ async function proposeSources({ client, domain, angle, count = 8 }) {
     `  IETF, and original vendor documentation or original research.`,
     `- Never invent a URL to make a point. Fewer, real sources beat more, guessed ones.`,
     `- Do not include marketing pages, listicles, or content farms.`,
+    `- When unsure whether a specific deep-linked page exists, cite the stable`,
+    `  documentation root or index page instead of guessing at a sub-path.`,
+    ...(avoid.length
+      ? [
+          ``,
+          `These URLs were already tried and do not resolve — do not propose them again:`,
+          `- ${avoid.join('\n- ')}`,
+        ]
+      : []),
     ``,
     `Return up to ${count} sources as JSON matching:`,
     CANDIDATE_SCHEMA_HINT,
@@ -126,21 +135,71 @@ function buildResearchContext(verified) {
     .join('\n\n');
 }
 
-async function runResearch({ client, domain, angle, fetchImpl, resolver, logger, maxSources = 6 }) {
-  const candidates = await proposeSources({ client, domain, angle });
-  logger?.info('Proposed research sources', { count: candidates.length });
+/**
+ * Run the propose→verify cycle, retrying when the model's guesses don't hold
+ * up. Real-world model output is noisy: a single hallucinated batch should not
+ * fail the whole run when a second attempt — or the domain's own curated
+ * `preferredSources` roots, which a human already vetted — would clear the bar.
+ */
+async function runResearch({
+  client,
+  domain,
+  angle,
+  fetchImpl,
+  resolver,
+  logger,
+  maxSources = 6,
+  maxAttempts = 3,
+}) {
+  const triedUrls = new Set();
+  const allCandidates = [];
+  let verified = [];
+  let rejected = [];
 
-  const { verified, rejected } = await verifySources(candidates, {
-    fetchImpl,
-    resolver,
-    maxSources,
-    logger,
-  });
-  logger?.info('Verified research sources', { verified: verified.length, rejected: rejected.length });
+  for (let attempt = 1; attempt <= maxAttempts && verified.length < 3; attempt++) {
+    const proposed = await proposeSources({
+      client,
+      domain,
+      angle,
+      avoid: rejected.map((r) => r.url),
+    });
+    logger?.info('Proposed research sources', { attempt, count: proposed.length });
+
+    // From the second attempt on, backstop the model with the domain's own
+    // curated roots — stable documentation entry points that are far more
+    // likely to resolve than a model-guessed deep link.
+    const fallback =
+      attempt > 1
+        ? (domain.preferredSources || [])
+            .filter((url) => !triedUrls.has(url))
+            .map((url) => ({ url, why: 'Curated preferred source root' }))
+        : [];
+
+    const round = [...proposed, ...fallback].filter((c) => {
+      if (triedUrls.has(c.url)) return false;
+      triedUrls.add(c.url);
+      return true;
+    });
+    allCandidates.push(...round);
+
+    const result = await verifySources(round, {
+      fetchImpl,
+      resolver,
+      maxSources: Math.max(maxSources - verified.length, 0),
+      logger,
+    });
+    verified = verified.concat(result.verified);
+    rejected = rejected.concat(result.rejected);
+    logger?.info('Verified research sources', {
+      attempt,
+      verified: verified.length,
+      rejected: rejected.length,
+    });
+  }
 
   if (verified.length < 3) {
     throw new Error(
-      `Only ${verified.length} of ${candidates.length} proposed sources could be verified ` +
+      `Only ${verified.length} of ${allCandidates.length} proposed sources could be verified ` +
         `(need at least 3). Rejected: ${rejected.map((r) => `${r.url} (${r.reason})`).join('; ')}`,
     );
   }
