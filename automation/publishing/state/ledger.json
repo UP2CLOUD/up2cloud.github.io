@@ -1,9 +1,127 @@
 {
-  "version": 173,
-  "updatedAt": "2026-08-13T19:06:43.116Z",
+  "version": 185,
+  "updatedAt": "2026-08-13T19:16:31.351Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260813191530_9726b4",
+      "mode": "dry-run",
+      "trigger": "workflow_dispatch",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-13T19:15:30.952Z",
+      "updatedAt": "2026-08-13T19:16:31.348Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:15:30.955Z",
+          "completedAt": "2026-08-13T19:15:30.974Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:15:30.977Z",
+          "completedAt": "2026-08-13T19:15:35.314Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 125802
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:15:35.315Z",
+          "completedAt": "2026-08-13T19:15:45.463Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 1032
+          }
+        },
+        "draft": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:15:45.465Z",
+          "completedAt": "2026-08-13T19:16:31.348Z",
+          "error": "Groq API 400: {\"error\":{\"message\":\"Failed to generate JSON. Please adjust your prompt. See 'failed_generation' for more details.\",\"type\":\"invalid_request_error\",\"code\":\"json_validate_failed\",\"failed_generation\":\"{\\n  \\\"title\\\": \\\"Cross-Cloud Identity Federation\\\",\\n   \\\"metaTitle\\\": \\\"Cross-Cloud Identity Federation — UP2CLOUD\\\",\\n   \\\"excerpt\\\": \\\"Learn how to implement cross-cloud identity federation and work",
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260813190639_890c09",
       "mode": "dry-run",
