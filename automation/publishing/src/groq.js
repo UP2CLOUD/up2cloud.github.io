@@ -102,7 +102,18 @@ class GroqClient {
         }
 
         const errText = await res.text().catch(() => '');
-        const retryable = RETRYABLE_STATUS.has(res.status);
+        // Groq's json_object mode occasionally emits output that fails its own
+        // schema validation (400 `json_validate_failed`) — a transient
+        // generation hiccup, not a malformed request, so it is worth one more
+        // attempt exactly like a 429/5xx.
+        let errCode;
+        try {
+          errCode = JSON.parse(errText)?.error?.code;
+        } catch {
+          // Non-JSON error body; fall through with errCode undefined.
+        }
+        const transientJsonFailure = res.status === 400 && errCode === 'json_validate_failed';
+        const retryable = RETRYABLE_STATUS.has(res.status) || transientJsonFailure;
         lastError = new GroqError(
           `Groq API ${res.status}: ${errText.slice(0, 400)}`,
           { status: res.status, requestId, retryable },
