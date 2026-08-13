@@ -2,6 +2,7 @@
 
 const { slugify } = require('../security/paths');
 const { buildResearchContext } = require('./research');
+const { checkWordCount } = require('../quality/gates');
 
 /**
  * Brief → outline/metadata → draft → review.
@@ -147,46 +148,77 @@ async function createOutlineAndMetadata({ client, domain, angle, brief, minWords
   return meta;
 }
 
-/** Stage 4b — the draft itself. */
+/**
+ * Stage 4b — the draft itself.
+ *
+ * The word-count and JSON-validity gates in `quality/gates.js` are load-bearing
+ * and never relaxed — but a single short or malformed generation shouldn't
+ * fail the whole run when a second attempt, told exactly what was wrong with
+ * the first, would clear the bar. Groq's smaller model is more prone to both
+ * than Gemini, which is when this actually matters.
+ */
 async function createDraft({ client, domain, brief, outline, research, minWords, maxWords }) {
   const sourceList = research.sources.map((s) => `- ${s.url} — ${s.title}`).join('\n');
 
-  const prompt = [
-    `Write the full article body in Markdown.`,
-    ``,
-    `Title (do NOT repeat as an H1 — the page template renders it): ${outline.title}`,
-    `Thesis: ${brief.thesis}`,
-    ``,
-    `Outline:`,
-    outline.sections.map((s, i) => `${i + 1}. ${s.heading}\n   - ${(s.points || []).join('\n   - ')}`).join('\n'),
-    ``,
-    `Verified sources you may cite (use inline markdown links):`,
-    sourceList,
-    ``,
-    `Source material:`,
-    researchContextFor(client, research),
-    ``,
-    `Requirements:`,
-    `- ${minWords}-${maxWords} words of prose (code blocks do not count).`,
-    `- Start with H2 (##). The page renders the H1 itself.`,
-    `- Practical and specific: real commands, real configuration, real trade-offs.`,
-    `- Include at least one fenced code block with a language annotation.`,
-    `  YAML must use spaces, never tabs. JSON must be valid JSON.`,
-    `- Cite sources inline as [descriptive text](https://…) using ONLY the URLs listed above.`,
-    `- End with a short section on what to do next — practical, not a sales pitch.`,
-    `- Do NOT include a "Conclusion" heading that merely restates the intro.`,
-    ``,
-    `Output ONLY the Markdown body. No front matter, no code fence around the whole thing.`,
-  ].join('\n');
+  const buildPrompt = (feedback) =>
+    [
+      `Write the full article body in Markdown.`,
+      ``,
+      `Title (do NOT repeat as an H1 — the page template renders it): ${outline.title}`,
+      `Thesis: ${brief.thesis}`,
+      ``,
+      `Outline:`,
+      outline.sections.map((s, i) => `${i + 1}. ${s.heading}\n   - ${(s.points || []).join('\n   - ')}`).join('\n'),
+      ``,
+      `Verified sources you may cite (use inline markdown links):`,
+      sourceList,
+      ``,
+      `Source material:`,
+      researchContextFor(client, research),
+      ``,
+      `Requirements:`,
+      `- ${minWords}-${maxWords} words of prose (code blocks do not count). This is a hard minimum —`,
+      `  a short article will be rejected. Go deeper on each outline point rather than padding.`,
+      `- Start with H2 (##). The page renders the H1 itself.`,
+      `- Practical and specific: real commands, real configuration, real trade-offs.`,
+      `- Include at least one fenced code block with a language annotation.`,
+      `  YAML must use spaces, never tabs. A \`\`\`json block MUST be strictly valid JSON — no`,
+      `  \`//\` or \`/* */\` comments (JSON has no comment syntax). Annotate in prose around the`,
+      `  block instead, or use a non-JSON language tag if you need inline comments.`,
+      `- Cite sources inline as [descriptive text](https://…) using ONLY the URLs listed above.`,
+      `- End with a short section on what to do next — practical, not a sales pitch.`,
+      `- Do NOT include a "Conclusion" heading that merely restates the intro.`,
+      ...(feedback ? ['', feedback] : []),
+      ``,
+      `Output ONLY the Markdown body. No front matter, no code fence around the whole thing.`,
+    ].join('\n');
 
-  const { text } = await client.messages({
-    system: buildSystemPrompt(),
-    messages: [{ role: 'user', content: prompt }],
-    maxTokens: isTokenConstrained(client) ? 6000 : 16_000,
-    temperature: 0.6,
-  });
+  const maxTokens = isTokenConstrained(client) ? 6000 : 16_000;
+  const maxAttempts = 2;
+  let body = '';
+  let words = 0;
 
-  return stripWrappingFence(text.trim());
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const feedback =
+      attempt > 1
+        ? `Your previous attempt was only ${words} words, below the required ${minWords}-${maxWords}. ` +
+          `Substantially expand: more depth per section, more concrete examples and command output, ` +
+          `longer practical explanations. Do not pad with repetition or filler.`
+        : null;
+
+    const { text } = await client.messages({
+      system: buildSystemPrompt(),
+      messages: [{ role: 'user', content: buildPrompt(feedback) }],
+      maxTokens,
+      temperature: 0.6,
+    });
+
+    body = stripWrappingFence(text.trim());
+    words = checkWordCount(body, { minWords, maxWords }).words;
+    if (words >= minWords) break;
+  }
+
+  return body;
 }
 
 /** Models sometimes wrap the whole body in ```markdown … ```. */
