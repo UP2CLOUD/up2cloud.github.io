@@ -1,9 +1,110 @@
 {
-  "version": 155,
-  "updatedAt": "2026-08-13T12:42:38.067Z",
+  "version": 163,
+  "updatedAt": "2026-08-13T18:45:42.951Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260813184537_73c71b",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-13T18:45:37.461Z",
+      "updatedAt": "2026-08-13T18:45:42.949Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T18:45:37.464Z",
+          "completedAt": "2026-08-13T18:45:37.481Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-13T18:45:37.483Z",
+          "completedAt": "2026-08-13T18:45:42.949Z",
+          "error": "Only 2 of 8 proposed sources could be verified (need at least 3). Rejected: https://docs.aws.amazon.com/wellarchitected/latest/frameworks/federation.html (HTTP 404); https://cloud.google.com/iam/docs/workload-identity (HTTP 404); https://learn.microsoft.com/azure/active-directory/develop/workload-identity (HTTP 404); https://cloud.google.com/architecture/framework/identity (HTTP 404); https://www.cncf.io/blog/2022/06/14/cncf-announces-availability-of-identity-federation-whitepaper/ (HTTP 404); https://www.nist.gov/publications/guideline-federal-identity-credential-access-management (HTTP 404)",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260813124232_2dc9cf",
       "mode": "draft",
