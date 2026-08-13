@@ -1,9 +1,140 @@
 {
-  "version": 185,
-  "updatedAt": "2026-08-13T19:16:31.351Z",
+  "version": 201,
+  "updatedAt": "2026-08-13T19:23:35.210Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260813192028_a5caa7",
+      "mode": "dry-run",
+      "trigger": "workflow_dispatch",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-13T19:20:28.709Z",
+      "updatedAt": "2026-08-13T19:23:35.207Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:20:28.713Z",
+          "completedAt": "2026-08-13T19:20:28.729Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:20:28.733Z",
+          "completedAt": "2026-08-13T19:20:35.999Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 100050
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:20:36.002Z",
+          "completedAt": "2026-08-13T19:20:37.821Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 1942
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:20:37.823Z",
+          "completedAt": "2026-08-13T19:22:18.708Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 8348
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:22:18.710Z",
+          "completedAt": "2026-08-13T19:23:13.149Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 12118
+          }
+        },
+        "validate": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-13T19:23:13.151Z",
+          "completedAt": "2026-08-13T19:23:35.207Z",
+          "error": "Quality gates blocked publication:\n  [word_count] Article is 772 words, below minimum 1200\n  [code] Invalid JSON code block: Unexpected token '/', \"// AWS IAM\"... is not valid JSON\n  [review] The article includes code examples that may not be up-to-date or compatible with the latest versions of the cloud providers' APIs and tools.",
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260813191530_9726b4",
       "mode": "dry-run",
