@@ -7175,22 +7175,72 @@ Critical rules:
     askAI(q);
   }
 
-  /* ── Quick reply suggestions after bot responses ── */
-  const QUICK_REPLY_SETS = [
-    { match: /finops|cost|saving|bill|spend|reduc/i,        suggestions: ['How much can I save?', 'Book free audit', 'Tell me about FinOps'] },
-    { match: /openclaw|incident|resolution|alert/i,         suggestions: ['How does OpenClaw work?', 'See AI solutions', 'Get OpenClaw setup'] },
-    { match: /offshore|apac|india|team|engineer/i,          suggestions: ['How fast can you start?', 'APAC team pricing', 'Book free audit'] },
-    { match: /devops|kubernetes|terraform|pipeline|ci.cd/i,  suggestions: ['What stack do you use?', 'DevOps info', 'Book free audit'] },
-    { match: /security|cyber|iso|gdpr|compliance/i,         suggestions: ['ISO 27001 process?', 'Security audit info', 'Contact Cesar'] },
-    { match: /agent|ai team|autonomous|workflow/i,           suggestions: ['What agents do you offer?', 'AI team pricing', 'See AI solutions'] },
-    { match: /certif|aws|gcp|azure|cloud/i,                 suggestions: ['Cloud migration?', 'Multi-cloud strategy', 'Book free audit'] },
+  /* ── Quick reply suggestions after bot responses ──
+     Keyed by topic, translated per language so the chips match whatever
+     language the bot just replied in (mirrors localStorage 'up2cloud-lang',
+     the same key the language switcher writes to). */
+  const QUICK_REPLY_KEYS = [
+    { key: 'finops',   match: /finops|cost|saving|bill|spend|reduc/i },
+    { key: 'openclaw', match: /openclaw|incident|resolution|alert/i },
+    { key: 'offshore', match: /offshore|apac|india|team|engineer/i },
+    { key: 'devops',   match: /devops|kubernetes|terraform|pipeline|ci.cd/i },
+    { key: 'security', match: /security|cyber|iso|gdpr|compliance/i },
+    { key: 'agent',    match: /agent|ai team|autonomous|workflow/i },
+    { key: 'cloud',    match: /certif|aws|gcp|azure|cloud/i },
   ];
-  const DEFAULT_SUGGESTIONS = ['Book free audit', 'What services do you offer?', 'Do you work remotely?'];
+  const QUICK_REPLY_I18N = {
+    en: {
+      finops:   ['How much can I save?', 'Book free audit', 'Tell me about FinOps'],
+      openclaw: ['How does OpenClaw work?', 'See AI solutions', 'Get OpenClaw setup'],
+      offshore: ['How fast can you start?', 'APAC team pricing', 'Book free audit'],
+      devops:   ['What stack do you use?', 'DevOps info', 'Book free audit'],
+      security: ['ISO 27001 process?', 'Security audit info', 'Contact Cesar'],
+      agent:    ['What agents do you offer?', 'AI team pricing', 'See AI solutions'],
+      cloud:    ['Cloud migration?', 'Multi-cloud strategy', 'Book free audit'],
+      default:  ['Book free audit', 'What services do you offer?', 'Do you work remotely?'],
+    },
+    pt: {
+      finops:   ['Quanto posso economizar?', 'Agendar auditoria gratuita', 'Fale sobre FinOps'],
+      openclaw: ['Como funciona o OpenClaw?', 'Ver soluções de IA', 'Configurar o OpenClaw'],
+      offshore: ['Quão rápido vocês começam?', 'Preços do time APAC', 'Agendar auditoria gratuita'],
+      devops:   ['Qual stack vocês usam?', 'Informações de DevOps', 'Agendar auditoria gratuita'],
+      security: ['Processo ISO 27001?', 'Info sobre auditoria de segurança', 'Falar com o Cesar'],
+      agent:    ['Quais agentes vocês oferecem?', 'Preço do time de IA', 'Ver soluções de IA'],
+      cloud:    ['Migração para a nuvem?', 'Estratégia multi-cloud', 'Agendar auditoria gratuita'],
+      default:  ['Agendar auditoria gratuita', 'Quais serviços vocês oferecem?', 'Vocês trabalham remotamente?'],
+    },
+    es: {
+      finops:   ['¿Cuánto puedo ahorrar?', 'Reservar auditoría gratuita', 'Cuéntame sobre FinOps'],
+      openclaw: ['¿Cómo funciona OpenClaw?', 'Ver soluciones de IA', 'Configurar OpenClaw'],
+      offshore: ['¿Qué tan rápido pueden empezar?', 'Precios del equipo APAC', 'Reservar auditoría gratuita'],
+      devops:   ['¿Qué stack usan?', 'Información de DevOps', 'Reservar auditoría gratuita'],
+      security: ['¿Proceso ISO 27001?', 'Info de auditoría de seguridad', 'Contactar a Cesar'],
+      agent:    ['¿Qué agentes ofrecen?', 'Precio del equipo de IA', 'Ver soluciones de IA'],
+      cloud:    ['¿Migración a la nube?', 'Estrategia multi-nube', 'Reservar auditoría gratuita'],
+      default:  ['Reservar auditoría gratuita', '¿Qué servicios ofrecen?', '¿Trabajan de forma remota?'],
+    },
+    fr: {
+      finops:   ['Combien puis-je économiser ?', 'Réserver un audit gratuit', 'Parlez-moi de FinOps'],
+      openclaw: ['Comment fonctionne OpenClaw ?', 'Voir les solutions IA', 'Configurer OpenClaw'],
+      offshore: ['À quelle vitesse pouvez-vous démarrer ?', 'Tarifs équipe APAC', 'Réserver un audit gratuit'],
+      devops:   ['Quelle stack utilisez-vous ?', 'Infos DevOps', 'Réserver un audit gratuit'],
+      security: ['Processus ISO 27001 ?', 'Infos audit de sécurité', 'Contacter Cesar'],
+      agent:    ['Quels agents proposez-vous ?', 'Tarif équipe IA', 'Voir les solutions IA'],
+      cloud:    ['Migration vers le cloud ?', 'Stratégie multi-cloud', 'Réserver un audit gratuit'],
+      default:  ['Réserver un audit gratuit', 'Quels services proposez-vous ?', 'Travaillez-vous à distance ?'],
+    },
+  };
+
+  function currentChatLang() {
+    const l = (localStorage.getItem('up2cloud-lang') || 'en').toLowerCase();
+    return QUICK_REPLY_I18N[l] ? l : 'en';
+  }
 
   function addQuickReplies(botReply) {
-    let suggestions = DEFAULT_SUGGESTIONS;
-    for (const s of QUICK_REPLY_SETS) {
-      if (s.match.test(botReply)) { suggestions = s.suggestions; break; }
+    const set = QUICK_REPLY_I18N[currentChatLang()];
+    let suggestions = set.default;
+    for (const s of QUICK_REPLY_KEYS) {
+      if (s.match.test(botReply)) { suggestions = set[s.key]; break; }
     }
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem';
