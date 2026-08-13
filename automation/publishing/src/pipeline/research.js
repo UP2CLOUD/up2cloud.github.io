@@ -128,10 +128,19 @@ function extractTitle(html) {
 /**
  * Build the untrusted-source block handed to later stages. Each source is
  * individually fenced so the model sees clear per-document boundaries.
+ *
+ * `maxSourceLength` lets a caller re-embed a shorter excerpt per source
+ * (e.g. when a token-constrained provider is active) without re-fetching —
+ * the full text stays on `research.sources[i].text` either way.
  */
-function buildResearchContext(verified) {
+function buildResearchContext(verified, { maxSourceLength } = {}) {
   return verified
-    .map((s, i) => wrapUntrusted(`source ${i + 1}: ${s.url}`, `${s.title}\n\n${s.text}`))
+    .map((s, i) =>
+      wrapUntrusted(
+        `source ${i + 1}: ${s.url}`,
+        `${s.title}\n\n${maxSourceLength ? s.text.slice(0, maxSourceLength) : s.text}`,
+      ),
+    )
     .join('\n\n');
 }
 

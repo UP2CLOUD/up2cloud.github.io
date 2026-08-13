@@ -1,6 +1,7 @@
 'use strict';
 
 const { slugify } = require('../security/paths');
+const { buildResearchContext } = require('./research');
 
 /**
  * Brief → outline/metadata → draft → review.
@@ -33,6 +34,25 @@ function buildSystemPrompt() {
   return HOUSE_RULES;
 }
 
+/**
+ * Groq's on-demand tier tops out at ~12k tokens/minute, and the full research
+ * excerpts alone can exceed that before a single completion token is spent —
+ * that is what actually failed here. Gemini's context window has no such
+ * ceiling, so only shrink the embedded excerpts and the requested completion
+ * room when Groq is the active provider. The provider switch is sticky for
+ * the process, so a stage that switches mid-run is caught by this too.
+ */
+const GROQ_SOURCE_EXCERPT_LENGTH = 2_000;
+
+function isTokenConstrained(client) {
+  return client.activeProvider === 'groq';
+}
+
+function researchContextFor(client, research) {
+  if (!isTokenConstrained(client)) return research.context;
+  return buildResearchContext(research.sources, { maxSourceLength: GROQ_SOURCE_EXCERPT_LENGTH });
+}
+
 /** Stage 3 — factual brief grounded strictly in verified sources. */
 async function createBrief({ client, domain, angle, research }) {
   const prompt = [
@@ -43,7 +63,7 @@ async function createBrief({ client, domain, angle, research }) {
     ``,
     `Below are verified sources. Ground every factual claim in them.`,
     ``,
-    research.context,
+    researchContextFor(client, research),
     ``,
     `Return JSON:`,
     `{`,
@@ -61,6 +81,7 @@ async function createBrief({ client, domain, angle, research }) {
     system: buildSystemPrompt(),
     prompt,
     temperature: 0.3,
+    maxTokens: isTokenConstrained(client) ? 1500 : 8192,
     validate: (obj) => {
       const problems = [];
       if (!obj.thesis) problems.push('missing thesis');
@@ -143,7 +164,7 @@ async function createDraft({ client, domain, brief, outline, research, minWords,
     sourceList,
     ``,
     `Source material:`,
-    research.context,
+    researchContextFor(client, research),
     ``,
     `Requirements:`,
     `- ${minWords}-${maxWords} words of prose (code blocks do not count).`,
@@ -161,7 +182,7 @@ async function createDraft({ client, domain, brief, outline, research, minWords,
   const { text } = await client.messages({
     system: buildSystemPrompt(),
     messages: [{ role: 'user', content: prompt }],
-    maxTokens: 16_000,
+    maxTokens: isTokenConstrained(client) ? 6000 : 16_000,
     temperature: 0.6,
   });
 
@@ -229,7 +250,7 @@ async function reviewDraft({ client, draft, brief, research, kind = 'technical' 
     system: buildSystemPrompt(),
     prompt,
     temperature: 0.2,
-    maxTokens: 6000,
+    maxTokens: isTokenConstrained(client) ? 2000 : 6000,
     validate: (obj) => (Array.isArray(obj.findings) ? [] : ['findings must be an array']),
   });
 }
@@ -259,7 +280,7 @@ async function reviseDraft({ client, draft, findings, research }) {
   const { text } = await client.messages({
     system: buildSystemPrompt(),
     messages: [{ role: 'user', content: prompt }],
-    maxTokens: 16_000,
+    maxTokens: isTokenConstrained(client) ? 6000 : 16_000,
     temperature: 0.4,
   });
 
