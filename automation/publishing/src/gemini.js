@@ -16,6 +16,14 @@
 
 const RETRYABLE_STATUS = new Set([408, 409, 429, 500, 502, 503, 504]);
 
+/**
+ * Ceiling for any single retry sleep, regardless of what the server asks for
+ * via Retry-After. A quota-reset window can be hours away; sleeping that long
+ * would run the CI job past its own timeout instead of failing with a clear,
+ * actionable error. Shared with groq.js, which hits the identical pattern.
+ */
+const MAX_BACKOFF_MS = 30_000;
+
 class GeminiError extends Error {
   constructor(message, { status, requestId, retryable, fallbackEligible } = {}) {
     super(message);
@@ -129,10 +137,15 @@ class GeminiClient {
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
 
+        // Retry-After can reflect a long quota-reset window rather than a
+        // short cooldown; honouring it verbatim would sleep the job past its
+        // own CI timeout instead of failing with a clear error, so cap it
+        // exactly like the exponential fallback (see groq.js for the same
+        // fix and the incident that prompted it).
         const retryAfter = Number(res.headers.get('retry-after'));
         const backoff = Number.isFinite(retryAfter) && retryAfter > 0
-          ? retryAfter * 1000
-          : Math.min(2 ** attempt * 1000, 30_000) + Math.floor(Math.random() * 500);
+          ? Math.min(retryAfter * 1000, MAX_BACKOFF_MS)
+          : Math.min(2 ** attempt * 1000, MAX_BACKOFF_MS) + Math.floor(Math.random() * 500);
         this.logger?.warn('Gemini call failed, retrying', {
           status: res.status,
           attempt: attempt + 1,
@@ -152,7 +165,7 @@ class GeminiClient {
           fallbackEligible: true,
         });
         if (attempt === this.maxRetries) throw lastError;
-        await sleep(Math.min(2 ** attempt * 1000, 30_000));
+        await sleep(Math.min(2 ** attempt * 1000, MAX_BACKOFF_MS));
       } finally {
         clearTimeout(timer);
       }
@@ -223,4 +236,4 @@ function extractJsonObject(text) {
   throw new Error('unbalanced JSON object');
 }
 
-module.exports = { GeminiClient, GeminiError, extractJsonObject, RETRYABLE_STATUS };
+module.exports = { GeminiClient, GeminiError, extractJsonObject, RETRYABLE_STATUS, MAX_BACKOFF_MS };
