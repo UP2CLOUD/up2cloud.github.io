@@ -52,6 +52,7 @@ const DEFAULTS = Object.freeze({
   geminiModel: 'gemini-2.5-pro',
   geminiApiVersion: 'v1beta',
   groqModel: 'llama-3.3-70b-versatile',
+  cerebrasModel: 'llama-3.3-70b',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -80,6 +81,7 @@ class ConfigError extends Error {
 const CAPABILITY_REQUIREMENTS = Object.freeze({
   gemini: ['GEMINI_API_KEY'],
   groq: ['GROQ_API_KEY'],
+  cerebras: ['CEREBRAS_API_KEY'],
   model: [],
   linkedin: ['LINKEDIN_ACCESS_TOKEN', 'LINKEDIN_ORGANIZATION_URN'],
   linkedinOAuth: ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET'],
@@ -156,6 +158,19 @@ function loadConfig(env = process.env, argv = {}) {
       baseUrl: (env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1').replace(/\/+$/, ''),
       maxRetries: parseIntOr(env.GROQ_MAX_RETRIES, 4),
       maxOutputTokens: parseIntOr(env.GROQ_MAX_OUTPUT_TOKENS, 8192),
+      envPrefix: 'GROQ',
+    },
+
+    // Open-source-model fallback (Cerebras hosts Llama free of charge, with
+    // its own separate quota from Gemini/Groq) — same OpenAI-compatible
+    // client as Groq, just pointed at a different host.
+    cerebras: {
+      apiKey: env.CEREBRAS_API_KEY || '',
+      model: (env.CEREBRAS_MODEL || DEFAULTS.cerebrasModel).trim(),
+      baseUrl: (env.CEREBRAS_BASE_URL || 'https://api.cerebras.ai/v1').replace(/\/+$/, ''),
+      maxRetries: parseIntOr(env.CEREBRAS_MAX_RETRIES, 4),
+      maxOutputTokens: parseIntOr(env.CEREBRAS_MAX_OUTPUT_TOKENS, 8192),
+      envPrefix: 'CEREBRAS',
     },
 
     linkedin: {
@@ -226,9 +241,9 @@ function loadConfig(env = process.env, argv = {}) {
     const required = CAPABILITY_REQUIREMENTS[capability];
     if (!required) throw new ConfigError(`Unknown capability "${capability}"`);
     if (capability === 'model') {
-      if (!config.gemini.apiKey && !config.groq.apiKey) {
+      if (!config.gemini.apiKey && !config.groq.apiKey && !config.cerebras.apiKey) {
         throw new ConfigError(
-          'Missing model credentials: set GEMINI_API_KEY or GROQ_API_KEY',
+          'Missing model credentials: set GEMINI_API_KEY, GROQ_API_KEY, or CEREBRAS_API_KEY',
         );
       }
       return true;

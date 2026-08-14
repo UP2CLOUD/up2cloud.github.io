@@ -1,7 +1,10 @@
 'use strict';
 
 /**
- * Groq OpenAI-compatible chat client.
+ * Generic OpenAI-compatible chat client (Groq, Cerebras, and any other host
+ * that speaks the `/chat/completions` dialect — only `baseUrl`/`model`/
+ * `apiKey` differ between them). Named GroqClient because that's the first
+ * provider it served; reused as-is for Cerebras via a different config block.
  *
  * It mirrors GeminiClient's narrow `messages()` / `json()` interface so the
  * pipeline can switch providers without changing any generation stage.
@@ -10,12 +13,17 @@
 const { extractJsonObject, RETRYABLE_STATUS, MAX_BACKOFF_MS } = require('./gemini');
 
 class GroqError extends Error {
-  constructor(message, { status, requestId, retryable } = {}) {
+  constructor(message, { status, requestId, retryable, fallbackEligible } = {}) {
     super(message);
     this.name = 'GroqError';
     this.status = status;
     this.requestId = requestId;
     this.retryable = Boolean(retryable);
+    // Whether ModelClient should try the next provider in the chain once
+    // local retries are exhausted. Rate limits and outages are — the model
+    // gave a bad/unsafe answer is not, because another provider would likely
+    // do the same.
+    this.fallbackEligible = Boolean(fallbackEligible);
   }
 }
 
@@ -45,8 +53,12 @@ class GroqClient {
     this.fetchImpl = fetchImpl || globalThis.fetch;
     this.logger = logger;
     this.sleep = sleepImpl || sleep;
-    if (!this.apiKey) throw new GroqError('GROQ_API_KEY is required');
-    if (!this.model) throw new GroqError('GROQ_MODEL is required');
+    // Reused for any OpenAI-compatible host (Groq, Cerebras, ...); the env
+    // var prefix in error text follows the caller so a Cerebras misconfig
+    // doesn't point someone at the wrong variable.
+    const envPrefix = (config.envPrefix || 'GROQ').toUpperCase();
+    if (!this.apiKey) throw new GroqError(`${envPrefix}_API_KEY is required`);
+    if (!this.model) throw new GroqError(`${envPrefix}_MODEL is required`);
   }
 
   async messages({
@@ -116,7 +128,7 @@ class GroqClient {
         const retryable = RETRYABLE_STATUS.has(res.status) || transientJsonFailure;
         lastError = new GroqError(
           `Groq API ${res.status}: ${errText.slice(0, 400)}`,
-          { status: res.status, requestId, retryable },
+          { status: res.status, requestId, retryable, fallbackEligible: retryable },
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
 
@@ -144,6 +156,7 @@ class GroqClient {
         }
         lastError = new GroqError(`Groq request failed: ${err.message}`, {
           retryable: true,
+          fallbackEligible: true,
         });
         if (attempt === this.maxRetries) throw lastError;
         await this.sleep(Math.min(2 ** attempt * 1000, MAX_BACKOFF_MS));
