@@ -52,7 +52,7 @@ const DEFAULTS = Object.freeze({
   geminiModel: 'gemini-2.5-pro',
   geminiApiVersion: 'v1beta',
   groqModel: 'llama-3.3-70b-versatile',
-  cerebrasModel: 'llama-3.3-70b',
+  cerebrasModel: 'gpt-oss-120b',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -161,9 +161,11 @@ function loadConfig(env = process.env, argv = {}) {
       envPrefix: 'GROQ',
     },
 
-    // Open-source-model fallback (Cerebras hosts Llama free of charge, with
-    // its own separate quota from Gemini/Groq) — same OpenAI-compatible
-    // client as Groq, just pointed at a different host.
+    // Open-source-model fallback: Cerebras hosts open-weight models free of
+    // charge, with its own quota separate from Gemini/Groq. Same
+    // OpenAI-compatible client as Groq, just pointed at a different host.
+    // The catalog is account-scoped — check GET /v1/models before changing
+    // the default model.
     cerebras: {
       apiKey: env.CEREBRAS_API_KEY || '',
       model: (env.CEREBRAS_MODEL || DEFAULTS.cerebrasModel).trim(),

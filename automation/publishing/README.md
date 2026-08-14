@@ -180,7 +180,7 @@ Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 |---|---|
 | `GEMINI_API_KEY` | primary generation provider |
 | `GROQ_API_KEY` | free-tier fallback; can also run without Gemini |
-| `CEREBRAS_API_KEY` | free open-source-model fallback (Llama on Cerebras); can also run alone |
+| `CEREBRAS_API_KEY` | free open-source-model fallback (gpt-oss-120b on Cerebras); can also run alone |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn posting |
 | `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_KV_NAMESPACE_ID` | only if `STATE_BACKEND=kv` |
 
@@ -193,7 +193,7 @@ Variables (→ **Variables**):
 | `PUBLISH_MODE` | `draft` | `dry-run` \| `draft` \| `review` \| `auto` |
 | `GEMINI_MODEL` | `gemini-2.5-pro` | model id, rolled forward without a code change |
 | `GROQ_MODEL` | `llama-3.3-70b-versatile` | fallback model id |
-| `CEREBRAS_MODEL` | `llama-3.3-70b` | second fallback model id |
+| `CEREBRAS_MODEL` | `gpt-oss-120b` | second fallback model id — check `GET /v1/models` on the account's key before changing, Cerebras' catalog is account-scoped |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
 | `PUBLISH_INTERVAL_HOURS` | `48` | cadence (one article every 48h) |
