@@ -1,16 +1,127 @@
 {
-  "version": 214,
-  "updatedAt": "2026-08-13T20:15:09.517Z",
+  "version": 226,
+  "updatedAt": "2026-08-14T01:02:23.582Z",
   "lastSuccessfulPublicationAt": null,
-  "lock": {
-    "owner": "31736120782-c3474d86",
-    "reason": "publish:dry-run",
-    "acquiredAt": "2026-08-13T19:30:09.288Z",
-    "expiresAt": "2026-08-13T21:00:09.517Z",
-    "heartbeatAt": "2026-08-13T20:15:09.517Z",
-    "stolenFrom": null
-  },
+  "lock": null,
   "runs": [
+    {
+      "runId": "run_20260814005930_4b6d8d",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-14T00:59:30.552Z",
+      "updatedAt": "2026-08-14T01:02:23.580Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-14T00:59:30.556Z",
+          "completedAt": "2026-08-14T00:59:30.575Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 653
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-14T00:59:30.580Z",
+          "completedAt": "2026-08-14T00:59:35.381Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 100116
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-14T00:59:35.441Z",
+          "completedAt": "2026-08-14T00:59:45.542Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 2347
+          }
+        },
+        "draft": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-14T00:59:45.544Z",
+          "completedAt": "2026-08-14T01:02:23.580Z",
+          "error": "Groq API 429: {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kqwwn9brebrskkp1h8899r88` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99147, Requested 10392. Please try again in 2h17m21.696s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260813193009_427309",
       "mode": "dry-run",
