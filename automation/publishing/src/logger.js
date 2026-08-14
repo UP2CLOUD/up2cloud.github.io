@@ -22,6 +22,7 @@ const SECRET_ENV_KEYS = [
   'CLOUDFLARE_ACCOUNT_ID',
   'BREVO_API_KEY',
   'GROQ_API_KEY',
+  'CEREBRAS_API_KEY',
 ];
 
 /** Secrets shorter than this are too generic to scrub without mangling logs. */

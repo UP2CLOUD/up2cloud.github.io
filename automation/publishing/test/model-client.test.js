@@ -29,6 +29,15 @@ function config() {
       baseUrl: 'https://api.groq.com/openai/v1',
       maxRetries: 0,
       maxOutputTokens: 8192,
+      envPrefix: 'GROQ',
+    },
+    cerebras: {
+      apiKey: 'cerebras-key',
+      model: 'llama-3.3-70b',
+      baseUrl: 'https://api.cerebras.ai/v1',
+      maxRetries: 0,
+      maxOutputTokens: 8192,
+      envPrefix: 'CEREBRAS',
     },
   };
 }
@@ -107,6 +116,76 @@ test('model/schema errors do not silently switch providers', async () => {
   await assert.rejects(() => client.json({}), /schema validation/);
   assert.equal(client.activeProvider, 'gemini');
   assert.equal(groqCalls, 0);
+});
+
+test('cascades through all three providers when Gemini and Groq are both exhausted', async () => {
+  let geminiCalls = 0;
+  let groqCalls = 0;
+  let cerebrasCalls = 0;
+  const gemini = {
+    messages: async () => {
+      geminiCalls += 1;
+      throw new GeminiError('quota exceeded', { status: 429, fallbackEligible: true });
+    },
+  };
+  const groq = {
+    messages: async () => {
+      groqCalls += 1;
+      const err = new Error('Groq API 429: rate_limit_exceeded');
+      err.status = 429;
+      err.fallbackEligible = true;
+      throw err;
+    },
+  };
+  const cerebras = {
+    messages: async () => {
+      cerebrasCalls += 1;
+      return { text: 'cerebras result' };
+    },
+  };
+  const client = new ModelClient(config(), { clients: { gemini, groq, cerebras } });
+
+  assert.equal((await client.messages({})).text, 'cerebras result');
+  assert.equal(client.activeProvider, 'cerebras');
+  // Sticky: the next call skips straight past the two known-failing providers.
+  assert.equal((await client.messages({})).text, 'cerebras result');
+  assert.equal(geminiCalls, 1);
+  assert.equal(groqCalls, 1);
+  assert.equal(cerebrasCalls, 2);
+});
+
+test('a non-fallback-eligible error on the last provider is not swallowed', async () => {
+  const gemini = {
+    messages: async () => {
+      throw new GeminiError('quota exceeded', { status: 429, fallbackEligible: true });
+    },
+  };
+  const groq = {
+    messages: async () => {
+      const err = new Error('Groq API 429');
+      err.fallbackEligible = true;
+      throw err;
+    },
+  };
+  const cerebras = {
+    messages: async () => {
+      throw new Error('Cerebras API 500: internal error');
+    },
+  };
+  const client = new ModelClient(config(), { clients: { gemini, groq, cerebras } });
+
+  await assert.rejects(() => client.messages({}), /Cerebras API 500/);
+});
+
+test('Cerebras-only configuration starts directly on Cerebras', async () => {
+  const cerebras = { messages: async () => ({ text: 'cerebras only' }) };
+  const cfg = config();
+  cfg.gemini.apiKey = '';
+  cfg.groq.apiKey = '';
+  const client = new ModelClient(cfg, { clients: { cerebras } });
+
+  assert.equal((await client.messages({})).text, 'cerebras only');
+  assert.equal(client.activeProvider, 'cerebras');
 });
 
 test('Groq-only configuration starts directly on Groq', async () => {

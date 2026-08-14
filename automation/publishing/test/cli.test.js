@@ -110,10 +110,18 @@ test('Groq alone satisfies the model credential preflight', () => {
   assert.match(r.githubOutput, /^skip=false$/m);
 });
 
-test('model preflight fails when neither Gemini nor Groq is configured', () => {
+test('Cerebras alone satisfies the model credential preflight', () => {
+  const r = runCli(['check-config', '--mode', 'dry-run', '--trigger', 'workflow_dispatch'], {
+    CEREBRAS_API_KEY: 'csk-test-key',
+  });
+  assert.equal(r.code, 0, `stderr: ${r.stderr}`);
+  assert.match(r.githubOutput, /^skip=false$/m);
+});
+
+test('model preflight fails when no model provider is configured', () => {
   const r = runCli(['check-config', '--mode', 'dry-run', '--trigger', 'workflow_dispatch'], {});
   assert.equal(r.code, 2);
-  assert.match(`${r.stdout}${r.stderr}`, /GEMINI_API_KEY or GROQ_API_KEY/);
+  assert.match(`${r.stdout}${r.stderr}`, /GEMINI_API_KEY, GROQ_API_KEY, or CEREBRAS_API_KEY/);
 });
 
 // ── Exit codes ────────────────────────────────────────────────────────────
