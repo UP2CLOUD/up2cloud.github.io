@@ -1,9 +1,110 @@
 {
-  "version": 258,
-  "updatedAt": "2026-08-14T10:18:31.872Z",
+  "version": 266,
+  "updatedAt": "2026-08-14T10:23:39.421Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260814102339_d83433",
+      "mode": "draft",
+      "trigger": "workflow_dispatch",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-14T10:23:39.022Z",
+      "updatedAt": "2026-08-14T10:23:39.416Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-14T10:23:39.028Z",
+          "completedAt": "2026-08-14T10:23:39.047Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 653
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-14T10:23:39.053Z",
+          "completedAt": "2026-08-14T10:23:39.416Z",
+          "error": "Groq API 413: {\"error\":{\"message\":\"Request too large for model `llama-3.1-8b-instant` in organization `org_01kqwwn9brebrskkp1h8899r88` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Requested 8525, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260814101630_7d6d61",
       "mode": "draft",
