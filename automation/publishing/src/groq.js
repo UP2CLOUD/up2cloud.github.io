@@ -7,7 +7,7 @@
  * pipeline can switch providers without changing any generation stage.
  */
 
-const { extractJsonObject, RETRYABLE_STATUS } = require('./gemini');
+const { extractJsonObject, RETRYABLE_STATUS, MAX_BACKOFF_MS } = require('./gemini');
 
 class GroqError extends Error {
   constructor(message, { status, requestId, retryable } = {}) {
@@ -120,10 +120,16 @@ class GroqClient {
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
 
+        // Groq's Retry-After can reflect a long quota-reset window (observed:
+        // 7686s ≈ 2.1h) rather than a short rate-limit cooldown. Honouring it
+        // verbatim would sleep the job past its own CI timeout instead of
+        // failing with a clear error, so cap it exactly like the exponential
+        // fallback — a few short retries either clear a transient limit or
+        // fail fast; nothing productive happens by sleeping for hours.
         const retryAfter = Number(res.headers.get('retry-after'));
         const backoff = Number.isFinite(retryAfter) && retryAfter > 0
-          ? retryAfter * 1000
-          : Math.min(2 ** attempt * 1000, 30_000) + Math.floor(Math.random() * 500);
+          ? Math.min(retryAfter * 1000, MAX_BACKOFF_MS)
+          : Math.min(2 ** attempt * 1000, MAX_BACKOFF_MS) + Math.floor(Math.random() * 500);
         this.logger?.warn('Groq call failed, retrying', {
           status: res.status,
           attempt: attempt + 1,
@@ -140,7 +146,7 @@ class GroqClient {
           retryable: true,
         });
         if (attempt === this.maxRetries) throw lastError;
-        await this.sleep(Math.min(2 ** attempt * 1000, 30_000));
+        await this.sleep(Math.min(2 ** attempt * 1000, MAX_BACKOFF_MS));
       } finally {
         clearTimeout(timer);
       }
