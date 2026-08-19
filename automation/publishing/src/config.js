@@ -51,7 +51,7 @@ const DEFAULTS = Object.freeze({
   siteBaseUrl: 'https://up2cloud.tech',
   geminiModel: 'gemini-2.5-pro',
   geminiApiVersion: 'v1beta',
-  groqModel: 'llama-3.3-70b-versatile',
+  groqModel: 'openai/gpt-oss-120b',
   cerebrasModel: 'gpt-oss-120b',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
