@@ -125,10 +125,15 @@ class GroqClient {
           // Non-JSON error body; fall through with errCode undefined.
         }
         const transientJsonFailure = res.status === 400 && errCode === 'json_validate_failed';
+        // Groq reports a tokens-per-minute cap as 413 `rate_limit_exceeded`
+        // instead of 429 — it's a rate limit, not a malformed request, but
+        // retrying the same provider won't help since the request size is
+        // fixed, so skip local retries and go straight to the next provider.
+        const tpmCapped = res.status === 413 && errCode === 'rate_limit_exceeded';
         const retryable = RETRYABLE_STATUS.has(res.status) || transientJsonFailure;
         lastError = new GroqError(
           `Groq API ${res.status}: ${errText.slice(0, 400)}`,
-          { status: res.status, requestId, retryable, fallbackEligible: retryable },
+          { status: res.status, requestId, retryable, fallbackEligible: retryable || tpmCapped },
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
 
