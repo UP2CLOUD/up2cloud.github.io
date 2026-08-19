@@ -1,9 +1,110 @@
 {
-  "version": 510,
-  "updatedAt": "2026-08-19T03:28:12.845Z",
+  "version": 518,
+  "updatedAt": "2026-08-19T06:23:54.242Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260819062353_691d3d",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-19T06:23:53.694Z",
+      "updatedAt": "2026-08-19T06:23:54.235Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-19T06:23:53.701Z",
+          "completedAt": "2026-08-19T06:23:53.723Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 653
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-19T06:23:53.732Z",
+          "completedAt": "2026-08-19T06:23:54.235Z",
+          "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260819032812_6f9e16",
       "mode": "dry-run",
