@@ -192,7 +192,7 @@ Variables (→ **Variables**):
 |---|---|---|
 | `PUBLISH_MODE` | `draft` | `dry-run` \| `draft` \| `review` \| `auto` |
 | `GEMINI_MODEL` | `gemini-2.5-pro` | model id, rolled forward without a code change |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` | fallback model id |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` | fallback model id |
 | `CEREBRAS_MODEL` | `gpt-oss-120b` | second fallback model id — check `GET /v1/models` on the account's key before changing, Cerebras' catalog is account-scoped |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
