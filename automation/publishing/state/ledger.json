@@ -1,9 +1,110 @@
 {
-  "version": 622,
-  "updatedAt": "2026-08-22T12:16:05.715Z",
+  "version": 630,
+  "updatedAt": "2026-08-22T18:13:27.121Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260822181326_7f2e9e",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-22T18:13:26.304Z",
+      "updatedAt": "2026-08-22T18:13:27.115Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-22T18:13:26.313Z",
+          "completedAt": "2026-08-22T18:13:26.433Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-22T18:13:26.443Z",
+          "completedAt": "2026-08-22T18:13:27.115Z",
+          "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260822121604_5f7f87",
       "mode": "draft",
@@ -6297,107 +6398,6 @@
           "attempts": 1,
           "startedAt": "2026-08-11T00:51:41.036Z",
           "completedAt": "2026-08-11T00:51:58.008Z",
-          "error": "Gemini API 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Your project has exceeded its monthly spending cap. Please go to AI Studio at https://ai.studio/spend to manage your project spend cap. Learn more at https://ai.google.dev/gemini-api/docs/billing#project-spend-caps. \",\n    \"status\": \"RESOURCE_EXHAUSTED\"\n  }\n}\n",
-          "output": null
-        },
-        "brief": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "draft": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "review": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "validate": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260810184052_8a3011",
-      "mode": "draft",
-      "trigger": "schedule",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-10T18:40:52.987Z",
-      "updatedAt": "2026-08-10T18:41:10.034Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-10T18:40:52.989Z",
-          "completedAt": "2026-08-10T18:40:53.103Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 666
-          }
-        },
-        "research": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-10T18:40:53.106Z",
-          "completedAt": "2026-08-10T18:41:10.033Z",
           "error": "Gemini API 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Your project has exceeded its monthly spending cap. Please go to AI Studio at https://ai.studio/spend to manage your project spend cap. Learn more at https://ai.google.dev/gemini-api/docs/billing#project-spend-caps. \",\n    \"status\": \"RESOURCE_EXHAUSTED\"\n  }\n}\n",
           "output": null
         },
