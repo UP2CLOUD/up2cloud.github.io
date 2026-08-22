@@ -1,9 +1,110 @@
 {
-  "version": 606,
-  "updatedAt": "2026-08-22T00:34:17.761Z",
+  "version": 614,
+  "updatedAt": "2026-08-22T06:20:13.320Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260822062012_87a71a",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-22T06:20:12.778Z",
+      "updatedAt": "2026-08-22T06:20:13.315Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-22T06:20:12.786Z",
+          "completedAt": "2026-08-22T06:20:12.808Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 666
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-22T06:20:12.818Z",
+          "completedAt": "2026-08-22T06:20:13.315Z",
+          "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260822003417_911825",
       "mode": "draft",
@@ -6339,155 +6440,6 @@
           "completedAt": null,
           "error": null,
           "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260807150824_d76eef",
-      "mode": "dry-run",
-      "trigger": "workflow_dispatch",
-      "status": "succeeded",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-07T15:08:24.229Z",
-      "updatedAt": "2026-08-07T15:12:32.421Z",
-      "completedAt": "2026-08-07T15:12:32.421Z",
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:08:24.250Z",
-          "completedAt": "2026-08-07T15:08:24.276Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 653
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:08:24.310Z",
-          "completedAt": "2026-08-07T15:08:51.516Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 85549
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:08:51.517Z",
-          "completedAt": "2026-08-07T15:09:16.626Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 3162
-          }
-        },
-        "draft": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:09:16.626Z",
-          "completedAt": "2026-08-07T15:10:20.263Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "outline",
-              "body"
-            ],
-            "size": 18357
-          }
-        },
-        "review": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:10:20.263Z",
-          "completedAt": "2026-08-07T15:11:52.379Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "findings",
-              "applied",
-              "body"
-            ],
-            "size": 18697
-          }
-        },
-        "validate": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:11:52.379Z",
-          "completedAt": "2026-08-07T15:12:18.139Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "passed",
-              "blocking",
-              "warnings",
-              "findings",
-              "contentHash",
-              "words",
-              "authoritativeCitations",
-              "recheckFindings"
-            ],
-            "size": 5834
-          }
-        },
-        "localize": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-07T15:12:18.139Z",
-          "completedAt": "2026-08-07T15:12:32.420Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "bundle",
-              "problems"
-            ],
-            "size": 1150
-          }
         },
         "publish_blog": {
           "status": "pending",
