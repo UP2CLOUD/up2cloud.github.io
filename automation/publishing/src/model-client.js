@@ -5,13 +5,13 @@ const { GroqClient } = require('./groq');
 
 /**
  * Prefer Gemini, but fall through an ordered chain of providers (Groq, then
- * Cerebras — both free open-source-model hosts) when the active one is
- * unavailable or out of quota. Once a provider succeeds, the switch is
- * sticky for the rest of the process so later stages do not repeat a
- * known-failing call. Content, safety and schema failures never trigger a
- * provider switch — only rate limits, outages, and quota exhaustion do
- * (`err.fallbackEligible`), because a different provider would likely
- * produce the same bad answer.
+ * Cerebras, then Cloudflare Workers AI — all free open-source-model hosts)
+ * when the active one is unavailable or out of quota. Once a provider
+ * succeeds, the switch is sticky for the rest of the process so later stages
+ * do not repeat a known-failing call. Content, safety and schema failures
+ * never trigger a provider switch — only rate limits, outages, and quota
+ * exhaustion do (`err.fallbackEligible`), because a different provider would
+ * likely produce the same bad answer.
  */
 class ModelClient {
   constructor(config, { fetchImpl, logger, sleepImpl, clients = {} } = {}) {
@@ -24,10 +24,14 @@ class ModelClient {
       { name: 'gemini', client: build('gemini', config.gemini, GeminiClient) },
       { name: 'groq', client: build('groq', config.groq, GroqClient) },
       { name: 'cerebras', client: build('cerebras', config.cerebras, GroqClient) },
+      { name: 'cloudflare-ai', client: build('cloudflare-ai', config.cloudflareAi, GroqClient) },
     ].filter((p) => p.client);
 
     if (!this.providers.length) {
-      throw new Error('GEMINI_API_KEY, GROQ_API_KEY, or CEREBRAS_API_KEY is required');
+      throw new Error(
+        'GEMINI_API_KEY, GROQ_API_KEY, CEREBRAS_API_KEY, or CLOUDFLARE_AI_API_TOKEN ' +
+          '(+ CLOUDFLARE_ACCOUNT_ID) is required',
+      );
     }
     this.activeIndex = 0;
   }

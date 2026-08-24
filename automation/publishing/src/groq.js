@@ -130,10 +130,20 @@ class GroqClient {
         // retrying the same provider won't help since the request size is
         // fixed, so skip local retries and go straight to the next provider.
         const tpmCapped = res.status === 413 && errCode === 'rate_limit_exceeded';
+        // A 402 means this account's free quota/credits are exhausted (seen
+        // from Cerebras: "Payment required... visit your billing tab").
+        // Retrying the same account can't help, but a different provider's
+        // quota is unrelated, so this should fall through immediately too.
+        const paymentRequired = res.status === 402;
         const retryable = RETRYABLE_STATUS.has(res.status) || transientJsonFailure;
         lastError = new GroqError(
           `Groq API ${res.status}: ${errText.slice(0, 400)}`,
-          { status: res.status, requestId, retryable, fallbackEligible: retryable || tpmCapped },
+          {
+            status: res.status,
+            requestId,
+            retryable,
+            fallbackEligible: retryable || tpmCapped || paymentRequired,
+          },
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
 

@@ -39,6 +39,14 @@ function config() {
       maxOutputTokens: 8192,
       envPrefix: 'CEREBRAS',
     },
+    cloudflareAi: {
+      apiKey: 'cf-ai-token',
+      model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+      baseUrl: 'https://api.cloudflare.com/client/v4/accounts/acct-id/ai/v1',
+      maxRetries: 0,
+      maxOutputTokens: 4096,
+      envPrefix: 'CLOUDFLARE_AI',
+    },
   };
 }
 
@@ -154,6 +162,47 @@ test('cascades through all three providers when Gemini and Groq are both exhaust
   assert.equal(cerebrasCalls, 2);
 });
 
+test('cascades to Cloudflare Workers AI when Gemini, Groq and Cerebras are all exhausted', async () => {
+  // Mirrors the real incident: Gemini 429, Groq 413 (TPM cap), Cerebras 402
+  // (payment required / free quota exhausted) — all fallback-eligible, none
+  // of them the last provider once Cloudflare Workers AI is configured too.
+  let cloudflareCalls = 0;
+  const gemini = {
+    messages: async () => {
+      throw new GeminiError('quota exceeded', { status: 429, fallbackEligible: true });
+    },
+  };
+  const groq = {
+    messages: async () => {
+      const err = new Error('Groq API 413: rate_limit_exceeded');
+      err.status = 413;
+      err.fallbackEligible = true;
+      throw err;
+    },
+  };
+  const cerebras = {
+    messages: async () => {
+      const err = new Error('Groq API 402: payment_required');
+      err.status = 402;
+      err.fallbackEligible = true;
+      throw err;
+    },
+  };
+  const cloudflareAi = {
+    messages: async () => {
+      cloudflareCalls += 1;
+      return { text: 'cloudflare result' };
+    },
+  };
+  const client = new ModelClient(config(), {
+    clients: { gemini, groq, cerebras, 'cloudflare-ai': cloudflareAi },
+  });
+
+  assert.equal((await client.messages({})).text, 'cloudflare result');
+  assert.equal(client.activeProvider, 'cloudflare-ai');
+  assert.equal(cloudflareCalls, 1);
+});
+
 test('a non-fallback-eligible error on the last provider is not swallowed', async () => {
   const gemini = {
     messages: async () => {
@@ -249,4 +298,30 @@ test('Groq client caps requested output at the configured model maximum', async 
     maxTokens: 16_000,
   });
   assert.equal(body.max_completion_tokens, 8192);
+});
+
+test('Groq client treats HTTP 402 (payment required) as fallback-eligible with no local retry', async () => {
+  let calls = 0;
+  const client = new GroqClient(config().groq, {
+    fetchImpl: async () => {
+      calls += 1;
+      return response({
+        status: 402,
+        body: {
+          message: 'Payment required to access this resource. Visit your billing tab.',
+          type: 'payment_required_error',
+          param: 'quota',
+          code: 'payment_required',
+        },
+      });
+    },
+  });
+
+  await assert.rejects(
+    () => client.messages({ messages: [{ role: 'user', content: 'test' }] }),
+    (err) => err.status === 402 && err.fallbackEligible === true && !err.retryable,
+  );
+  // Retrying the same exhausted account can't help, so this should fail
+  // fast — exactly one request, no backoff/sleep.
+  assert.equal(calls, 1);
 });
