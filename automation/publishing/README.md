@@ -181,8 +181,9 @@ Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 | `GEMINI_API_KEY` | primary generation provider |
 | `GROQ_API_KEY` | free-tier fallback; can also run without Gemini |
 | `CEREBRAS_API_KEY` | free open-source-model fallback (gpt-oss-120b on Cerebras); can also run alone |
+| `CLOUDFLARE_AI_API_TOKEN` | fourth fallback — Workers AI on the same Cloudflare account as `CLOUDFLARE_ACCOUNT_ID` below, deliberately a separate token from `CLOUDFLARE_API_TOKEN` (that one's scoped for KV) so a leak or misconfig of either can't reach the other's permissions. Needs the account's **Workers AI: Edit** permission |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn posting |
-| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_KV_NAMESPACE_ID` | only if `STATE_BACKEND=kv` |
+| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_KV_NAMESPACE_ID` | `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_KV_NAMESPACE_ID` only if `STATE_BACKEND=kv`; `CLOUDFLARE_ACCOUNT_ID` also doubles as the account for `CLOUDFLARE_AI_API_TOKEN` above |
 
 `GITHUB_TOKEN` is provided by Actions automatically.
 
@@ -194,6 +195,7 @@ Variables (→ **Variables**):
 | `GEMINI_MODEL` | `gemini-2.5-pro` | model id, rolled forward without a code change |
 | `GROQ_MODEL` | `openai/gpt-oss-120b` | fallback model id |
 | `CEREBRAS_MODEL` | `gpt-oss-120b` | second fallback model id — check `GET /v1/models` on the account's key before changing, Cerebras' catalog is account-scoped |
+| `CLOUDFLARE_AI_MODEL` | `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | third fallback model id — see the [model catalog](https://developers.cloudflare.com/workers-ai/models/) for other `@cf/...` ids |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
 | `PUBLISH_INTERVAL_HOURS` | `48` | cadence (one article every 48h) |
@@ -202,15 +204,16 @@ Variables (→ **Variables**):
 | `STATE_BACKEND` | `file` | `file` (git-committed) or `kv` (Cloudflare) |
 | `UTM_CAMPAIGN` | `up2cloud_blog` | campaign tag |
 
-Generation prefers Gemini, then Groq, then Cerebras — whichever of the three
-has a key configured, tried in that order. If the active provider is
-unavailable, rate-limited or over its quota, the run falls through to the
+Generation prefers Gemini, then Groq, then Cerebras, then Cloudflare Workers
+AI — whichever of the four has a key configured, tried in that order. If the
+active provider is unavailable, rate-limited, over its quota, or returns
+payment-required (free credits/tier exhausted), the run falls through to the
 next one and stays there for all remaining stages (sticky, so later stages
 don't repeat a known-failing call). Schema-validation and content-quality
 failures never trigger a provider switch — a different provider would likely
 produce the same bad answer. Any single credential is enough to run; none of
-the three free plans have unlimited daily capacity, so having all three
-configured is what makes the weekly cadence resilient to one or two of them
+the four free plans have unlimited daily capacity, so having several
+configured is what makes the weekly cadence resilient to one or more of them
 being tapped out on a given day.
 
 ### State backends

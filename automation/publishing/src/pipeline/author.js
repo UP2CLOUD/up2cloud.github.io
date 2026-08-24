@@ -36,17 +36,22 @@ function buildSystemPrompt() {
 }
 
 /**
- * Groq's on-demand tier tops out at ~12k tokens/minute, and the full research
- * excerpts alone can exceed that before a single completion token is spent —
- * that is what actually failed here. Gemini's context window has no such
- * ceiling, so only shrink the embedded excerpts and the requested completion
- * room when Groq is the active provider. The provider switch is sticky for
- * the process, so a stage that switches mid-run is caught by this too.
+ * Every fallback provider's free tier tops out at a fraction of Gemini's
+ * context window and per-minute budget — Groq's on-demand tier is ~12k
+ * tokens/minute, and Cerebras's free tier context caps at 8,192 tokens
+ * total, well under a single untrimmed research context on its own. Gemini
+ * has no such ceiling, so only shrink the embedded excerpts and the
+ * requested completion room when a fallback provider is active — i.e.
+ * anything that isn't Gemini, rather than naming each fallback, so a newly
+ * added provider (Cerebras, Cloudflare Workers AI, ...) is covered by
+ * default instead of silently sending it a full-size prompt. The provider
+ * switch is sticky for the process, so a stage that switches mid-run is
+ * caught by this too.
  */
 const GROQ_SOURCE_EXCERPT_LENGTH = 2_000;
 
 function isTokenConstrained(client) {
-  return client.activeProvider === 'groq';
+  return client.activeProvider !== 'gemini';
 }
 
 function researchContextFor(client, research) {

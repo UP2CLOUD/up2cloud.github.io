@@ -53,6 +53,7 @@ const DEFAULTS = Object.freeze({
   geminiApiVersion: 'v1beta',
   groqModel: 'openai/gpt-oss-120b',
   cerebrasModel: 'gpt-oss-120b',
+  cloudflareAiModel: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -82,6 +83,9 @@ const CAPABILITY_REQUIREMENTS = Object.freeze({
   gemini: ['GEMINI_API_KEY'],
   groq: ['GROQ_API_KEY'],
   cerebras: ['CEREBRAS_API_KEY'],
+  // Reuses the account's existing CLOUDFLARE_ACCOUNT_ID (already required for
+  // the KV state backend) — only the Workers AI-scoped token is new.
+  cloudflareAi: ['CLOUDFLARE_AI_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID'],
   model: [],
   linkedin: ['LINKEDIN_ACCESS_TOKEN', 'LINKEDIN_ORGANIZATION_URN'],
   linkedinOAuth: ['LINKEDIN_CLIENT_ID', 'LINKEDIN_CLIENT_SECRET'],
@@ -175,6 +179,32 @@ function loadConfig(env = process.env, argv = {}) {
       envPrefix: 'CEREBRAS',
     },
 
+    // Third free fallback: Cloudflare Workers AI, on the same Cloudflare
+    // account already used for the KV state backend (CLOUDFLARE_ACCOUNT_ID
+    // is shared with `state.cloudflare` below). The token is deliberately
+    // separate from CLOUDFLARE_API_TOKEN — that one is scoped for KV, this
+    // one only needs Workers AI — so a leak or misconfiguration of either
+    // can't reach the other's permissions. Same OpenAI-compatible client as
+    // Groq/Cerebras; only the account-scoped base URL differs. Requires both
+    // the token and the account id, so an unconfigured account id (unlikely,
+    // since it's already needed for KV) disables this provider rather than
+    // constructing a client with a broken URL.
+    cloudflareAi: {
+      apiKey: env.CLOUDFLARE_AI_API_TOKEN && env.CLOUDFLARE_ACCOUNT_ID
+        ? env.CLOUDFLARE_AI_API_TOKEN
+        : '',
+      model: (env.CLOUDFLARE_AI_MODEL || DEFAULTS.cloudflareAiModel).trim(),
+      baseUrl: (
+        env.CLOUDFLARE_AI_BASE_URL ||
+        (env.CLOUDFLARE_ACCOUNT_ID
+          ? `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/ai/v1`
+          : '')
+      ).replace(/\/+$/, ''),
+      maxRetries: parseIntOr(env.CLOUDFLARE_AI_MAX_RETRIES, 4),
+      maxOutputTokens: parseIntOr(env.CLOUDFLARE_AI_MAX_OUTPUT_TOKENS, 4096),
+      envPrefix: 'CLOUDFLARE_AI',
+    },
+
     linkedin: {
       accessToken: env.LINKEDIN_ACCESS_TOKEN || '',
       refreshToken: env.LINKEDIN_REFRESH_TOKEN || '',
@@ -243,9 +273,15 @@ function loadConfig(env = process.env, argv = {}) {
     const required = CAPABILITY_REQUIREMENTS[capability];
     if (!required) throw new ConfigError(`Unknown capability "${capability}"`);
     if (capability === 'model') {
-      if (!config.gemini.apiKey && !config.groq.apiKey && !config.cerebras.apiKey) {
+      if (
+        !config.gemini.apiKey &&
+        !config.groq.apiKey &&
+        !config.cerebras.apiKey &&
+        !config.cloudflareAi.apiKey
+      ) {
         throw new ConfigError(
-          'Missing model credentials: set GEMINI_API_KEY, GROQ_API_KEY, or CEREBRAS_API_KEY',
+          'Missing model credentials: set GEMINI_API_KEY, GROQ_API_KEY, CEREBRAS_API_KEY, ' +
+            'or CLOUDFLARE_AI_API_TOKEN + CLOUDFLARE_ACCOUNT_ID',
         );
       }
       return true;
