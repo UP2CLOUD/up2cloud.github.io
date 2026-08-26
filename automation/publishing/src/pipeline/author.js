@@ -218,9 +218,64 @@ async function createDraft({ client, domain, brief, outline, research, minWords,
       temperature: 0.6,
     });
 
-    body = stripWrappingFence(text.trim());
-    words = checkWordCount(body, { minWords, maxWords }).words;
+    const candidate = stripWrappingFence(text.trim());
+    const candidateWords = checkWordCount(candidate, { minWords, maxWords }).words;
+    // Keep the longest attempt seen so far: a fresh regeneration from the same
+    // weak prompt tends to land in the same shortfall range rather than
+    // reliably improving on it, so a later, shorter retry should never
+    // discard an earlier, closer-to-target one.
+    if (candidateWords > words) {
+      body = candidate;
+      words = candidateWords;
+    }
     if (words >= minWords) break;
+  }
+
+  // Smaller fallback models (Groq/Cerebras/Cloudflare AI) reliably undershoot
+  // the minimum even after a from-scratch retry with feedback — a full
+  // rewrite from the same outline tends to reproduce the same shallow
+  // coverage. Expanding the best draft in place, section by section, is a
+  // meaningfully different strategy and much more likely to close a gap of a
+  // few hundred words than hoping a third from-scratch generation lands
+  // longer by chance.
+  if (words < minWords) {
+    const expansionAttempts = 2;
+    for (let attempt = 1; attempt <= expansionAttempts && words < minWords; attempt++) {
+      const expandPrompt = [
+        `The article draft below is ${words} words. It must be ${minWords}-${maxWords} words.`,
+        `Expand it to reach that target by:`,
+        `- Deepening each existing section with more concrete detail, examples, command output or trade-offs.`,
+        `- Adding one or two additional sub-sections where the outline below supports them.`,
+        `Do NOT remove or shorten any existing content, citations or code blocks. Do NOT pad with`,
+        `repetition or filler — every addition must be substantive and specific.`,
+        ``,
+        `Original outline (for reference — do not restate it, just ensure coverage):`,
+        outline.sections.map((s, i) => `${i + 1}. ${s.heading}\n   - ${(s.points || []).join('\n   - ')}`).join('\n'),
+        ``,
+        `Verified sources you may cite (use inline markdown links):`,
+        sourceList,
+        ``,
+        `Current draft:`,
+        ``,
+        body,
+        ``,
+        `Output ONLY the full expanded Markdown body. No front matter, no code fence around the whole thing.`,
+      ].join('\n');
+
+      const { text } = await client.messages({
+        system: buildSystemPrompt(),
+        messages: [{ role: 'user', content: expandPrompt }],
+        maxTokens,
+        temperature: 0.5,
+      });
+
+      const candidate = stripWrappingFence(text.trim());
+      const candidateWords = checkWordCount(candidate, { minWords, maxWords }).words;
+      if (candidateWords > words) {
+        body = candidate;
+        words = candidateWords;
+      }
+    }
   }
 
   return body;
