@@ -85,6 +85,7 @@ up2cloud.github.io/
 │   └── <slug>/index.html            # Individual blog post pages
 │
 ├── functions/
+│   ├── connect.js                    # Remote MCP server (GET/POST /connect)
 │   └── api/                          # Cloudflare Pages Functions (edge serverless)
 │       ├── chat.js                   # AI chatbot proxy (Groq API)
 │       ├── newsletter.js             # Newsletter subscription (Brevo API)
@@ -200,6 +201,7 @@ Edge functions live in `functions/api/` and are deployed automatically with Clou
 | `POST /api/newsletter` | `newsletter.js` | Subscribe email to Brevo list; honeypot + rate-limit via KV |
 | `GET/POST /api/comments` | `comments.js` | Blog comment read/write via Cloudflare KV (`UP2CLOUD_COMMENTS`) |
 | `POST /api/likes` | `likes.js` | Blog post like toggle via Cloudflare KV (`UP2CLOUD_LIKES`) |
+| `GET/POST /connect` | `connect.js` | Remote MCP server (Streamable HTTP, stateless) — read-only tools for company info, services, contact, and blog search. `GET` with `Accept: text/html` serves a human landing page; everything else goes through JSON-RPC over `POST`. No secrets or KV required. |
 
 **KV namespaces** (configured in `wrangler.toml` and Cloudflare dashboard):
 - `UP2CLOUD_COMMENTS` — stores blog comments

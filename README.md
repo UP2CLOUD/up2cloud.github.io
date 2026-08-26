@@ -1,5 +1,14 @@
 # UP2CLOUD — IT Consulting, Cloud & AI Solutions
 
+[![CI/CD](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/deploy-pages.yml)
+[![Uptime Monitor](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/uptime-monitor.yml/badge.svg)](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/uptime-monitor.yml)
+[![Blog Autopublish](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/blog-autopublish.yml/badge.svg)](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/blog-autopublish.yml)
+[![SEO Weekly](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/seo-weekly.yml/badge.svg)](https://github.com/UP2CLOUD/up2cloud.github.io/actions/workflows/seo-weekly.yml)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fup2cloud.tech&label=up2cloud.tech)](https://up2cloud.tech)
+[![MCP Connector](https://img.shields.io/badge/MCP-connector-6E56CF)](https://up2cloud.tech/connect)
+[![Last Commit](https://img.shields.io/github/last-commit/UP2CLOUD/up2cloud.github.io)](https://github.com/UP2CLOUD/up2cloud.github.io/commits/main)
+[![License](https://img.shields.io/badge/license-proprietary-lightgrey)](#)
+
 > **Live site → [up2cloud.tech](https://up2cloud.tech)**
 
 Landing page for UP2CLOUD, led by **Cesar A. Nogueira** — Senior Cloud DevOps & FinOps Consultant with 10+ years scaling infrastructure across GCP, AWS, Azure, and Oracle Cloud.
@@ -15,7 +24,23 @@ Landing page for UP2CLOUD, led by **Cesar A. Nogueira** — Senior Cloud DevOps 
 | **Interactive Map** | Leaflet.js + CartoDB dark tiles — pins for Vila Real 🇵🇹, São Paulo 🇧🇷, Madrid 🇪🇸 |
 | **Analytics** | Hotjar (HTTPS-only guard — skips on localhost) |
 | **CI/CD** | GitHub Actions → GitHub Pages — auto-deploys on every push to `main` |
+| **MCP Connector** | [`/connect`](https://up2cloud.tech/connect) — remote MCP server for AI agents (company info, services, contact, blog search) |
 | **Local dev** | `node serve.js` or `python3 serve.py` — reads `.env`, injects secrets locally |
+
+---
+
+## MCP Connector
+
+[up2cloud.tech/connect](https://up2cloud.tech/connect) is a stateless remote [MCP](https://modelcontextprotocol.io) (Model Context Protocol) server — add it to any MCP-compatible client (Claude, other AI agents) to give it read-only access to:
+
+| Tool | What it returns |
+|---|---|
+| `up2cloud_get_company_overview` | Founder, tagline, offices, one-paragraph summary |
+| `up2cloud_list_services` | The full service catalog with descriptions |
+| `up2cloud_get_contact` | Email, WhatsApp, LinkedIn, GitHub, website |
+| `up2cloud_search_blog` | Keyword search across blog post title/excerpt/category |
+
+Transport is Streamable HTTP (protocol `2025-06-18`, also accepts `2025-03-26` and `2024-11-05`), implemented as a Cloudflare Pages Function (`functions/connect.js`) — no secrets or KV required. Visit the URL in a browser for a human-readable landing page with a `curl` example; MCP clients talk to it over `POST`.
 
 ---
 
@@ -104,6 +129,9 @@ up2cloud.github.io/
 │   ├── i18n/                     # Translation JSON files (EN · PT · ES · FR)
 │   └── img/
 │       └── cesar.jpg             # Profile photo (add manually — gitignored)
+├── functions/
+│   ├── connect.js                # Remote MCP server (GET/POST /connect)
+│   └── api/                      # Cloudflare Pages Functions (chat, newsletter, comments, likes)
 ├── terraform/
 │   └── github-pages/             # Terraform — GitHub Pages infra
 ├── automation/
