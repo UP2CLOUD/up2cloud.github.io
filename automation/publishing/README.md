@@ -204,17 +204,20 @@ Variables (→ **Variables**):
 | `STATE_BACKEND` | `file` | `file` (git-committed) or `kv` (Cloudflare) |
 | `UTM_CAMPAIGN` | `up2cloud_blog` | campaign tag |
 
-Generation prefers Gemini, then Groq, then Cerebras, then Cloudflare Workers
-AI — whichever of the four has a key configured, tried in that order. If the
-active provider is unavailable, rate-limited, over its quota, or returns
-payment-required (free credits/tier exhausted), the run falls through to the
-next one and stays there for all remaining stages (sticky, so later stages
-don't repeat a known-failing call). Schema-validation and content-quality
-failures never trigger a provider switch — a different provider would likely
-produce the same bad answer. Any single credential is enough to run; none of
-the four free plans have unlimited daily capacity, so having several
-configured is what makes the weekly cadence resilient to one or more of them
-being tapped out on a given day.
+Generation prefers Cloudflare Workers AI, then Gemini, then Groq, then
+Cerebras — whichever of the four has a key configured, tried in that order.
+Cloudflare AI goes first because its free tier renews daily (10,000
+Neurons/day) rather than being a one-time credit grant like Cerebras', or a
+quota that has been observed exhausted alongside Gemini's and Groq's in the
+same incident. If the active provider is unavailable, rate-limited, over its
+quota, or returns payment-required (free credits/tier exhausted), the run
+falls through to the next one and stays there for all remaining stages
+(sticky, so later stages don't repeat a known-failing call). Schema-validation
+and content-quality failures never trigger a provider switch — a different
+provider would likely produce the same bad answer. Any single credential is
+enough to run; none of the four free plans have unlimited daily capacity, so
+having several configured is what makes the weekly cadence resilient to one
+or more of them being tapped out on a given day.
 
 ### State backends
 

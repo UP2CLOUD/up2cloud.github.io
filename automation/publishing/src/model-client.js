@@ -4,14 +4,17 @@ const { GeminiClient } = require('./gemini');
 const { GroqClient } = require('./groq');
 
 /**
- * Prefer Gemini, but fall through an ordered chain of providers (Groq, then
- * Cerebras, then Cloudflare Workers AI — all free open-source-model hosts)
- * when the active one is unavailable or out of quota. Once a provider
- * succeeds, the switch is sticky for the rest of the process so later stages
- * do not repeat a known-failing call. Content, safety and schema failures
- * never trigger a provider switch — only rate limits, outages, and quota
- * exhaustion do (`err.fallbackEligible`), because a different provider would
- * likely produce the same bad answer.
+ * Prefer Cloudflare Workers AI first — its free tier is a 10,000
+ * Neurons/day allowance that renews daily, unlike Gemini's quota, Groq's
+ * per-minute cap, and Cerebras' free credits, which have all been observed
+ * exhausted simultaneously in production. Fall through an ordered chain
+ * (Gemini, then Groq, then Cerebras) when the active one is unavailable or
+ * out of quota. Once a provider succeeds, the switch is sticky for the rest
+ * of the process so later stages do not repeat a known-failing call.
+ * Content, safety and schema failures never trigger a provider switch —
+ * only rate limits, outages, and quota exhaustion do
+ * (`err.fallbackEligible`), because a different provider would likely
+ * produce the same bad answer.
  */
 class ModelClient {
   constructor(config, { fetchImpl, logger, sleepImpl, clients = {} } = {}) {
@@ -21,10 +24,10 @@ class ModelClient {
       cfg?.apiKey ? (clients[name] || new ClientClass(cfg, { fetchImpl, logger, sleepImpl })) : null;
 
     this.providers = [
+      { name: 'cloudflare-ai', client: build('cloudflare-ai', config.cloudflareAi, GroqClient) },
       { name: 'gemini', client: build('gemini', config.gemini, GeminiClient) },
       { name: 'groq', client: build('groq', config.groq, GroqClient) },
       { name: 'cerebras', client: build('cerebras', config.cerebras, GroqClient) },
-      { name: 'cloudflare-ai', client: build('cloudflare-ai', config.cloudflareAi, GroqClient) },
     ].filter((p) => p.client);
 
     if (!this.providers.length) {

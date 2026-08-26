@@ -135,6 +135,12 @@ class GroqClient {
         // Retrying the same account can't help, but a different provider's
         // quota is unrelated, so this should fall through immediately too.
         const paymentRequired = res.status === 402;
+        // A 401 means this provider's own credentials are bad or expired
+        // (seen from Cloudflare Workers AI: {"code":10000,"message":
+        // "Authentication error"}) — nothing to do with whether another
+        // provider's credentials work, so this should fall through too
+        // rather than hard-failing the whole run.
+        const authError = res.status === 401;
         const retryable = RETRYABLE_STATUS.has(res.status) || transientJsonFailure;
         lastError = new GroqError(
           `Groq API ${res.status}: ${errText.slice(0, 400)}`,
@@ -142,7 +148,7 @@ class GroqClient {
             status: res.status,
             requestId,
             retryable,
-            fallbackEligible: retryable || tpmCapped || paymentRequired,
+            fallbackEligible: retryable || tpmCapped || paymentRequired || authError,
           },
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
