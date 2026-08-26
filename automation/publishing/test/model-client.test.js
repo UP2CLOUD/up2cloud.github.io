@@ -39,8 +39,13 @@ function config() {
       maxOutputTokens: 8192,
       envPrefix: 'CEREBRAS',
     },
+    // Empty by default: Cloudflare AI is now first in provider order, so an
+    // always-on key here would make it the real, unstubbed active provider
+    // in every test below that doesn't care about it — each of those would
+    // then attempt a live network call instead of exercising its stub.
+    // Tests that specifically target Cloudflare AI opt in explicitly.
     cloudflareAi: {
-      apiKey: 'cf-ai-token',
+      apiKey: '',
       model: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
       baseUrl: 'https://api.cloudflare.com/client/v4/accounts/acct-id/ai/v1',
       maxRetries: 0,
@@ -162,11 +167,47 @@ test('cascades through all three providers when Gemini and Groq are both exhaust
   assert.equal(cerebrasCalls, 2);
 });
 
-test('cascades to Cloudflare Workers AI when Gemini, Groq and Cerebras are all exhausted', async () => {
-  // Mirrors the real incident: Gemini 429, Groq 413 (TPM cap), Cerebras 402
-  // (payment required / free quota exhausted) — all fallback-eligible, none
-  // of them the last provider once Cloudflare Workers AI is configured too.
+test('Cloudflare Workers AI is tried first when configured, ahead of Gemini', async () => {
+  // Its free tier renews daily (10,000 Neurons/day) rather than being a
+  // one-time credit grant, so it goes first — the other three are only
+  // reached if it's unavailable.
+  let geminiCalls = 0;
   let cloudflareCalls = 0;
+  const cloudflareAi = {
+    messages: async () => {
+      cloudflareCalls += 1;
+      return { text: 'cloudflare result' };
+    },
+  };
+  const gemini = {
+    messages: async () => {
+      geminiCalls += 1;
+      return { text: 'gemini result' };
+    },
+  };
+  const cfg = config();
+  cfg.cloudflareAi.apiKey = 'cf-ai-token';
+  const client = new ModelClient(cfg, { clients: { 'cloudflare-ai': cloudflareAi, gemini } });
+
+  assert.equal((await client.messages({})).text, 'cloudflare result');
+  assert.equal(client.activeProvider, 'cloudflare-ai');
+  assert.equal(cloudflareCalls, 1);
+  assert.equal(geminiCalls, 0);
+});
+
+test('falls back to Gemini, then Groq, then Cerebras when Cloudflare Workers AI is exhausted', async () => {
+  // Mirrors the real incident, but with Cloudflare AI first: a 401
+  // (bad/expired token), then Gemini 429, Groq 413 (TPM cap), Cerebras
+  // succeeds as the last provider in the chain.
+  let cerebrasCalls = 0;
+  const cloudflareAi = {
+    messages: async () => {
+      const err = new Error('Groq API 401: Authentication error');
+      err.status = 401;
+      err.fallbackEligible = true;
+      throw err;
+    },
+  };
   const gemini = {
     messages: async () => {
       throw new GeminiError('quota exceeded', { status: 429, fallbackEligible: true });
@@ -182,25 +223,19 @@ test('cascades to Cloudflare Workers AI when Gemini, Groq and Cerebras are all e
   };
   const cerebras = {
     messages: async () => {
-      const err = new Error('Groq API 402: payment_required');
-      err.status = 402;
-      err.fallbackEligible = true;
-      throw err;
+      cerebrasCalls += 1;
+      return { text: 'cerebras result' };
     },
   };
-  const cloudflareAi = {
-    messages: async () => {
-      cloudflareCalls += 1;
-      return { text: 'cloudflare result' };
-    },
-  };
-  const client = new ModelClient(config(), {
-    clients: { gemini, groq, cerebras, 'cloudflare-ai': cloudflareAi },
+  const cfg = config();
+  cfg.cloudflareAi.apiKey = 'cf-ai-token';
+  const client = new ModelClient(cfg, {
+    clients: { 'cloudflare-ai': cloudflareAi, gemini, groq, cerebras },
   });
 
-  assert.equal((await client.messages({})).text, 'cloudflare result');
-  assert.equal(client.activeProvider, 'cloudflare-ai');
-  assert.equal(cloudflareCalls, 1);
+  assert.equal((await client.messages({})).text, 'cerebras result');
+  assert.equal(client.activeProvider, 'cerebras');
+  assert.equal(cerebrasCalls, 1);
 });
 
 test('a non-fallback-eligible error on the last provider is not swallowed', async () => {
@@ -323,5 +358,26 @@ test('Groq client treats HTTP 402 (payment required) as fallback-eligible with n
   );
   // Retrying the same exhausted account can't help, so this should fail
   // fast — exactly one request, no backoff/sleep.
+  assert.equal(calls, 1);
+});
+
+test('Groq client treats HTTP 401 (bad/expired token) as fallback-eligible with no local retry', async () => {
+  let calls = 0;
+  const client = new GroqClient(config().groq, {
+    fetchImpl: async () => {
+      calls += 1;
+      return response({
+        status: 401,
+        body: { result: null, success: false, errors: [{ code: 10000, message: 'Authentication error' }] },
+      });
+    },
+  });
+
+  await assert.rejects(
+    () => client.messages({ messages: [{ role: 'user', content: 'test' }] }),
+    (err) => err.status === 401 && err.fallbackEligible === true && !err.retryable,
+  );
+  // A bad credential on this provider says nothing about the next one, so
+  // this should fail fast rather than retry the same broken token.
   assert.equal(calls, 1);
 });
