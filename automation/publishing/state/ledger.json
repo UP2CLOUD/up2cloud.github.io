@@ -1,15 +1,172 @@
 {
+<<<<<<< Updated upstream
   "version": 774,
 <<<<<<< Updated upstream
   "updatedAt": "2026-08-26T01:13:44.514Z",
 =======
   "updatedAt": "2026-08-26T01:15:41.706Z",
 >>>>>>> Stashed changes
+=======
+  "version": 793,
+  "updatedAt": "2026-08-26T01:18:50.341Z",
+>>>>>>> Stashed changes
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
     {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+      "runId": "run_20260826011606_152e69",
+      "mode": "dry-run",
+      "trigger": "workflow_dispatch",
+      "status": "succeeded",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-26T01:16:06.960Z",
+      "updatedAt": "2026-08-26T01:18:50.336Z",
+      "completedAt": "2026-08-26T01:18:50.333Z",
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:16:06.967Z",
+          "completedAt": "2026-08-26T01:16:06.991Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 666
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:16:06.999Z",
+          "completedAt": "2026-08-26T01:16:30.033Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 99846
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:16:30.037Z",
+          "completedAt": "2026-08-26T01:16:44.913Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 1644
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:16:44.917Z",
+          "completedAt": "2026-08-26T01:17:57.060Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 12261
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:17:57.063Z",
+          "completedAt": "2026-08-26T01:18:44.945Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 15129
+          }
+        },
+        "validate": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:18:44.949Z",
+          "completedAt": "2026-08-26T01:18:46.229Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "passed",
+              "blocking",
+              "warnings",
+              "findings",
+              "contentHash",
+              "words",
+              "authoritativeCitations",
+              "recheckFindings"
+            ],
+            "size": 199
+          }
+        },
+        "localize": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-26T01:18:46.233Z",
+          "completedAt": "2026-08-26T01:18:50.331Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "bundle",
+              "problems"
+            ],
+            "size": 693
+          }
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
+    {
+>>>>>>> Stashed changes
       "runId": "run_20260826011140_d63e39",
 =======
       "runId": "run_20260826011406_9eb3f7",
@@ -6238,124 +6395,6 @@
           "startedAt": "2026-08-14T10:11:39.541Z",
           "completedAt": "2026-08-14T10:13:40.466Z",
           "error": "Groq API 429: {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kqwwn9brebrskkp1h8899r88` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 99852, Requested 8884. Please try again in 2h5m47.904s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
-          "output": null
-        },
-        "review": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "validate": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260814070559_54307b",
-      "mode": "draft",
-      "trigger": "schedule",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-14T07:05:59.527Z",
-      "updatedAt": "2026-08-14T07:09:00.067Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-14T07:05:59.533Z",
-          "completedAt": "2026-08-14T07:05:59.683Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 666
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-14T07:05:59.688Z",
-          "completedAt": "2026-08-14T07:06:03.361Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 102852
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-14T07:06:03.363Z",
-          "completedAt": "2026-08-14T07:06:13.100Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 2129
-          }
-        },
-        "draft": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-14T07:06:13.102Z",
-          "completedAt": "2026-08-14T07:09:00.067Z",
-          "error": "Groq API 429: {\"error\":{\"message\":\"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kqwwn9brebrskkp1h8899r88` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 97706, Requested 10280. Please try again in 1h54m59.904s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n",
           "output": null
         },
         "review": {
