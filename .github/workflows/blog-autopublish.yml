@@ -181,7 +181,21 @@ jobs:
           git stash push --include-untracked -- automation/publishing/state
           git checkout "$DEFAULT_BRANCH"
           git pull --rebase origin "$DEFAULT_BRANCH"
-          git stash pop || true
+          if ! git stash pop; then
+            # A real conflict: this run's ledger changes and a concurrent
+            # run's already-pushed changes touched the same lines. `git add`
+            # would silently stage the conflict markers as file content and
+            # `git commit` would happily commit corrupted JSON — which is
+            # exactly how the ledger got corrupted before. Bail out loudly
+            # instead; the next run's own state update will pick this run's
+            # in-memory result back up from its local files.
+            echo "::error::Ledger stash pop conflicted; leaving the ledger untouched rather than committing corrupted JSON."
+            git stash list
+            git diff --name-only --diff-filter=U
+            git checkout -- automation/publishing/state
+            git stash drop || true
+            exit 1
+          fi
           git add automation/publishing/state
           git commit -m "chore(autopublish): update publication ledger [skip ci]" || exit 0
           for attempt in 1 2 3 4; do
