@@ -183,7 +183,9 @@ async function createDraft({ client, domain, brief, outline, research, minWords,
       ``,
       `Requirements:`,
       `- ${minWords}-${maxWords} words of prose (code blocks do not count). This is a hard minimum —`,
-      `  a short article will be rejected. Go deeper on each outline point rather than padding.`,
+      `  a short article will be rejected. Models systematically undershoot this: aim past ${minWords},`,
+      `  not right up to it. Go deeper on each outline point (${outline.sections.length} sections means`,
+      `  roughly ${Math.ceil(minWords / Math.max(outline.sections.length, 1))}+ words each) rather than padding.`,
       `- Start with H2 (##). The page renders the H1 itself.`,
       `- Practical and specific: real commands, real configuration, real trade-offs.`,
       `- Include at least one fenced code block with a language annotation.`,
@@ -239,10 +241,13 @@ async function createDraft({ client, domain, brief, outline, research, minWords,
   // few hundred words than hoping a third from-scratch generation lands
   // longer by chance.
   if (words < minWords) {
-    const expansionAttempts = 2;
+    const expansionAttempts = 3;
     for (let attempt = 1; attempt <= expansionAttempts && words < minWords; attempt++) {
+      const shortfall = minWords - words;
       const expandPrompt = [
-        `The article draft below is ${words} words. It must be ${minWords}-${maxWords} words.`,
+        `The article draft below is ${words} words. It must be ${minWords}-${maxWords} words —`,
+        `you must add AT LEAST ${shortfall} more words, and aim for a comfortable margin past that`,
+        `(models systematically undershoot on this kind of pass, so err generous).`,
         `Expand it to reach that target by:`,
         `- Deepening each existing section with more concrete detail, examples, command output or trade-offs.`,
         `- Adding one or two additional sub-sections where the outline below supports them.`,
