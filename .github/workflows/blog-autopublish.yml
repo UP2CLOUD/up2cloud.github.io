@@ -178,6 +178,16 @@ jobs:
           fi
           git config user.name  "up2cloud-autopublish[bot]"
           git config user.email "automation@up2cloud.tech"
+          # A pipeline failure partway through publish_blog can leave stray
+          # writes outside the ledger (blog/*, sitemap.xml — publishBlog()
+          # writes them to disk before creating its own content branch, and
+          # only commits them there). Those were never meant to land on main
+          # directly, and left in place they block the pull --rebase below
+          # with "You have unstaged changes" — a run that never even reached
+          # this point would otherwise poison every run after it. Discard
+          # anything outside the ledger before touching it.
+          git checkout -- . ':!automation/publishing/state' 2>/dev/null || true
+          git clean -fd -- . ':!automation/publishing/state' 2>/dev/null || true
           git stash push --include-untracked -- automation/publishing/state
           git checkout "$DEFAULT_BRANCH"
           git pull --rebase origin "$DEFAULT_BRANCH"
