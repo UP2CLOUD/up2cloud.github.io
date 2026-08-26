@@ -1,25 +1,43 @@
 {
   "version": 774,
+<<<<<<< Updated upstream
   "updatedAt": "2026-08-26T01:13:44.514Z",
+=======
+  "updatedAt": "2026-08-26T01:15:41.706Z",
+>>>>>>> Stashed changes
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
     {
+<<<<<<< Updated upstream
       "runId": "run_20260826011140_d63e39",
+=======
+      "runId": "run_20260826011406_9eb3f7",
+>>>>>>> Stashed changes
       "mode": "dry-run",
       "trigger": "workflow_dispatch",
       "status": "running",
       "topic": "cloud-platforms",
+<<<<<<< Updated upstream
       "createdAt": "2026-08-26T01:11:40.964Z",
       "updatedAt": "2026-08-26T01:13:44.511Z",
+=======
+      "createdAt": "2026-08-26T01:14:06.274Z",
+      "updatedAt": "2026-08-26T01:15:41.702Z",
+>>>>>>> Stashed changes
       "completedAt": null,
       "error": null,
       "stages": {
         "select_topic": {
           "status": "succeeded",
           "attempts": 1,
+<<<<<<< Updated upstream
           "startedAt": "2026-08-26T01:11:41.070Z",
           "completedAt": "2026-08-26T01:11:41.323Z",
+=======
+          "startedAt": "2026-08-26T01:14:06.281Z",
+          "completedAt": "2026-08-26T01:14:06.305Z",
+>>>>>>> Stashed changes
           "error": null,
           "output": {
             "keys": [
@@ -28,14 +46,23 @@
               "angle",
               "selectionReason"
             ],
+<<<<<<< Updated upstream
             "size": 658
+=======
+            "size": 653
+>>>>>>> Stashed changes
           }
         },
         "research": {
           "status": "succeeded",
           "attempts": 1,
+<<<<<<< Updated upstream
           "startedAt": "2026-08-26T01:11:41.332Z",
           "completedAt": "2026-08-26T01:11:56.988Z",
+=======
+          "startedAt": "2026-08-26T01:14:06.312Z",
+          "completedAt": "2026-08-26T01:14:21.101Z",
+>>>>>>> Stashed changes
           "error": null,
           "output": {
             "keys": [
@@ -44,14 +71,23 @@
               "context",
               "authoritativeCount"
             ],
+<<<<<<< Updated upstream
             "size": 96262
+=======
+            "size": 99735
+>>>>>>> Stashed changes
           }
         },
         "brief": {
           "status": "succeeded",
           "attempts": 1,
+<<<<<<< Updated upstream
           "startedAt": "2026-08-26T01:11:56.991Z",
           "completedAt": "2026-08-26T01:12:04.486Z",
+=======
+          "startedAt": "2026-08-26T01:14:21.105Z",
+          "completedAt": "2026-08-26T01:14:29.858Z",
+>>>>>>> Stashed changes
           "error": null,
           "output": {
             "keys": [
@@ -61,28 +97,46 @@
               "keyFacts",
               "outOfScope"
             ],
+<<<<<<< Updated upstream
             "size": 1225
+=======
+            "size": 1622
+>>>>>>> Stashed changes
           }
         },
         "draft": {
           "status": "succeeded",
           "attempts": 1,
+<<<<<<< Updated upstream
           "startedAt": "2026-08-26T01:12:04.522Z",
           "completedAt": "2026-08-26T01:13:05.365Z",
+=======
+          "startedAt": "2026-08-26T01:14:29.861Z",
+          "completedAt": "2026-08-26T01:15:38.929Z",
+>>>>>>> Stashed changes
           "error": null,
           "output": {
             "keys": [
               "outline",
               "body"
             ],
+<<<<<<< Updated upstream
             "size": 10551
+=======
+            "size": 8939
+>>>>>>> Stashed changes
           }
         },
         "review": {
           "status": "succeeded",
           "attempts": 1,
+<<<<<<< Updated upstream
           "startedAt": "2026-08-26T01:13:05.368Z",
           "completedAt": "2026-08-26T01:13:38.017Z",
+=======
+          "startedAt": "2026-08-26T01:15:38.932Z",
+          "completedAt": "2026-08-26T01:15:40.740Z",
+>>>>>>> Stashed changes
           "error": null,
           "output": {
             "keys": [
@@ -90,15 +144,25 @@
               "applied",
               "body"
             ],
+<<<<<<< Updated upstream
             "size": 10601
+=======
+            "size": 6763
+>>>>>>> Stashed changes
           }
         },
         "validate": {
           "status": "failed",
           "attempts": 1,
+<<<<<<< Updated upstream
           "startedAt": "2026-08-26T01:13:38.020Z",
           "completedAt": "2026-08-26T01:13:44.511Z",
           "error": "Quality gates blocked publication:\n  [word_count] Article is 1142 words, below minimum 1200",
+=======
+          "startedAt": "2026-08-26T01:15:40.743Z",
+          "completedAt": "2026-08-26T01:15:41.702Z",
+          "error": "Quality gates blocked publication:\n  [word_count] Article is 717 words, below minimum 1200",
+>>>>>>> Stashed changes
           "output": null
         },
         "localize": {
