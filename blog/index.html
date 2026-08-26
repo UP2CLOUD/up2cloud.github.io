@@ -167,7 +167,7 @@
     </div>
 
     <!-- Article Grid -->
-    <p class="text-white/40 text-xs uppercase tracking-widest font-semibold mb-6 reveal">All Articles</p>
+    <p class="text-white/40 text-xs uppercase tracking-widest font-semibold mb-6 reveal" data-i18n="blog_all_articles">All Articles</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
       <!-- New: OpenClaw (also in grid) -->
@@ -180,7 +180,7 @@
           <p class="text-white/50 text-sm leading-relaxed mb-6 flex-grow">How combining AI intelligence with infra creates self-healing systems.</p>
           <div class="flex items-center justify-between pt-4 border-t border-white/5">
             <span class="text-white/30 text-xs">May 9, 2026</span>
-            <span class="text-sky-light text-xs font-semibold group-hover:underline">Read post &rarr;</span>
+            <span class="text-sky-light text-xs font-semibold group-hover:underline" data-i18n="blog_read">Read article</span>
           </div>
         </div>
       </a>
@@ -195,7 +195,7 @@
           <p class="text-white/50 text-sm leading-relaxed mb-6 flex-grow">Most cloud bills spike silently for days before anyone notices. Here's how AI-powered anomaly detection catches cost explosions in minutes — not weeks.</p>
           <div class="flex items-center justify-between pt-4 border-t border-white/5">
             <span class="text-white/30 text-xs">May 8, 2026</span>
-            <span class="text-sky-light text-xs font-semibold group-hover:underline">Read post &rarr;</span>
+            <span class="text-sky-light text-xs font-semibold group-hover:underline" data-i18n="blog_read">Read article</span>
           </div>
         </div>
       </a>
@@ -210,7 +210,7 @@
           <p class="text-white/50 text-sm leading-relaxed mb-6 flex-grow">How modern cloud teams reduce costs without slowing developers down.</p>
           <div class="flex items-center justify-between pt-4 border-t border-white/5">
             <span class="text-white/30 text-xs">May 8, 2026</span>
-            <span class="text-sky-light text-xs font-semibold group-hover:underline">Read post &rarr;</span>
+            <span class="text-sky-light text-xs font-semibold group-hover:underline" data-i18n="blog_read">Read article</span>
           </div>
         </div>
       </a>
@@ -225,7 +225,7 @@
           <p class="text-white/50 text-sm leading-relaxed mb-6 flex-grow">A deep dive into tagging strategy, rightsizing, and reserved instances.</p>
           <div class="flex items-center justify-between pt-4 border-t border-white/5">
             <span class="text-white/30 text-xs">April 8, 2025</span>
-            <span class="text-sky-light text-xs font-semibold group-hover:underline">Read post &rarr;</span>
+            <span class="text-sky-light text-xs font-semibold group-hover:underline" data-i18n="blog_read">Read article</span>
           </div>
         </div>
       </a>
@@ -361,10 +361,10 @@
           <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke-linejoin="round"/></svg>
           </div>
-          <h3 class="font-heading font-bold text-white text-lg mb-2">Need hands-on help?</h3>
-          <p class="text-white/55 text-sm mb-5 leading-relaxed">Book a free 45-minute infrastructure audit and walk away with an action plan.</p>
+          <h3 class="font-heading font-bold text-white text-lg mb-2" data-i18n="blog_cta_help_title">Need hands-on help?</h3>
+          <p class="text-white/55 text-sm mb-5 leading-relaxed" data-i18n="blog_cta_help_sub">Book a free 45-minute infrastructure audit and walk away with an action plan.</p>
           <a href="/#contact" class="inline-flex items-center gap-2 text-sm font-semibold text-white px-5 py-2.5 rounded-xl" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
-            Get in Touch
+            <span data-i18n="blog_cta_touch">Get in Touch</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
@@ -380,8 +380,8 @@
     <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-5" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" aria-hidden="true"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <h2 class="font-heading font-bold text-3xl text-white mb-3">Get new articles in your inbox</h2>
-    <p class="text-white/55 mb-8 leading-relaxed">
+    <h2 class="font-heading font-bold text-3xl text-white mb-3" data-i18n="blog_nl_title">Get new articles in your inbox</h2>
+    <p class="text-white/55 mb-8 leading-relaxed" data-i18n="blog_nl_sub">
       Weekly cloud engineering insights — FinOps, DevSecOps, Kubernetes, AI automation. No spam, unsubscribe anytime.
     </p>
     <form id="blog-nl-form" novalidate class="flex flex-col items-center gap-3 max-w-md mx-auto">
@@ -390,17 +390,17 @@
         style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
       <div class="flex w-full gap-3 flex-wrap sm:flex-nowrap">
         <input id="blog-nl-email" type="email" placeholder="your@email.com" required autocomplete="email"
-          aria-label="Email address"
+          aria-label="Email address" data-i18n-ph="blog_nl_email_ph"
           class="flex-1 min-w-0 rounded-xl px-4 py-3 text-sm text-white outline-none transition-all"
           style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);font-family:'DM Sans',sans-serif">
-        <button id="blog-nl-btn" type="submit"
+        <button id="blog-nl-btn" type="submit" data-i18n="newsletter_submit"
           class="font-heading font-semibold text-white text-sm px-6 py-3 rounded-xl whitespace-nowrap transition-all hover:opacity-90"
           style="background:linear-gradient(135deg,#0369A1,#0EA5E9);border:none;cursor:pointer">
           Subscribe
         </button>
       </div>
       <p id="blog-nl-status" role="status" aria-live="assertive" class="text-sm min-h-[1.2em]"></p>
-      <p class="text-white/30 text-xs">By subscribing you agree to receive UP2CLOUD updates. No spam. <a href="/privacy/" class="hover:text-white/60 transition-colors">Privacy policy</a>.</p>
+      <p class="text-white/30 text-xs" data-i18n-html="blog_nl_disclaimer">By subscribing you agree to receive UP2CLOUD updates. No spam. <a href="/privacy/" class="hover:text-white/60 transition-colors">Privacy policy</a>.</p>
     </form>
   </div>
 </section>
@@ -415,10 +415,10 @@
       <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
     </div>
     <div class="flex gap-6">
-      <a href="/" class="hover:text-white/70 transition-colors">Home</a>
-      <a href="/blog/" class="hover:text-white/70 transition-colors">Blog</a>
-      <a href="/about/" class="hover:text-white/70 transition-colors">About</a>
-      <a href="/#contact" class="hover:text-white/70 transition-colors">Contact</a>
+      <a href="/" class="hover:text-white/70 transition-colors" data-i18n="blog_footer_home">Home</a>
+      <a href="/blog/" class="hover:text-white/70 transition-colors" data-i18n="nav_blog">Blog</a>
+      <a href="/about/" class="hover:text-white/70 transition-colors" data-i18n="nav_about">About</a>
+      <a href="/#contact" class="hover:text-white/70 transition-colors" data-i18n="nav_contact">Contact</a>
     </div>
   </div>
 </footer>
