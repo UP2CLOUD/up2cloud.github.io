@@ -61,7 +61,22 @@ async function configureIdentity(cwd, { name, email, token }) {
 
 async function createBranch(cwd, branch, { baseBranch = 'main', token } = {}) {
   assertSafeBranchName(branch);
-  await git(['fetch', 'origin', baseBranch], { cwd, token });
+  // A bare `git fetch` failure here is almost always a transient network/API
+  // hiccup rather than something retrying can't fix (unlike an auth or
+  // not-found error, which fails identically every time) — one retry with a
+  // short pause clears it without masking a real, persistent failure.
+  let lastErr;
+  for (let attempt = 0; attempt <= 1; attempt += 1) {
+    try {
+      await git(['fetch', 'origin', baseBranch], { cwd, token });
+      lastErr = null;
+      break;
+    } catch (err) {
+      lastErr = err;
+      if (attempt === 0) await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+  if (lastErr) throw lastErr;
   await git(['checkout', '-B', branch, `origin/${baseBranch}`], { cwd, token });
   return branch;
 }
