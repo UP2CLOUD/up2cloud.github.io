@@ -36,6 +36,33 @@ function readSitemapUrls(repoRoot) {
  * Duplicate titles and descriptions are the classic example: each page looks
  * fine in isolation, and Google reports them as a site-level problem.
  */
+/**
+ * Does an internal link resolve to something this site actually serves?
+ *
+ * Static files are the common case, but not every served URL is a file on
+ * disk: Cloudflare Pages also serves a route for each module under
+ * `functions/`, so `functions/connect.js` answers `/connect` even though no
+ * `connect/index.html` exists. Without that second case the auditor reports
+ * a broken-internal-link for a link that works — and a warning that cannot
+ * be actioned reappears in every weekly report, which is how a report stops
+ * being read.
+ */
+function linkResolves(clean, repoRoot) {
+  const staticCandidates = clean.endsWith('/')
+    ? [path.join(repoRoot, clean, 'index.html')]
+    : [path.join(repoRoot, clean), path.join(repoRoot, `${clean}.html`), path.join(repoRoot, clean, 'index.html')];
+  if (staticCandidates.some((c) => fs.existsSync(c))) return true;
+
+  // Pages Functions: /connect -> functions/connect.js, /a/b -> functions/a/b.js
+  // or functions/a/b/index.js. Trailing slashes are irrelevant to the mapping.
+  const route = clean.replace(/\/+$/, '') || '/';
+  if (route === '/') return false;
+  return [
+    path.join(repoRoot, 'functions', `${route}.js`),
+    path.join(repoRoot, 'functions', route, 'index.js'),
+  ].some((c) => fs.existsSync(c));
+}
+
 function siteFindings(pages, { sitemapUrls, repoRoot, baseUrl }) {
   const findings = [];
 
@@ -98,10 +125,7 @@ function siteFindings(pages, { sitemapUrls, repoRoot, baseUrl }) {
     for (const href of new Set(p.parsed.internalLinks)) {
       const clean = href.replace(baseUrl, '').split(/[?#]/)[0];
       if (!clean || !clean.startsWith('/')) continue;
-      const candidates = clean.endsWith('/')
-        ? [path.join(repoRoot, clean, 'index.html')]
-        : [path.join(repoRoot, clean), path.join(repoRoot, `${clean}.html`), path.join(repoRoot, clean, 'index.html')];
-      if (!candidates.some((c) => fs.existsSync(c))) {
+      if (!linkResolves(clean, repoRoot)) {
         findings.push({
           rule: 'broken-internal-link',
           severity: SEVERITY.WARN,
@@ -227,6 +251,7 @@ function auditSite({
 module.exports = {
   auditSite,
   findHtmlFiles,
+  linkResolves,
   readSitemapUrls,
   siteFindings,
   urlForFile,
