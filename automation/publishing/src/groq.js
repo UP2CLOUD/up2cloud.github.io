@@ -188,35 +188,52 @@ class GroqClient {
     throw lastError || new GroqError('Groq request failed with no error recorded');
   }
 
-  async json({ system, prompt, maxTokens = 8192, temperature = 0.3, validate }) {
-    const { text, requestId, stopReason } = await this.messages({
-      system,
-      messages: [{ role: 'user', content: prompt }],
-      maxTokens,
-      temperature,
-      responseMimeType: 'application/json',
-    });
+  // A parse failure or a validate() rejection means the model's own output was
+  // unusable JSON, not a request problem — the same "transient generation
+  // hiccup" the 400 json_validate_failed retry above exists for, just caught
+  // on our side instead of Groq's. Retry a small, fixed number of times
+  // before giving up; this never switches provider (schema failures aren't
+  // fallbackEligible — see model-client.js) since a different provider's
+  // model would likely mis-shape the same request the same way.
+  async json({ system, prompt, maxTokens = 8192, temperature = 0.3, validate, maxJsonRetries = 2 }) {
+    let lastErr;
+    for (let attempt = 0; attempt <= maxJsonRetries; attempt += 1) {
+      const { text, requestId, stopReason } = await this.messages({
+        system,
+        messages: [{ role: 'user', content: prompt }],
+        maxTokens,
+        temperature,
+        responseMimeType: 'application/json',
+      });
 
-    let parsed;
-    try {
-      parsed = JSON.parse(extractJsonObject(text.trim()));
-    } catch (err) {
-      throw new GroqError(
-        `Model did not return valid JSON (stop_reason=${stopReason}, request-id=${requestId}): ${err.message}`,
-        { requestId },
-      );
-    }
-
-    if (typeof validate === 'function') {
-      const problems = validate(parsed);
-      if (Array.isArray(problems) && problems.length) {
-        throw new GroqError(
-          `Model JSON failed schema validation: ${problems.join('; ')}`,
+      let parsed;
+      try {
+        parsed = JSON.parse(extractJsonObject(text.trim()));
+      } catch (err) {
+        lastErr = new GroqError(
+          `Model did not return valid JSON (stop_reason=${stopReason}, request-id=${requestId}): ${err.message}`,
           { requestId },
         );
+        if (attempt === maxJsonRetries) throw lastErr;
+        this.logger?.warn('Model JSON did not parse, retrying', { attempt: attempt + 1, error: err.message });
+        continue;
       }
+
+      if (typeof validate === 'function') {
+        const problems = validate(parsed);
+        if (Array.isArray(problems) && problems.length) {
+          lastErr = new GroqError(
+            `Model JSON failed schema validation: ${problems.join('; ')}`,
+            { requestId },
+          );
+          if (attempt === maxJsonRetries) throw lastErr;
+          this.logger?.warn('Model JSON failed schema validation, retrying', { attempt: attempt + 1, problems });
+          continue;
+        }
+      }
+      return parsed;
     }
-    return parsed;
+    throw lastErr;
   }
 }
 
