@@ -1,9 +1,110 @@
 {
-  "version": 1155,
-  "updatedAt": "2026-08-28T21:22:50.351Z",
+  "version": 1163,
+  "updatedAt": "2026-08-28T21:35:30.342Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260828213530_dda417",
+      "mode": "review",
+      "trigger": "workflow_dispatch",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-28T21:35:30.053Z",
+      "updatedAt": "2026-08-28T21:35:30.331Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-28T21:35:30.060Z",
+          "completedAt": "2026-08-28T21:35:30.086Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-28T21:35:30.095Z",
+          "completedAt": "2026-08-28T21:35:30.330Z",
+          "error": "Groq API 404: {\"error\":{\"message\":\"This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct\",\"code\":404},\"user_id\":\"user_3DU5VSBvUGcaj6QfGzy8b5FDiIV\"}",
+          "output": null
+        },
+        "brief": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "draft": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "review": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "validate": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260828212229_9f45c9",
       "mode": "review",
@@ -6445,107 +6546,6 @@
           "attempts": 1,
           "startedAt": "2026-08-20T18:21:28.996Z",
           "completedAt": "2026-08-20T18:21:29.935Z",
-          "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
-          "output": null
-        },
-        "brief": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "draft": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "review": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "validate": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260820122303_5f92eb",
-      "mode": "draft",
-      "trigger": "schedule",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-20T12:23:03.357Z",
-      "updatedAt": "2026-08-20T12:23:03.816Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-20T12:23:03.364Z",
-          "completedAt": "2026-08-20T12:23:03.384Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 658
-          }
-        },
-        "research": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-20T12:23:03.393Z",
-          "completedAt": "2026-08-20T12:23:03.816Z",
           "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
           "output": null
         },
