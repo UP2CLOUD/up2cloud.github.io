@@ -63,6 +63,15 @@ function config() {
       maxOutputTokens: 8192,
       envPrefix: 'OPENROUTER',
     },
+    // Empty by default: Claude is now first in provider order when
+    // configured, so an always-on token here would make it the real,
+    // unstubbed active provider in every test below.
+    claude: {
+      oauthToken: '',
+      model: 'claude-sonnet-5',
+      cliPath: 'claude',
+      maxRetries: 0,
+    },
   };
 }
 
@@ -176,6 +185,34 @@ test('cascades through all three providers when Gemini and Groq are both exhaust
   assert.equal(geminiCalls, 1);
   assert.equal(groqCalls, 1);
   assert.equal(cerebrasCalls, 2);
+});
+
+test('Claude is tried first when configured, ahead of OpenRouter', async () => {
+  // Better quality and its own separate quota (a Claude subscription) — it
+  // goes first, ahead of every free-tier fallback.
+  let claudeCalls = 0;
+  let openrouterCalls = 0;
+  const claude = {
+    messages: async () => {
+      claudeCalls += 1;
+      return { text: 'claude result' };
+    },
+  };
+  const openrouter = {
+    messages: async () => {
+      openrouterCalls += 1;
+      return { text: 'openrouter result' };
+    },
+  };
+  const cfg = config();
+  cfg.claude.oauthToken = 'claude-oauth-token';
+  cfg.openrouter.apiKey = 'openrouter-key';
+  const client = new ModelClient(cfg, { clients: { claude, openrouter } });
+
+  assert.equal((await client.messages({})).text, 'claude result');
+  assert.equal(client.activeProvider, 'claude');
+  assert.equal(claudeCalls, 1);
+  assert.equal(openrouterCalls, 0);
 });
 
 test('OpenRouter is tried first when configured, ahead of Cloudflare Workers AI', async () => {

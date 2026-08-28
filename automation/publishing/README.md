@@ -178,10 +178,12 @@ Secrets (Settings → Secrets and variables → Actions → **Secrets**):
 
 | Secret | Needed for |
 |---|---|
-| `GEMINI_API_KEY` | primary generation provider |
+| `CLAUDE_CODE_OAUTH_TOKEN` | best-quality provider, billed against a Claude Pro/Max/Team subscription instead of API credits — generate with `claude setup-token` on the account whose plan should be billed; can also run alone |
+| `OPENROUTER_API_KEY` | free-tier fallback (`:free` open-weight models — Meta, Qwen, etc.); its quota is a separate account, untouched by whatever exhausts the other free providers; can also run alone |
+| `GEMINI_API_KEY` | free-tier fallback |
 | `GROQ_API_KEY` | free-tier fallback; can also run without Gemini |
-| `CEREBRAS_API_KEY` | free open-source-model fallback (gpt-oss-120b on Cerebras); can also run alone |
-| `CLOUDFLARE_AI_API_TOKEN` | fourth fallback — Workers AI on the same Cloudflare account as `CLOUDFLARE_ACCOUNT_ID` below, deliberately a separate token from `CLOUDFLARE_API_TOKEN` (that one's scoped for KV) so a leak or misconfig of either can't reach the other's permissions. Needs the account's **Workers AI: Edit** permission |
+| `CEREBRAS_API_KEY` | free open-source-model fallback (gpt-oss-120b on Cerebras) — requires a verified payment method as of August 2026, the no-card free tier ended; can also run alone |
+| `CLOUDFLARE_AI_API_TOKEN` | free-tier fallback — Workers AI on the same Cloudflare account as `CLOUDFLARE_ACCOUNT_ID` below, deliberately a separate token from `CLOUDFLARE_API_TOKEN` (that one's scoped for KV) so a leak or misconfig of either can't reach the other's permissions. Needs the account's **Workers AI: Edit** permission |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn posting |
 | `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_KV_NAMESPACE_ID` | `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_KV_NAMESPACE_ID` only if `STATE_BACKEND=kv`; `CLOUDFLARE_ACCOUNT_ID` also doubles as the account for `CLOUDFLARE_AI_API_TOKEN` above |
 
@@ -192,10 +194,12 @@ Variables (→ **Variables**):
 | Variable | Default | Purpose |
 |---|---|---|
 | `PUBLISH_MODE` | `draft` | `dry-run` \| `draft` \| `review` \| `auto` |
+| `CLAUDE_MODEL` | `claude-sonnet-5` | model id used via the `claude` CLI |
+| `OPENROUTER_MODEL` | `z-ai/glm-5.2:free` | OpenRouter's free-tier catalog rotates — check `GET https://openrouter.ai/api/v1/models` (filter `id.endsWith(':free')`) before changing this |
 | `GEMINI_MODEL` | `gemini-2.5-pro` | model id, rolled forward without a code change |
 | `GROQ_MODEL` | `openai/gpt-oss-120b` | fallback model id |
-| `CEREBRAS_MODEL` | `gpt-oss-120b` | second fallback model id — check `GET /v1/models` on the account's key before changing, Cerebras' catalog is account-scoped |
-| `CLOUDFLARE_AI_MODEL` | `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | third fallback model id — see the [model catalog](https://developers.cloudflare.com/workers-ai/models/) for other `@cf/...` ids |
+| `CEREBRAS_MODEL` | `gpt-oss-120b` | fallback model id — check `GET /v1/models` on the account's key before changing, Cerebras' catalog is account-scoped |
+| `CLOUDFLARE_AI_MODEL` | `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | fallback model id — see the [model catalog](https://developers.cloudflare.com/workers-ai/models/) for other `@cf/...` ids |
 | `LINKEDIN_ORGANIZATION_URN` | — | `urn:li:organization:12345678` |
 | `LINKEDIN_TOKEN_EXPIRES_AT` | — | ISO timestamp, drives expiry warnings |
 | `PUBLISH_INTERVAL_HOURS` | `48` | cadence (one article every 48h) |
@@ -204,20 +208,28 @@ Variables (→ **Variables**):
 | `STATE_BACKEND` | `file` | `file` (git-committed) or `kv` (Cloudflare) |
 | `UTM_CAMPAIGN` | `up2cloud_blog` | campaign tag |
 
-Generation prefers Cloudflare Workers AI, then Gemini, then Groq, then
-Cerebras — whichever of the four has a key configured, tried in that order.
-Cloudflare AI goes first because its free tier renews daily (10,000
-Neurons/day) rather than being a one-time credit grant like Cerebras', or a
-quota that has been observed exhausted alongside Gemini's and Groq's in the
-same incident. If the active provider is unavailable, rate-limited, over its
-quota, or returns payment-required (free credits/tier exhausted), the run
-falls through to the next one and stays there for all remaining stages
-(sticky, so later stages don't repeat a known-failing call). Schema-validation
-and content-quality failures never trigger a provider switch — a different
+Generation prefers Claude (via the `claude` CLI, billed against a subscription
+rather than a per-token quota), then OpenRouter, then Cloudflare Workers AI,
+then Gemini, then Groq, then Cerebras — whichever of the six has a
+credential configured, tried in that order. Claude goes first when
+configured because quality is meaningfully better and its quota (a
+subscription) is independent of every other provider's. OpenRouter goes
+next because its free-tier quota is also a separate account, untouched by
+whatever exhausts the rest. Cloudflare AI is next because its free tier
+renews daily (10,000 Neurons/day) rather than being a one-time credit grant
+like Cerebras', or a quota that has been observed exhausted alongside
+Gemini's and Groq's in the same incident. If the active provider is
+unavailable, rate-limited, over its quota, or returns payment-required
+(free credits/tier exhausted) or a model-not-found error, the run falls
+through to the next one and stays there for all remaining stages (sticky,
+so later stages don't repeat a known-failing call). Schema-validation and
+content-quality failures never trigger a provider switch — a different
 provider would likely produce the same bad answer. Any single credential is
-enough to run; none of the four free plans have unlimited daily capacity, so
+enough to run; none of the free plans have unlimited daily capacity, so
 having several configured is what makes the weekly cadence resilient to one
-or more of them being tapped out on a given day.
+or more of them being tapped out on a given day. Note that Claude usage via
+`CLAUDE_CODE_OAUTH_TOKEN` draws from the same subscription usage pool as
+whoever ran `claude setup-token`'s own interactive Claude Code use.
 
 ### State backends
 
