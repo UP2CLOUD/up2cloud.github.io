@@ -24,6 +24,7 @@ const SECRET_ENV_KEYS = [
   'GROQ_API_KEY',
   'CEREBRAS_API_KEY',
   'OPENROUTER_API_KEY',
+  'CLAUDE_CODE_OAUTH_TOKEN',
 ];
 
 /** Secrets shorter than this are too generic to scrub without mangling logs. */

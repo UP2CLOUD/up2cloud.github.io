@@ -51,6 +51,7 @@ const DEFAULTS = Object.freeze({
   siteBaseUrl: 'https://up2cloud.tech',
   geminiModel: 'gemini-2.5-pro',
   geminiApiVersion: 'v1beta',
+  claudeModel: 'claude-sonnet-5',
   groqModel: 'openai/gpt-oss-120b',
   cerebrasModel: 'gpt-oss-120b',
   cloudflareAiModel: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
@@ -88,6 +89,7 @@ const CAPABILITY_REQUIREMENTS = Object.freeze({
   groq: ['GROQ_API_KEY'],
   cerebras: ['CEREBRAS_API_KEY'],
   openrouter: ['OPENROUTER_API_KEY'],
+  claude: ['CLAUDE_CODE_OAUTH_TOKEN'],
   // Reuses the account's existing CLOUDFLARE_ACCOUNT_ID (already required for
   // the KV state backend) — only the Workers AI-scoped token is new.
   cloudflareAi: ['CLOUDFLARE_AI_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID'],
@@ -150,6 +152,19 @@ function loadConfig(env = process.env, argv = {}) {
     maxWords: parseIntOr(env.MAX_WORDS, DEFAULTS.maxWords),
     lockTtlSeconds: parseIntOr(env.LOCK_TTL_SECONDS, DEFAULTS.lockTtlSeconds),
     maxAttemptsPerStage: parseIntOr(env.MAX_ATTEMPTS_PER_STAGE, DEFAULTS.maxAttemptsPerStage),
+
+    // First in the fallback chain when configured: Claude via the `claude`
+    // CLI's headless mode, billed against a Claude Pro/Max/Team
+    // subscription (CLAUDE_CODE_OAUTH_TOKEN, from `claude setup-token`)
+    // rather than pay-per-token API credits. Uses ClaudeCliClient, not the
+    // generic OpenAI-compatible GroqClient, since it shells out to a CLI
+    // instead of calling an HTTP endpoint.
+    claude: {
+      oauthToken: env.CLAUDE_CODE_OAUTH_TOKEN || '',
+      model: (env.CLAUDE_MODEL || DEFAULTS.claudeModel).trim(),
+      cliPath: env.CLAUDE_CLI_PATH || 'claude',
+      maxRetries: parseIntOr(env.CLAUDE_MAX_RETRIES, 2),
+    },
 
     gemini: {
       apiKey: env.GEMINI_API_KEY || '',
@@ -298,11 +313,13 @@ function loadConfig(env = process.env, argv = {}) {
         !config.groq.apiKey &&
         !config.cerebras.apiKey &&
         !config.cloudflareAi.apiKey &&
-        !config.openrouter.apiKey
+        !config.openrouter.apiKey &&
+        !config.claude.oauthToken
       ) {
         throw new ConfigError(
-          'Missing model credentials: set OPENROUTER_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, ' +
-            'CEREBRAS_API_KEY, or CLOUDFLARE_AI_API_TOKEN + CLOUDFLARE_ACCOUNT_ID',
+          'Missing model credentials: set CLAUDE_CODE_OAUTH_TOKEN, OPENROUTER_API_KEY, ' +
+            'GEMINI_API_KEY, GROQ_API_KEY, CEREBRAS_API_KEY, or CLOUDFLARE_AI_API_TOKEN + ' +
+            'CLOUDFLARE_ACCOUNT_ID',
         );
       }
       return true;
