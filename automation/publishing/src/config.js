@@ -54,7 +54,10 @@ const DEFAULTS = Object.freeze({
   groqModel: 'openai/gpt-oss-120b',
   cerebrasModel: 'gpt-oss-120b',
   cloudflareAiModel: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-  openrouterModel: 'meta-llama/llama-3.3-70b-instruct:free',
+  // OpenRouter's free-tier catalog rotates (models get pulled to paid-only
+  // or removed entirely) — verify against GET https://openrouter.ai/api/v1
+  // /models (filter for id.endsWith(':free')) before changing this default.
+  openrouterModel: 'z-ai/glm-5.2:free',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
