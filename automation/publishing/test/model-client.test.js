@@ -57,7 +57,7 @@ function config() {
     // the real, unstubbed active provider in every test below.
     openrouter: {
       apiKey: '',
-      model: 'meta-llama/llama-3.3-70b-instruct:free',
+      model: 'z-ai/glm-5.2:free',
       baseUrl: 'https://openrouter.ai/api/v1',
       maxRetries: 0,
       maxOutputTokens: 8192,
@@ -418,6 +418,32 @@ test('Groq client treats HTTP 401 (bad/expired token) as fallback-eligible with 
   );
   // A bad credential on this provider says nothing about the next one, so
   // this should fail fast rather than retry the same broken token.
+  assert.equal(calls, 1);
+});
+
+test('Groq client treats HTTP 404 (model unavailable on this plan) as fallback-eligible with no local retry', async () => {
+  let calls = 0;
+  const client = new GroqClient(config().groq, {
+    fetchImpl: async () => {
+      calls += 1;
+      return response({
+        status: 404,
+        body: {
+          error: {
+            message: 'This model is unavailable for free. The paid version is available now - use this slug instead: meta-llama/llama-3.3-70b-instruct',
+            code: 404,
+          },
+        },
+      });
+    },
+  });
+
+  await assert.rejects(
+    () => client.messages({ messages: [{ role: 'user', content: 'test' }] }),
+    (err) => err.status === 404 && err.fallbackEligible === true && !err.retryable,
+  );
+  // The slug is wrong regardless of how many times we ask, so this should
+  // fail fast rather than retry the same broken request.
   assert.equal(calls, 1);
 });
 

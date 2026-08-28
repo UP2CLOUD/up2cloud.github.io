@@ -141,6 +141,13 @@ class GroqClient {
         // provider's credentials work, so this should fall through too
         // rather than hard-failing the whole run.
         const authError = res.status === 401;
+        // A 404 means the configured model slug doesn't exist on this
+        // provider/plan (seen from OpenRouter when a `:free` model gets
+        // pulled to paid-only: "This model is unavailable for free... use
+        // this slug instead"). Retrying the same request can't help — the
+        // slug is still wrong — but it says nothing about another
+        // provider's model, so fall through rather than hard-failing.
+        const modelUnavailable = res.status === 404;
         const retryable = RETRYABLE_STATUS.has(res.status) || transientJsonFailure;
         lastError = new GroqError(
           `Groq API ${res.status}: ${errText.slice(0, 400)}`,
@@ -148,7 +155,7 @@ class GroqClient {
             status: res.status,
             requestId,
             retryable,
-            fallbackEligible: retryable || tpmCapped || paymentRequired || authError,
+            fallbackEligible: retryable || tpmCapped || paymentRequired || authError || modelUnavailable,
           },
         );
         if (!retryable || attempt === this.maxRetries) throw lastError;
