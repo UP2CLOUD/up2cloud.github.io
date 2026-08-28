@@ -214,7 +214,7 @@ class Pipeline {
       return { findings, applied, body: revised };
     });
 
-    const finalBody = reviewed.body || drafted.body;
+    let finalBody = reviewed.body || drafted.body;
     const metadata = {
       ...drafted.outline,
       category: topic.domain.category,
@@ -223,37 +223,64 @@ class Pipeline {
     };
 
     // ── 6. Validate (quality gates) ────────────────────────────────────────
+    // A single review+revise pass (stage 5) doesn't guarantee the recheck
+    // below is satisfied — the recheck runs against the revised text and can
+    // still flag something the first revision missed or introduced. Retry
+    // the revise-and-recheck cycle a few times when the only thing still
+    // blocking is a model review finding; a structural gate (citations, word
+    // count, duplication, fabrication) won't change from asking the model to
+    // revise again, so those fail fast on the first attempt as before.
+    const MAX_RECHECK_ATTEMPTS = 3;
     const validation = await this.stage(run, 'validate', async () => {
       const publications = await this.ledger.listPublications();
       const legacyPosts = loadLegacyPosts(cfg.repoRoot);
 
-      // Re-review the *revised* body: revision can introduce new problems, and
-      // gating on findings from the pre-revision draft would check the wrong text.
-      const recheck = await author.reviewDraft({
-        client: this.client(),
-        draft: finalBody,
-        brief,
-        research,
-        kind: 'technical',
-      });
+      let body = finalBody;
+      let recheck;
+      let result;
+      for (let attempt = 1; attempt <= MAX_RECHECK_ATTEMPTS; attempt += 1) {
+        // Re-review the *revised* body: revision can introduce new problems, and
+        // gating on findings from the pre-revision draft would check the wrong text.
+        recheck = await author.reviewDraft({
+          client: this.client(),
+          draft: body,
+          brief,
+          research,
+          kind: 'technical',
+        });
 
-      const result = runAllGates({
-        body: finalBody,
-        metadata,
-        citations: research.sources,
-        existingPublications: publications,
-        existingPosts: legacyPosts,
-        minWords: cfg.minWords,
-        maxWords: cfg.maxWords,
-        reviewFindings: recheck.findings || [],
-      });
+        result = runAllGates({
+          body,
+          metadata,
+          citations: research.sources,
+          existingPublications: publications,
+          existingPosts: legacyPosts,
+          minWords: cfg.minWords,
+          maxWords: cfg.maxWords,
+          reviewFindings: recheck.findings || [],
+        });
+
+        if (result.passed) break;
+
+        const reviewOnlyBlocking = result.blocking.every((b) => b.gate === 'review');
+        if (!reviewOnlyBlocking || attempt === MAX_RECHECK_ATTEMPTS) break;
+
+        const { revised } = await author.reviseDraft({
+          client: this.client(),
+          draft: body,
+          findings: recheck.findings || [],
+          research,
+        });
+        body = revised;
+      }
 
       if (!result.passed) {
         const summary = result.blocking.map((b) => `[${b.gate}] ${b.message}`).join('\n  ');
         throw new Error(`Quality gates blocked publication:\n  ${summary}`);
       }
-      return { ...result, recheckFindings: recheck.findings || [] };
+      return { ...result, recheckFindings: recheck.findings || [], body };
     });
+    finalBody = validation.body || finalBody;
 
     // ── 7. Localize ────────────────────────────────────────────────────────
     const localized = await this.stage(run, 'localize', async () => {
