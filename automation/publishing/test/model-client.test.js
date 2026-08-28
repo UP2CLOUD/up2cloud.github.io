@@ -381,3 +381,78 @@ test('Groq client treats HTTP 401 (bad/expired token) as fallback-eligible with 
   // this should fail fast rather than retry the same broken token.
   assert.equal(calls, 1);
 });
+
+test('Groq client retries a schema-invalid JSON response and succeeds on the next attempt', async () => {
+  let calls = 0;
+  const client = new GroqClient(config().groq, {
+    fetchImpl: async () => {
+      calls += 1;
+      const body = calls === 1 ? { findings: 'not an array' } : { findings: [] };
+      return response({
+        status: 200,
+        body: { choices: [{ message: { content: JSON.stringify(body) }, finish_reason: 'stop' }] },
+      });
+    },
+  });
+
+  const result = await client.json({
+    prompt: 'review this',
+    validate: (obj) => (Array.isArray(obj.findings) ? [] : ['findings must be an array']),
+  });
+
+  assert.deepEqual(result, { findings: [] });
+  assert.equal(calls, 2, 'the first malformed response should trigger exactly one retry');
+});
+
+test('Groq client gives up after exhausting json retries on a persistently schema-invalid response', async () => {
+  let calls = 0;
+  const client = new GroqClient(config().groq, {
+    fetchImpl: async () => {
+      calls += 1;
+      return response({
+        status: 200,
+        body: { choices: [{ message: { content: JSON.stringify({ findings: 'still not an array' }) }, finish_reason: 'stop' }] },
+      });
+    },
+  });
+
+  await assert.rejects(
+    () =>
+      client.json({
+        prompt: 'review this',
+        maxJsonRetries: 2,
+        validate: (obj) => (Array.isArray(obj.findings) ? [] : ['findings must be an array']),
+      }),
+    /schema validation/,
+  );
+  // Initial attempt + 2 retries = 3 calls, then give up rather than retry forever.
+  assert.equal(calls, 3);
+});
+
+test('Gemini client retries a schema-invalid JSON response and succeeds on the next attempt', async () => {
+  let calls = 0;
+  const client = new GeminiClient({
+    apiKey: 'gemini-key',
+    model: 'gemini-model',
+    baseUrl: 'https://generativelanguage.googleapis.com',
+  }, {
+    fetchImpl: async () => {
+      calls += 1;
+      const body = calls === 1 ? { findings: 'not an array' } : { findings: [] };
+      return response({
+        status: 200,
+        body: {
+          candidates: [{ content: { parts: [{ text: JSON.stringify(body) }] }, finishReason: 'STOP' }],
+        },
+      });
+    },
+  });
+
+  const result = await client.json({
+    prompt: 'review this',
+    validate: (obj) => (Array.isArray(obj.findings) ? [] : ['findings must be an array']),
+  });
+
+  assert.deepEqual(result, { findings: [] });
+  assert.equal(calls, 2, 'the first malformed response should trigger exactly one retry');
+});

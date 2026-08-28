@@ -178,36 +178,52 @@ class GeminiClient {
    * "application/json"`, which is far more reliable than asking politely for
    * "JSON only" and hoping — the API itself constrains the output.
    */
-  async json({ system, prompt, maxTokens = 8192, temperature = 0.3, validate }) {
+  // A parse failure or a validate() rejection means the model's own output
+  // was unusable JSON, not a request problem — a transient generation
+  // hiccup (see groq.js's identical retry for the same failure shape, and
+  // model-client.js for why this never triggers a provider switch: a
+  // different provider's model would likely mis-shape the same request the
+  // same way). Retry a small, fixed number of times before giving up.
+  async json({ system, prompt, maxTokens = 8192, temperature = 0.3, validate, maxJsonRetries = 2 }) {
     const messages = [{ role: 'user', content: prompt }];
-    const { text, requestId, stopReason } = await this.messages({
-      system,
-      messages,
-      maxTokens,
-      temperature,
-      responseMimeType: 'application/json',
-    });
+    let lastErr;
+    for (let attempt = 0; attempt <= maxJsonRetries; attempt += 1) {
+      const { text, requestId, stopReason } = await this.messages({
+        system,
+        messages,
+        maxTokens,
+        temperature,
+        responseMimeType: 'application/json',
+      });
 
-    let parsed;
-    try {
-      parsed = JSON.parse(extractJsonObject(text.trim()));
-    } catch (err) {
-      throw new GeminiError(
-        `Model did not return valid JSON (stop_reason=${stopReason}, request-id=${requestId}): ${err.message}`,
-        { requestId },
-      );
-    }
-
-    if (typeof validate === 'function') {
-      const problems = validate(parsed);
-      if (Array.isArray(problems) && problems.length) {
-        throw new GeminiError(
-          `Model JSON failed schema validation: ${problems.join('; ')}`,
+      let parsed;
+      try {
+        parsed = JSON.parse(extractJsonObject(text.trim()));
+      } catch (err) {
+        lastErr = new GeminiError(
+          `Model did not return valid JSON (stop_reason=${stopReason}, request-id=${requestId}): ${err.message}`,
           { requestId },
         );
+        if (attempt === maxJsonRetries) throw lastErr;
+        this.logger?.warn('Model JSON did not parse, retrying', { attempt: attempt + 1, error: err.message });
+        continue;
       }
+
+      if (typeof validate === 'function') {
+        const problems = validate(parsed);
+        if (Array.isArray(problems) && problems.length) {
+          lastErr = new GeminiError(
+            `Model JSON failed schema validation: ${problems.join('; ')}`,
+            { requestId },
+          );
+          if (attempt === maxJsonRetries) throw lastErr;
+          this.logger?.warn('Model JSON failed schema validation, retrying', { attempt: attempt + 1, problems });
+          continue;
+        }
+      }
+      return parsed;
     }
-    return parsed;
+    throw lastErr;
   }
 }
 
