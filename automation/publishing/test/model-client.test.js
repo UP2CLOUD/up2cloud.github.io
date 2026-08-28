@@ -52,6 +52,17 @@ function config() {
       maxOutputTokens: 4096,
       envPrefix: 'CLOUDFLARE_AI',
     },
+    // Empty by default for the same reason as cloudflareAi above: OpenRouter
+    // is now first in provider order, so an always-on key here would make it
+    // the real, unstubbed active provider in every test below.
+    openrouter: {
+      apiKey: '',
+      model: 'meta-llama/llama-3.3-70b-instruct:free',
+      baseUrl: 'https://openrouter.ai/api/v1',
+      maxRetries: 0,
+      maxOutputTokens: 8192,
+      envPrefix: 'OPENROUTER',
+    },
   };
 }
 
@@ -165,6 +176,34 @@ test('cascades through all three providers when Gemini and Groq are both exhaust
   assert.equal(geminiCalls, 1);
   assert.equal(groqCalls, 1);
   assert.equal(cerebrasCalls, 2);
+});
+
+test('OpenRouter is tried first when configured, ahead of Cloudflare Workers AI', async () => {
+  // Its free `:free` models run on their own account/quota, so they're
+  // untouched by whatever exhausted the other four — it goes first.
+  let cloudflareCalls = 0;
+  let openrouterCalls = 0;
+  const openrouter = {
+    messages: async () => {
+      openrouterCalls += 1;
+      return { text: 'openrouter result' };
+    },
+  };
+  const cloudflareAi = {
+    messages: async () => {
+      cloudflareCalls += 1;
+      return { text: 'cloudflare result' };
+    },
+  };
+  const cfg = config();
+  cfg.openrouter.apiKey = 'openrouter-key';
+  cfg.cloudflareAi.apiKey = 'cf-ai-token';
+  const client = new ModelClient(cfg, { clients: { openrouter, 'cloudflare-ai': cloudflareAi } });
+
+  assert.equal((await client.messages({})).text, 'openrouter result');
+  assert.equal(client.activeProvider, 'openrouter');
+  assert.equal(openrouterCalls, 1);
+  assert.equal(cloudflareCalls, 0);
 });
 
 test('Cloudflare Workers AI is tried first when configured, ahead of Gemini', async () => {

@@ -23,6 +23,7 @@ const SECRET_ENV_KEYS = [
   'BREVO_API_KEY',
   'GROQ_API_KEY',
   'CEREBRAS_API_KEY',
+  'OPENROUTER_API_KEY',
 ];
 
 /** Secrets shorter than this are too generic to scrub without mangling logs. */

@@ -54,6 +54,7 @@ const DEFAULTS = Object.freeze({
   groqModel: 'openai/gpt-oss-120b',
   cerebrasModel: 'gpt-oss-120b',
   cloudflareAiModel: '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+  openrouterModel: 'meta-llama/llama-3.3-70b-instruct:free',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -83,6 +84,7 @@ const CAPABILITY_REQUIREMENTS = Object.freeze({
   gemini: ['GEMINI_API_KEY'],
   groq: ['GROQ_API_KEY'],
   cerebras: ['CEREBRAS_API_KEY'],
+  openrouter: ['OPENROUTER_API_KEY'],
   // Reuses the account's existing CLOUDFLARE_ACCOUNT_ID (already required for
   // the KV state backend) — only the Workers AI-scoped token is new.
   cloudflareAi: ['CLOUDFLARE_AI_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID'],
@@ -163,6 +165,21 @@ function loadConfig(env = process.env, argv = {}) {
       maxRetries: parseIntOr(env.GROQ_MAX_RETRIES, 4),
       maxOutputTokens: parseIntOr(env.GROQ_MAX_OUTPUT_TOKENS, 8192),
       envPrefix: 'GROQ',
+    },
+
+    // First in the fallback chain: OpenRouter's `:free` models run on their
+    // own account/quota, untouched by whatever exhausted the other four
+    // providers, and the free tier's daily cap (50-1000 requests/day
+    // depending on lifetime spend, per OpenRouter's docs) comfortably covers
+    // one real publish every PUBLISH_INTERVAL_HOURS. Same OpenAI-compatible
+    // client as Groq/Cerebras/Cloudflare AI.
+    openrouter: {
+      apiKey: env.OPENROUTER_API_KEY || '',
+      model: (env.OPENROUTER_MODEL || DEFAULTS.openrouterModel).trim(),
+      baseUrl: (env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/+$/, ''),
+      maxRetries: parseIntOr(env.OPENROUTER_MAX_RETRIES, 4),
+      maxOutputTokens: parseIntOr(env.OPENROUTER_MAX_OUTPUT_TOKENS, 8192),
+      envPrefix: 'OPENROUTER',
     },
 
     // Open-source-model fallback: Cerebras hosts open-weight models free of
@@ -277,11 +294,12 @@ function loadConfig(env = process.env, argv = {}) {
         !config.gemini.apiKey &&
         !config.groq.apiKey &&
         !config.cerebras.apiKey &&
-        !config.cloudflareAi.apiKey
+        !config.cloudflareAi.apiKey &&
+        !config.openrouter.apiKey
       ) {
         throw new ConfigError(
-          'Missing model credentials: set GEMINI_API_KEY, GROQ_API_KEY, CEREBRAS_API_KEY, ' +
-            'or CLOUDFLARE_AI_API_TOKEN + CLOUDFLARE_ACCOUNT_ID',
+          'Missing model credentials: set OPENROUTER_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, ' +
+            'CEREBRAS_API_KEY, or CLOUDFLARE_AI_API_TOKEN + CLOUDFLARE_ACCOUNT_ID',
         );
       }
       return true;
