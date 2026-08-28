@@ -247,6 +247,36 @@ test('quality gates block a fabricated claim before anything is written', async 
   pipeline._client.messages = original;
 });
 
+test('validate retries the revise-and-recheck cycle when only a review finding blocks, and recovers', async () => {
+  const repo = sandbox();
+  const { ledger, pipeline } = makePipeline(repo, 'dry-run');
+
+  const baseJson = pipeline._client.json.bind(pipeline._client);
+  let reviewCalls = 0;
+  pipeline._client.json = async (args) => {
+    if (args.prompt.includes('Review this draft')) {
+      reviewCalls += 1;
+      // Stage 5's technical + editorial reviews (calls 1-2) and validate's
+      // first recheck (call 3) all report a blocking finding; only the
+      // recheck after one revise-retry (call 4) comes back clean.
+      if (reviewCalls <= 3) {
+        return {
+          findings: [{ severity: 'high', message: 'unclear connection between the cited foundations and the thesis' }],
+          verdict: 'needs_revision',
+        };
+      }
+      return { findings: [{ severity: 'low', message: 'reads fine now' }], verdict: 'publishable' };
+    }
+    return baseJson(args);
+  };
+
+  const run = await ledger.startRun({ mode: 'dry-run', trigger: 'test' });
+  const result = await pipeline.run({ run, forcedTopic: null });
+
+  assert.ok(result.validation.passed, JSON.stringify(result.validation.blocking));
+  assert.equal(reviewCalls, 4, 'expected exactly one revise-and-recheck retry');
+});
+
 test('a resumed run does not repeat completed stages', async () => {
   const repo = sandbox();
   const { ledger, pipeline } = makePipeline(repo, 'dry-run');
