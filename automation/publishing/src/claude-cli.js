@@ -25,6 +25,11 @@ class ClaudeCliError extends Error {
     super(message);
     this.name = 'ClaudeCliError';
     this.exitCode = exitCode;
+    // Aliased to `status` too: ModelClient's generic "unavailable; trying
+    // next provider" log line reads `err.status` for every provider — an
+    // HTTP status code for the others, the CLI's exit code here — so this
+    // failure shows up there instead of logging as `undefined`.
+    this.status = exitCode;
     this.retryable = Boolean(retryable);
     this.fallbackEligible = Boolean(fallbackEligible);
   }
@@ -124,7 +129,11 @@ class ClaudeCliClient {
         lastError = err;
         if (!err.retryable || attempt === this.maxRetries) throw err;
         const backoff = Math.min(2 ** attempt * 1000, MAX_BACKOFF_MS);
-        this.logger?.warn('Claude CLI call failed, retrying', { attempt: attempt + 1, backoffMs: backoff });
+        this.logger?.warn('Claude CLI call failed, retrying', {
+          attempt: attempt + 1,
+          backoffMs: backoff,
+          error: err.message,
+        });
         await this.sleep(backoff);
         continue;
       }
@@ -162,6 +171,7 @@ class ClaudeCliClient {
         exitCode: result.code,
         attempt: attempt + 1,
         backoffMs: backoff,
+        error: lastError.message,
       });
       await this.sleep(backoff);
     }
