@@ -1,9 +1,159 @@
 {
-  "version": 1338,
-  "updatedAt": "2026-08-29T15:56:06.591Z",
+  "version": 1358,
+  "updatedAt": "2026-08-29T20:17:01.327Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260829200711_aea07b",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-08-29T20:07:11.074Z",
+      "updatedAt": "2026-08-29T20:17:01.320Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:07:11.083Z",
+          "completedAt": "2026-08-29T20:07:11.098Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:07:11.108Z",
+          "completedAt": "2026-08-29T20:07:39.092Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 102280
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:07:39.097Z",
+          "completedAt": "2026-08-29T20:08:14.467Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 3776
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:08:14.472Z",
+          "completedAt": "2026-08-29T20:10:14.766Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 21646
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:10:14.772Z",
+          "completedAt": "2026-08-29T20:15:26.639Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 27849
+          }
+        },
+        "validate": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:15:26.645Z",
+          "completedAt": "2026-08-29T20:16:24.070Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "passed",
+              "blocking",
+              "warnings",
+              "findings",
+              "contentHash",
+              "words",
+              "authoritativeCitations",
+              "recheckFindings",
+              "body"
+            ],
+            "size": 18962
+          }
+        },
+        "localize": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:16:24.075Z",
+          "completedAt": "2026-08-29T20:16:29.402Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "bundle",
+              "problems"
+            ],
+            "size": 1257
+          }
+        },
+        "publish_blog": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-08-29T20:16:29.408Z",
+          "completedAt": "2026-08-29T20:17:01.320Z",
+          "error": "git push failed: To https://github.com/UP2CLOUD/up2cloud.github.io\n ! [rejected]        automation/blog-2026-08-29-cross-cloud-workload-identity-federation -> automation/blog-2026-08-29-cross-cloud-workload-identity-federation (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/UP2CLOUD/up2cloud.github.io'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before pushing",
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260829155316_61d836",
       "mode": "draft",
@@ -6750,107 +6900,6 @@
           "attempts": 1,
           "startedAt": "2026-08-24T00:36:40.905Z",
           "completedAt": "2026-08-24T00:36:41.485Z",
-          "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
-          "output": null
-        },
-        "brief": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "draft": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "review": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "validate": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260823181251_a6db4a",
-      "mode": "draft",
-      "trigger": "schedule",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-23T18:12:51.966Z",
-      "updatedAt": "2026-08-23T18:12:52.534Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-23T18:12:51.974Z",
-          "completedAt": "2026-08-23T18:12:51.997Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 658
-          }
-        },
-        "research": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-23T18:12:52.007Z",
-          "completedAt": "2026-08-23T18:12:52.534Z",
           "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
           "output": null
         },
