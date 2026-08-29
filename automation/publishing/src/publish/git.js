@@ -26,19 +26,26 @@ class GitError extends Error {
   }
 }
 
-async function git(args, { cwd, token, env = process.env } = {}) {
+async function git(args, { cwd, token, env = process.env, execImpl = execFileAsync } = {}) {
   const authArgs = token
     ? ['-c', `http.https://github.com/.extraheader=Authorization: Basic ${Buffer.from(`x-access-token:${token}`).toString('base64')}`]
     : [];
   try {
-    const { stdout, stderr } = await execFileAsync('git', [...authArgs, ...args], {
+    const { stdout, stderr } = await execImpl('git', [...authArgs, ...args], {
       cwd,
       env,
       maxBuffer: 20 * 1024 * 1024,
     });
     return { stdout: stdout.trim(), stderr: stderr.trim() };
   } catch (err) {
-    throw new GitError(`git ${args[0]} failed: ${err.message.split('\n')[0]}`, {
+    // Node's own exec error message is just "Command failed: <cmd>" — the
+    // actual reason (auth failure, DNS, "remote end hung up", ...) is git's
+    // stderr, captured separately on the error object. `.split('\n')[0]`
+    // used to keep only that useless first line and throw away the one
+    // detail that would have explained a failure like the "git fetch
+    // failed" seen in production with no diagnosable cause.
+    const reason = (err.stderr || err.message || '').trim().slice(0, 500);
+    throw new GitError(`git ${args[0]} failed: ${reason}`, {
       stdout: err.stdout,
       stderr: err.stderr,
       code: err.code,
