@@ -27,8 +27,20 @@ class GitError extends Error {
 }
 
 async function git(args, { cwd, token, env = process.env, execImpl = execFileAsync } = {}) {
+  // actions/checkout runs with persist-credentials: true (needed so this same
+  // job can push its content branch), which writes its own
+  // http.https://github.com/.extraheader into .git/config. `http.extraHeader`
+  // is a multi-valued config key, so simply adding ours via `-c` does not
+  // replace that one — git sends BOTH Authorization headers, and GitHub's API
+  // rejects the request with 400 "Duplicate header: Authorization" (seen in
+  // production on publishBlog's `git fetch`, the first time a run ever
+  // reached that stage). The empty `-c` entry first clears the persisted
+  // value for this invocation only, before the real one is added.
   const authArgs = token
-    ? ['-c', `http.https://github.com/.extraheader=Authorization: Basic ${Buffer.from(`x-access-token:${token}`).toString('base64')}`]
+    ? [
+        '-c', 'http.https://github.com/.extraheader=',
+        '-c', `http.https://github.com/.extraheader=Authorization: Basic ${Buffer.from(`x-access-token:${token}`).toString('base64')}`,
+      ]
     : [];
   try {
     const { stdout, stderr } = await execImpl('git', [...authArgs, ...args], {

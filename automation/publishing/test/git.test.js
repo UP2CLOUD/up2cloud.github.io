@@ -49,3 +49,25 @@ test('a successful git command trims stdout/stderr and returns them', async () =
 
   assert.deepEqual(result, { stdout: 'abc123', stderr: '' });
 });
+
+test('a token clears actions/checkout\'s persisted extraheader before adding its own', async () => {
+  // actions/checkout (persist-credentials: true) already writes an
+  // http.extraheader into .git/config for its own GITHUB_TOKEN. Since that's
+  // a multi-valued git config key, adding ours without first clearing it
+  // makes git send both Authorization headers — GitHub's API then rejects
+  // the request with 400 "Duplicate header: Authorization" (seen in
+  // production on the first run that ever reached publishBlog).
+  let seenArgs;
+  const execImpl = async (cmd, args) => {
+    seenArgs = args;
+    return { stdout: '', stderr: '' };
+  };
+
+  await git(['fetch', 'origin', 'main'], { cwd: '/tmp', token: 'my-token', execImpl });
+
+  const clearIdx = seenArgs.indexOf('http.https://github.com/.extraheader=');
+  const setIdx = seenArgs.findIndex((a) => a.startsWith('http.https://github.com/.extraheader=Authorization'));
+  assert.notEqual(clearIdx, -1, 'expected an empty-value extraheader clearing the persisted one');
+  assert.notEqual(setIdx, -1, 'expected the real Authorization extraheader');
+  assert.ok(clearIdx < setIdx, 'the clearing entry must come before the real header');
+});
