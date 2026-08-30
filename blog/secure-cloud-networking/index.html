@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Network Security — UP2CLOUD</title>
+  <meta name="description" content="Design a secure cloud network architecture with private connectivity and egress control to protect cloud-based workloads" />
+  <meta name="keywords" content="cloud network security, private connectivity, egress control, cloud architecture, network architecture, security, compliance" />
+  <meta property="og:title" content="Cloud Network Security — UP2CLOUD" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://up2cloud.tech/blog/secure-cloud-networking/" />
+  <link rel="canonical" href="https://up2cloud.tech/blog/secure-cloud-networking/" />
+  <meta property="article:published_time" content="2026-08-30" />
+  <!-- include: _includes/favicon.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="../../assets/css/tailwind.min.css" as="style" />
+  <link rel="stylesheet" href="../../assets/css/tailwind.min.css" />
+  <style>
+    *,*::before,*::after { box-sizing:border-box }
+    html { scroll-behavior:smooth; overscroll-behavior:none }
+    body { font-family:'DM Sans',sans-serif; background:#0F172A; color:#fff; margin:0 }
+    h1,h2,h3,h4 { font-family:'Space Grotesk',sans-serif }
+    .glass { background:rgba(255,255,255,.07); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.12) }
+    .gradient-text { background:linear-gradient(90deg,#0EA5E9,#38BDF8,#7DD3FC); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+    .badge { background:rgba(3,105,161,.15); color:#38BDF8; font-size:.72rem; font-weight:600; padding:.25rem .75rem; border-radius:999px; letter-spacing:.05em; text-transform:uppercase }
+    .badge-sky { background:rgba(3,105,161,.18); color:#38BDF8 }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease }
+    .reveal.visible { opacity:1; transform:none }
+    .prose p { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; font-size:1.0625rem }
+    .prose h2 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#fff; margin-top:2.5rem; margin-bottom:1rem }
+    .prose h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.2rem; color:rgba(255,255,255,.9); margin-top:2rem; margin-bottom:.75rem }
+    .prose ul { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; padding-left:1.5rem; list-style-type:disc }
+    .prose ul li { margin-bottom:.5rem }
+    .prose strong { color:#fff; font-weight:600 }
+    .prose pre { background:#0a0f1a; border:1px solid rgba(14,165,233,.2); border-radius:12px; padding:1.25rem 1.5rem; overflow-x:auto; margin-bottom:1.5rem }
+    .prose pre code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#94d4f7; line-height:1.7; white-space:pre }
+    .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#7dd3fc; background:rgba(14,165,233,.1); padding:.1rem .35rem; border-radius:4px }
+    .prose pre code { background:none; padding:0; color:#94d4f7 }
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(56,189,248,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
+  </style>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Secure Cloud Networking",
+  "description": "Design a secure cloud network architecture with private connectivity and egress control to protect cloud-based workloads",
+  "datePublished": "2026-08-30",
+  "dateModified": "2026-08-30",
+  "author": {
+    "@type": "Person",
+    "name": "Cesar A. Nogueira",
+    "url": "https://up2cloud.tech/about/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "UP2CLOUD",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://up2cloud.tech/assets/img/og-image.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://up2cloud.tech/blog/secure-cloud-networking/"
+  },
+  "image": "https://up2cloud.tech/assets/img/og-image.png"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://up2cloud.tech/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://up2cloud.tech/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Secure Cloud Networking",
+      "item": "https://up2cloud.tech/blog/secure-cloud-networking/"
+    }
+  ]
+}
+  </script>
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <meta property="og:description" content="Design a secure cloud network architecture with private connectivity and egress control to protect cloud-based workloads" />
+  <meta name="author" content="César Nogueira" />
+  <meta property="article:author" content="https://up2cloud.tech/about/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@up2cloud" />
+  <meta name="twitter:title" content="Cloud Network Security — UP2CLOUD" />
+  <meta name="twitter:description" content="Design a secure cloud network architecture with private connectivity and egress control to protect cloud-based workloads" />
+  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q', { anonymize_ip: true });
+  </script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:rgba(15,23,42,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-white rounded" aria-label="UP2CLOUD Home">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="relative" id="article-lang-picker">
+        <button id="article-lang-btn" onclick="toggleArticleLang(event)" class="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium border border-white/20 rounded-lg px-2.5 py-1.5 transition-colors hover:border-white/40 cursor-pointer" aria-haspopup="true" aria-expanded="false">
+          <span id="article-lang-flag" class="text-sm leading-none">🇺🇸</span>
+          <span id="article-lang-code" class="font-semibold tracking-wide">EN</span>
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="article-lang-menu" class="hidden absolute right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-50 min-w-[140px]" style="background:rgba(15,23,42,.97);backdrop-filter:blur(16px)">
+          <button onclick="setArticleLang('en')" data-lang="en" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇺🇸</span><span>English</span></button>
+          <button onclick="setArticleLang('pt')" data-lang="pt" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇧🇷</span><span>Português</span></button>
+          <button onclick="setArticleLang('es')" data-lang="es" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇪🇸</span><span>Español</span></button>
+          <button onclick="setArticleLang('fr')" data-lang="fr" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇫🇷</span><span>Français</span></button>
+        </div>
+      </div>
+      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_blog">Blog</a>
+      <a href="/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_back">← Back to site</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)" data-i18n="blog_cta_touch">Get in Touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-32 pb-12 relative overflow-hidden" style="background:radial-gradient(circle at 15% 20%,rgba(14,165,233,.18),transparent 35%),radial-gradient(circle at 85% 10%,rgba(3,105,161,.15),transparent 30%),linear-gradient(135deg,#020617 0%,#0F172A 50%,#0c2240 100%)">
+  <div class="absolute w-96 h-96 rounded-full opacity-15 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-5%;right:-5%;filter:blur(70px)"></div>
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/blog/" class="text-white/50 hover:text-white text-sm transition-colors">Blog</a>
+      <span class="text-white/25">/</span>
+      <span class="badge badge-sky">Cloud</span>
+    </div>
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+      Secure Cloud Networking
+    </h1>
+    <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
+      <div class="flex items-center gap-3">
+        <img src="/assets/img/cesar.webp" alt="Cesar A. Nogueira" width="48" height="48" loading="lazy" class="w-8 h-8 rounded-full object-cover" style="object-position:64% 62%;transform:scale(1.5);transform-origin:center" />
+        <span class="text-white/70 font-medium">Cesar A. Nogueira</span>
+      </div>
+      <span>April 22, 2025</span>
+      <span>·</span>
+      <span>8 <span data-i18n="blog_min_read">min read</span></span>
+    </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Diagram of Terraform's layered module structure — resource modules, composition modules, and root configurations — flowing through a policy-gated CI/CD pipeline into production apply">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".5"><rect x="10" y="50" width="40" height="30" rx="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".65"><rect x="70" y="38" width="40" height="42" rx="4"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".8"><rect x="130" y="26" width="40" height="54" rx="4"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#7DD3FC"><rect x="190" y="12" width="40" height="68" rx="4"/></g>
+      <path class="draw" d="M250 46 L280 46 L280 22 L385 22" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="385" cy="22" r="4" fill="#F97316"/>
+      <text x="292" y="14" fill="#FB923C" font-size="9" font-family="Space Grotesk,sans-serif" font-weight="700">apply</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">modules</text>
+      <text x="190" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">environments</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ARTICLE BODY -->
+<article class="py-12" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6 prose reveal">
+
+<h2>Introduction to Cloud Network Security</h2>
+<p>Cloud network security is a critical aspect of protecting cloud-based workloads and preventing unauthorized data access. As more organizations move their applications and data to the cloud, the importance of cloud network security cannot be overstated. Designing a secure cloud network architecture is challenging due to the complexity of cloud environments and the need to balance security with scalability and performance. A well-designed cloud network architecture with private connectivity and egress control is crucial for securing cloud-based workloads. According to the <a href="https://learn.microsoft.com/en-us/azure/well-architected/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Azure Well-Architected Framework</a>, a well-architected cloud network should prioritize security, scalability, and performance.</p>
+<p>The complexity of cloud environments can make it difficult to design a secure cloud network architecture. Cloud environments are often made up of multiple virtual networks, subnets, and instances, which can make it challenging to manage and secure. Additionally, cloud environments are often dynamic, with instances and resources being spun up and down as needed, which can make it difficult to maintain a consistent security posture. However, with the right design principles and best practices, it is possible to design a secure cloud network architecture that meets the needs of your organization.</p>
+<h2>Private Connectivity Options</h2>
+<p>Private connectivity options are essential for securing cloud-based workloads by providing a dedicated and secure connection between the cloud and on-premises environments. There are several private connectivity options available, including:</p>
+<ul><li>AWS Direct Connect: a service that allows customers to establish a dedicated network connection from their premises to AWS.</li><li>Azure ExpressRoute: a service that allows customers to establish a dedicated network connection from their premises to Azure.</li><li>Google Cloud Interconnect: a service that allows customers to establish a dedicated network connection from their premises to Google Cloud.</li></ul>
+<p>Each of these options provides a secure and dedicated connection, but they differ in terms of their features, pricing, and compatibility. For example, AWS Direct Connect supports speeds of up to 100 Gbps, while Azure ExpressRoute supports speeds of up to 100 Gbps as well. Google Cloud Interconnect supports speeds of up to 10 Gbps.</p>
+<p>When choosing a private connectivity option, it&#39;s essential to consider the specific needs of your organization. For example, if you require a high-speed connection, AWS Direct Connect or Azure ExpressRoute may be a better option. On the other hand, if you require a more cost-effective solution, Google Cloud Interconnect may be a better option.</p>
+<h3>Comparison of Private Connectivity Options</h3>
+<p>The following table compares the features, pricing models, and compatibility of the private connectivity options: | Option | Speed | Pricing Model | Compatibility | Additional Costs | | --- | --- | --- | --- | --- | | AWS Direct Connect | Up to 100 Gbps | Port-hour pricing, data transfer pricing | AWS-only | Costs associated with establishing and maintaining a connection | | Azure ExpressRoute | Up to 100 Gbps | Circuit pricing, data transfer pricing | Azure-only | Costs associated with establishing and maintaining a connection | | Google Cloud Interconnect | Up to 10 Gbps | Port-hour pricing, data transfer pricing | Google Cloud-only | Costs associated with establishing and maintaining a connection |</p>
+<p>As shown in the table, each private connectivity option has its own strengths and weaknesses. AWS Direct Connect and Azure ExpressRoute offer higher speeds, but are limited to their respective cloud providers. Google Cloud Interconnect offers a more cost-effective solution, but has lower speeds. It&#39;s essential to consider the pricing models, compatibility, and additional costs associated with each option when making a decision.</p>
+<h2>Egress Control and Network Segmentation</h2>
+<p>Egress control and network segmentation are critical components of cloud network security. Egress control refers to the ability to control and monitor outgoing traffic from a cloud environment, while network segmentation refers to the ability to divide a cloud environment into smaller, isolated segments. According to the <a href="https://docs.cloud.google.com/architecture/framework" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Google Cloud Well-Architected Framework</a>, network segmentation is essential for reducing the attack surface and improving security.</p>
+<p>Network segmentation can be achieved using various techniques, including:</p>
+<ul><li>Security groups: a feature that allows customers to define inbound and outbound traffic rules for a group of instances.</li><li>Network ACLs: a feature that allows customers to define inbound and outbound traffic rules for a subnet.</li><li>Subnets: a feature that allows customers to divide a VPC into smaller, isolated segments.</li></ul>
+<p>For example, the following YAML code defines a security group that allows inbound traffic on port 22:</p>
+<pre><code class="language-yml">---
+- name: Create security group
+  ec2_group:
+    name: my-security-group
+    description: My security group
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0</code></pre>
+<h3>Network Segmentation Strategies</h3>
+<p>There are several network segmentation strategies that can be used to improve security. One strategy is to divide the cloud environment into separate subnets for different types of traffic. For example, a separate subnet can be created for web servers, database servers, and application servers. This can help to reduce the attack surface and improve security.</p>
+<p>Another strategy is to use security groups to control inbound and outbound traffic. Security groups can be used to define rules for allowing or denying traffic based on factors such as protocol, port, and IP address.</p>
+<h2>Configuring Private Connectivity and Egress Control</h2>
+<p>Configuring private connectivity and egress control requires careful planning and execution. The following example configuration of AWS Direct Connect and security groups demonstrates how to establish a dedicated network connection and control outgoing traffic:</p>
+<pre><code class="language-json">{
+  &quot;aws_direct_connect&quot;: {
+    &quot;location&quot;: &quot;Equinix DC2&quot;,
+    &quot;bandwidth&quot;: &quot;1Gbps&quot;,
+    &quot;vlan&quot;: 100
+  },
+  &quot;security_groups&quot;: [
+    {
+      &quot;name&quot;: &quot;my-security-group&quot;,
+      &quot;description&quot;: &quot;My security group&quot;,
+      &quot;rules&quot;: [
+        {
+          &quot;proto&quot;: &quot;tcp&quot;,
+          &quot;from_port&quot;: 22,
+          &quot;to_port&quot;: 22,
+          &quot;cidr_ip&quot;: &quot;0.0.0.0/0&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre>
+<p>Similarly, the following example configuration of Azure ExpressRoute and network security groups demonstrates how to establish a dedicated network connection and control outgoing traffic:</p>
+<pre><code class="language-json">{
+  &quot;azure_expressroute&quot;: {
+    &quot;location&quot;: &quot;Equinix DC2&quot;,
+    &quot;bandwidth&quot;: &quot;1Gbps&quot;,
+    &quot;vlan&quot;: 100
+  },
+  &quot;network_security_groups&quot;: [
+    {
+      &quot;name&quot;: &quot;my-network-security-group&quot;,
+      &quot;description&quot;: &quot;My network security group&quot;,
+      &quot;rules&quot;: [
+        {
+          &quot;proto&quot;: &quot;tcp&quot;,
+          &quot;from_port&quot;: 22,
+          &quot;to_port&quot;: 22,
+          &quot;cidr_ip&quot;: &quot;0.0.0.0/0&quot;
+        }
+      ]
+    }
+  ]
+}</code></pre>
+<p>These configurations demonstrate how to establish a dedicated network connection and control outgoing traffic using private connectivity options and security groups.</p>
+<h3>Using Terraform or CloudFormation</h3>
+<p>Terraform and CloudFormation are popular infrastructure-as-code tools that can be used to configure private connectivity and egress control. The following example Terraform code defines a security group and an AWS Direct Connect connection:</p>
+<pre><code class="language-terraform">resource &quot;aws_security_group&quot; &quot;my-security-group&quot; {
+  name        = &quot;my-security-group&quot;
+  description = &quot;My security group&quot;
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = &quot;tcp&quot;
+    cidr_blocks = [&quot;0.0.0.0/0&quot;]
+  }
+}
+
+resource &quot;aws_direct_connect&quot; &quot;my-direct-connect&quot; {
+  location = &quot;Equinix DC2&quot;
+  bandwidth = &quot;1Gbps&quot;
+  vlan      = 100
+}</code></pre>
+<p>Similarly, the following example CloudFormation code defines a security group and an Azure ExpressRoute connection:</p>
+<pre><code class="language-yml">Resources:
+  MySecurityGroup:
+    Type: &#39;AWS::EC2::SecurityGroup&#39;
+    Properties:
+      GroupDescription: My security group
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+
+  MyExpressRoute:
+    Type: &#39;Azure::Network::ExpressRoute&#39;
+    Properties:
+      location: Equinix DC2
+      bandwidth: 1Gbps
+      vlan: 100</code></pre>
+<p>These examples demonstrate how to use Terraform and CloudFormation to configure private connectivity and egress control.</p>
+<h2>Best Practices for Secure Cloud Network Architecture</h2>
+<p>Designing a secure cloud network architecture requires careful planning and execution. According to the <a href="https://docs.aws.amazon.com/wellarchitected/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Well-Architected Framework</a>, a well-architected cloud network should prioritize security, scalability, and performance. The following best practices can help achieve a secure cloud network architecture:</p>
+<ul><li>Monitor and log all network traffic to detect and respond to security incidents.</li><li>Implement network segmentation to reduce the attack surface and improve security.</li><li>Use security groups and network ACLs to control inbound and outbound traffic.</li><li>Regularly review and update security configurations to ensure they are aligned with changing business requirements.</li></ul>
+<h3>Monitoring and Logging</h3>
+<p>Monitoring and logging are critical components of a secure cloud network architecture. By monitoring and logging all network traffic, you can detect and respond to security incidents in real-time. The following tools can be used to monitor and log network traffic:</p>
+<ul><li>AWS CloudWatch: a monitoring and logging service that provides real-time visibility into network traffic.</li><li>Azure Monitor: a monitoring and logging service that provides real-time visibility into network traffic.</li><li>Google Cloud Logging: a logging service that provides real-time visibility into network traffic.</li></ul>
+<h3>Compliance and Regulatory Considerations</h3>
+<p>Compliance and regulatory considerations are essential when designing a secure cloud network architecture. The following regulations and standards can be used to guide the design of a secure cloud network architecture:</p>
+<ul><li><a href="https://www.nist.gov/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">NIST Cybersecurity Framework</a>: a framework that provides guidelines for managing and reducing cybersecurity risk.</li><li><a href="https://datatracker.ietf.org/doc/html/rfc2196" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">IETF RFC 2196</a>: a standard that provides guidelines for network security.</li><li><a href="https://www.cncf.io/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Cloud Native Computing Foundation</a>: a foundation that provides guidelines for cloud-native security.</li></ul>
+<h2>What to Do Next</h2>
+<p>To get started with designing a secure cloud network architecture, follow these steps:</p>
+<ol class="list-decimal pl-6 text-white/70 leading-relaxed mb-5"><li class="mb-2">Review the <a href="https://learn.microsoft.com/en-us/azure/well-architected/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Azure Well-Architected Framework</a> and <a href="https://docs.cloud.google.com/architecture/framework" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Google Cloud Well-Architected Framework</a> to understand the key principles and best practices for designing a secure cloud network architecture.</li><li class="mb-2">Assess your current cloud network architecture and identify areas for improvement.</li><li class="mb-2">Implement private connectivity options, such as AWS Direct Connect or Azure ExpressRoute, to establish a dedicated and secure connection between your cloud and on-premises environments.</li><li class="mb-2">Configure security groups and network ACLs to control inbound and outbound traffic.</li><li class="mb-2">Monitor and log all network traffic to detect and respond to security incidents.</li></ol>
+<h2>Conclusion</h2>
+<p>In conclusion, designing a secure cloud network architecture is critical for protecting cloud-based workloads and preventing unauthorized data access. By following the best practices outlined in this article, you can design a secure cloud network architecture that meets the needs of your organization. Remember to prioritize security, scalability, and performance when designing your cloud network architecture, and to regularly review and update your security configurations to ensure they are aligned with changing business requirements.</p>
+<p>A well-designed cloud network architecture with private connectivity and egress control is crucial for securing cloud-based workloads. By using private connectivity options, such as AWS Direct Connect or Azure ExpressRoute, and configuring security groups and network ACLs, you can establish a dedicated and secure connection between your cloud and on-premises environments. Additionally, by monitoring and logging all network traffic, you can detect and respond to security incidents in real-time.</p>
+<p>Ongoing monitoring and maintenance of cloud network security is essential to ensure the security and integrity of cloud-based workloads. By regularly reviewing and updating security configurations, you can ensure that your cloud network architecture remains secure and aligned with changing business requirements.</p>
+
+    <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
+      Working through this in production? Explore the
+      <a href="/#services" class="text-sky-light hover:underline">Cloud &amp; DevOps services</a>
+      or read more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
+    </p>
+
+  </div>
+</article>
+
+<!-- Blog Engagement: Likes + Comments -->
+<section class="max-w-3xl mx-auto px-6 py-2">
+  <div id="likes-mount"></div>
+  <div id="comments-mount"></div>
+</section>
+<script src="/assets/js/blog-engagement.js" defer></script>
+
+
+<!-- Related Posts -->
+<section class="py-12 border-t border-white/5" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="font-heading font-bold text-2xl text-white mb-8">Related Insights</h2>
+    <div class="grid sm:grid-cols-2 gap-6">
+
+      <a href="/blog/platform-engineering-finops-2026/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">Finops</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">Platform Engineering + FinOps in 2026: How Elite Cloud Teams Reduce Costs Without Slowing Developers</h3>
+      </a>
+
+      <a href="/blog/cloud-cost-anomaly-detection-ai/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">FinOps</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">How AI Anomaly Detection Catches Cloud Cost Spikes Before They Hurt</h3>
+      </a>
+
+    </div>
+  </div>
+</section>
+<!-- CTA -->
+<section class="py-16" style="background:#020617">
+  <div class="max-w-3xl mx-auto px-6 reveal">
+    <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(3,105,161,.2),rgba(14,165,233,.15));border:1px solid rgba(14,165,233,.2)">
+      <div class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-20%;right:-10%;filter:blur(50px)"></div>
+      <span class="badge badge-sky inline-block mb-4">IaC Consulting</span>
+      <h2 class="font-heading font-bold text-3xl text-white mb-4">Need help scaling your Terraform codebase?</h2>
+      <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
+        We help teams design module libraries, implement policy-as-code guardrails, and build CI/CD pipelines that make infrastructure changes safe and fast.
+      </p>
+      <a href="/#contact" class="inline-flex items-center gap-2 font-semibold text-white px-8 py-3.5 rounded-xl transition-all hover:opacity-90" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        Let's Talk
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#020617;border-top:1px solid rgba(255,255,255,.07)" class="py-12 mt-0">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-white/40">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/" class="hover:text-white/70 transition-colors">Home</a>
+      <a href="/blog/" class="hover:text-white/70 transition-colors">Blog</a>
+      <a href="/about/" class="hover:text-white/70 transition-colors">About</a>
+      <a href="/#contact" class="hover:text-white/70 transition-colors">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
+</script>
+<script>
+(function(){
+  const LANG_META = {
+    en:{flag:'🇺🇸',code:'EN'}, pt:{flag:'🇧🇷',code:'PT'},
+    es:{flag:'🇪🇸',code:'ES'}, fr:{flag:'🇫🇷',code:'FR'}
+  };
+  const cache = {};
+  async function loadLang(lang) {
+    if (cache[lang]) return cache[lang];
+    try {
+      const r = await fetch('/assets/i18n/' + lang + '.json');
+      if (!r.ok) throw 0;
+      cache[lang] = await r.json();
+    } catch(e) { cache[lang] = cache['en'] || {}; }
+    return cache[lang];
+  }
+  function applyLang(t) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+    });
+  }
+  const POST_SLUG = 'terraform-iac-best-practices';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
+  async function setArticleLang(lang) {
+    document.getElementById('article-lang-menu')?.classList.add('hidden');
+    document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
+    const meta = LANG_META[lang];
+    if (!meta) return;
+    localStorage.setItem('up2cloud-lang', lang);
+    document.getElementById('article-lang-flag').textContent = meta.flag;
+    document.getElementById('article-lang-code').textContent = meta.code;
+    document.querySelectorAll('.article-lang-opt').forEach(b => {
+      b.style.background = b.dataset.lang === lang ? 'rgba(14,165,233,.15)':'';
+      b.style.color = b.dataset.lang === lang ? '#fff':'';
+    });
+    const t = await loadLang(lang);
+    applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
+  }
+  function toggleArticleLang(e) {
+    e && e.stopPropagation();
+    const m = document.getElementById('article-lang-menu');
+    const open = m.classList.toggle('hidden');
+    document.getElementById('article-lang-btn').setAttribute('aria-expanded', String(!open));
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('article-lang-picker');
+    if (p && !p.contains(e.target)) document.getElementById('article-lang-menu')?.classList.add('hidden');
+  });
+  window.setArticleLang = setArticleLang;
+  window.toggleArticleLang = toggleArticleLang;
+  const saved = localStorage.getItem('up2cloud-lang') || 'en';
+  loadLang('en').then(() => setArticleLang(saved));
+})();
+</script>
+<script>const yearEl = document.getElementById("year"); if (yearEl) yearEl.textContent = new Date().getFullYear();</script></body>
+</html>
