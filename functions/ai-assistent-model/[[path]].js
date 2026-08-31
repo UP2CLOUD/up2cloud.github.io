@@ -1,5 +1,5 @@
 const UPSTREAM_ORIGIN =
-  "https://up2cloud-ai-assistant-git-main-cesarnogueira1210s-projects.vercel.app";
+  "https://up2cloud-ai-assistant.vercel.app";
 
 /**
  * Expose the Vercel-hosted assistant below the UP2CLOUD website path while
