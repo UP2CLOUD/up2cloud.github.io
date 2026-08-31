@@ -52,6 +52,16 @@ function config() {
       maxOutputTokens: 4096,
       envPrefix: 'CLOUDFLARE_AI',
     },
+    // Empty by default for the same reason as cloudflareAi above: NVIDIA
+    // is high in provider order, so an empty key here keeps stubbed tests clean.
+    nvidia: {
+      apiKey: '',
+      model: 'moonshotai/kimi-k3',
+      baseUrl: 'https://integrate.api.nvidia.com/v1',
+      maxRetries: 0,
+      maxOutputTokens: 8192,
+      envPrefix: 'NVIDIA',
+    },
     // Empty by default for the same reason as cloudflareAi above: OpenRouter
     // is now first in provider order, so an always-on key here would make it
     // the real, unstubbed active provider in every test below.
@@ -212,6 +222,32 @@ test('Claude is tried first when configured, ahead of OpenRouter', async () => {
   assert.equal((await client.messages({})).text, 'claude result');
   assert.equal(client.activeProvider, 'claude');
   assert.equal(claudeCalls, 1);
+  assert.equal(openrouterCalls, 0);
+});
+
+test('NVIDIA is tried first when configured, ahead of OpenRouter', async () => {
+  let nvidiaCalls = 0;
+  let openrouterCalls = 0;
+  const nvidia = {
+    messages: async () => {
+      nvidiaCalls += 1;
+      return { text: 'nvidia result' };
+    },
+  };
+  const openrouter = {
+    messages: async () => {
+      openrouterCalls += 1;
+      return { text: 'openrouter result' };
+    },
+  };
+  const cfg = config();
+  cfg.nvidia.apiKey = 'nvidia-key';
+  cfg.openrouter.apiKey = 'openrouter-key';
+  const client = new ModelClient(cfg, { clients: { nvidia, openrouter } });
+
+  assert.equal((await client.messages({})).text, 'nvidia result');
+  assert.equal(client.activeProvider, 'nvidia');
+  assert.equal(nvidiaCalls, 1);
   assert.equal(openrouterCalls, 0);
 });
 

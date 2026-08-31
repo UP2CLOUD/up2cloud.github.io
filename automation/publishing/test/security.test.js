@@ -202,6 +202,13 @@ test('Groq API keys are redacted from logs', () => {
   assert.ok(out.includes('[REDACTED]'));
 });
 
+test('NVIDIA API keys are redacted from logs', () => {
+  const secret = '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';
+  const out = redact(`NVIDIA call failed with ${secret}`, { NVIDIA_API_KEY: secret });
+  assert.equal(out.includes(secret), false);
+  assert.ok(out.includes('[REDACTED]'));
+});
+
 test('token-shaped strings are redacted even if never seen in the environment', () => {
   const out = redact('Authorization: Bearer AQXdSP7ZjXnQ0000111122223333444455556666aaaa', {});
   assert.equal(/AQXdSP7Zj/.test(out), false, out);

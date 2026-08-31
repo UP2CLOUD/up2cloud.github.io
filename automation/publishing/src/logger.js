@@ -25,6 +25,7 @@ const SECRET_ENV_KEYS = [
   'CEREBRAS_API_KEY',
   'OPENROUTER_API_KEY',
   'CLAUDE_CODE_OAUTH_TOKEN',
+  'NVIDIA_API_KEY',
 ];
 
 /** Secrets shorter than this are too generic to scrub without mangling logs. */
@@ -36,6 +37,7 @@ const TOKEN_PATTERNS = [
   /\bAQ[A-Za-z0-9_-]{40,}/g, // LinkedIn access tokens
   /\bgh[pousr]_[A-Za-z0-9]{20,}/g, // GitHub
   /\bxkeysib-[A-Za-z0-9]{16,}/g, // Brevo
+  /\bnvapi-[A-Za-z0-9_-]{40,}/g, // NVIDIA NIM API key
   /\bBearer\s+[A-Za-z0-9._~+/-]{20,}=*/gi,
 ];
 

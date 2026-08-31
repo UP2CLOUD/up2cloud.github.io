@@ -32,6 +32,7 @@ class ModelClient {
 
     this.providers = [
       { name: 'claude', client: build('claude', config.claude, ClaudeCliClient, { spawnImpl }) },
+      { name: 'nvidia', client: build('nvidia', config.nvidia, GroqClient) },
       { name: 'openrouter', client: build('openrouter', config.openrouter, GroqClient) },
       { name: 'cloudflare-ai', client: build('cloudflare-ai', config.cloudflareAi, GroqClient) },
       { name: 'gemini', client: build('gemini', config.gemini, GeminiClient) },
@@ -41,7 +42,7 @@ class ModelClient {
 
     if (!this.providers.length) {
       throw new Error(
-        'CLAUDE_CODE_OAUTH_TOKEN, OPENROUTER_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, ' +
+        'CLAUDE_CODE_OAUTH_TOKEN, NVIDIA_API_KEY, OPENROUTER_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, ' +
           'CEREBRAS_API_KEY, or CLOUDFLARE_AI_API_TOKEN (+ CLOUDFLARE_ACCOUNT_ID) is required',
       );
     }

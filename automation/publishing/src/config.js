@@ -59,6 +59,7 @@ const DEFAULTS = Object.freeze({
   // or removed entirely) — verify against GET https://openrouter.ai/api/v1
   // /models (filter for id.endsWith(':free')) before changing this default.
   openrouterModel: 'z-ai/glm-5.2:free',
+  nvidiaModel: 'moonshotai/kimi-k3',
   linkedinApiVersion: '202508',
   utmCampaign: 'up2cloud_blog',
 });
@@ -89,6 +90,7 @@ const CAPABILITY_REQUIREMENTS = Object.freeze({
   groq: ['GROQ_API_KEY'],
   cerebras: ['CEREBRAS_API_KEY'],
   openrouter: ['OPENROUTER_API_KEY'],
+  nvidia: ['NVIDIA_API_KEY'],
   claude: ['CLAUDE_CODE_OAUTH_TOKEN'],
   // Reuses the account's existing CLOUDFLARE_ACCOUNT_ID (already required for
   // the KV state backend) — only the Workers AI-scoped token is new.
@@ -198,6 +200,17 @@ function loadConfig(env = process.env, argv = {}) {
       maxRetries: parseIntOr(env.OPENROUTER_MAX_RETRIES, 4),
       maxOutputTokens: parseIntOr(env.OPENROUTER_MAX_OUTPUT_TOKENS, 8192),
       envPrefix: 'OPENROUTER',
+    },
+
+    // Free NVIDIA NIM API (build.nvidia.com) - OpenAI-compatible base URL.
+    // Provides free access to models like moonshotai/kimi-k3, meta/muse-glimmer-30b, etc.
+    nvidia: {
+      apiKey: env.NVIDIA_API_KEY || '',
+      model: (env.NVIDIA_MODEL || DEFAULTS.nvidiaModel).trim(),
+      baseUrl: (env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1').replace(/\/+$/, ''),
+      maxRetries: parseIntOr(env.NVIDIA_MAX_RETRIES, 4),
+      maxOutputTokens: parseIntOr(env.NVIDIA_MAX_OUTPUT_TOKENS, 8192),
+      envPrefix: 'NVIDIA',
     },
 
     // Open-source-model fallback: Cerebras hosts open-weight models free of
@@ -314,10 +327,11 @@ function loadConfig(env = process.env, argv = {}) {
         !config.cerebras.apiKey &&
         !config.cloudflareAi.apiKey &&
         !config.openrouter.apiKey &&
+        !config.nvidia.apiKey &&
         !config.claude.oauthToken
       ) {
         throw new ConfigError(
-          'Missing model credentials: set CLAUDE_CODE_OAUTH_TOKEN, OPENROUTER_API_KEY, ' +
+          'Missing model credentials: set CLAUDE_CODE_OAUTH_TOKEN, NVIDIA_API_KEY, OPENROUTER_API_KEY, ' +
             'GEMINI_API_KEY, GROQ_API_KEY, CEREBRAS_API_KEY, or CLOUDFLARE_AI_API_TOKEN + ' +
             'CLOUDFLARE_ACCOUNT_ID',
         );
