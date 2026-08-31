@@ -12,72 +12,779 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="UP2CLOUD AI Cloud Engineering Assistant for architecture, DevOps, FinOps, security and infrastructure guidance.">
-  <title>UP2CLOUD AI Cloud Engineering Assistant</title>
+  <meta name="description" content="Ask the UP2CLOUD AI Cloud Engineering Assistant about architecture, DevOps, FinOps, security, automation, and production infrastructure.">
+  <meta name="theme-color" content="#020617">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://up2cloud.tech/ai-assistent-model/">
+  <meta property="og:title" content="AI Cloud Engineering Assistant — UP2CLOUD">
+  <meta property="og:description" content="Production-minded guidance for cloud architecture, DevOps, FinOps, security, and automation.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://up2cloud.tech/ai-assistent-model/">
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png">
+  <title>AI Cloud Engineering Assistant — UP2CLOUD</title>
+
+  <link rel="icon" type="image/svg+xml" href="/assets/img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://up2cloud-ai-assistant.vercel.app">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
   <style>
     :root {
       color-scheme: dark;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #07111f;
-      color: #edf5ff;
+      --navy-950: #020617;
+      --navy-900: #0f172a;
+      --navy-800: #172033;
+      --sky-600: #0369a1;
+      --sky-500: #0ea5e9;
+      --sky-400: #38bdf8;
+      --purple-500: #7c3aed;
+      --orange-500: #f97316;
+      --green-400: #4ade80;
+      --white: #ffffff;
+      --muted: rgba(255,255,255,.64);
+      --subtle: rgba(255,255,255,.56);
+      --border: rgba(255,255,255,.13);
+      --panel: rgba(15,23,42,.78);
+      --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
     }
+
     * { box-sizing: border-box; }
-    html, body { width: 100%; min-height: 100%; margin: 0; }
-    body { background: #07111f; }
-    .bar {
-      position: relative;
-      z-index: 2;
+    html { min-width: 320px; min-height: 100%; background: var(--navy-950); scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      min-height: 100svh;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--navy-950);
+      color: var(--white);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    button, a { font: inherit; }
+    a { color: inherit; }
+    button { color: inherit; }
+    svg { display: block; }
+
+    :focus-visible {
+      outline: 3px solid var(--sky-400);
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 100;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: var(--sky-600);
+      color: white;
+      font-weight: 700;
+      text-decoration: none;
+      transform: translateY(-160%);
+      transition: transform .2s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 13% 20%, rgba(14,165,233,.25), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(124,58,237,.24), transparent 27%),
+        radial-gradient(circle at 50% 96%, rgba(249,115,22,.14), transparent 30%),
+        linear-gradient(135deg, #020617 0%, #0f172a 36%, #0c4a6e 72%, #0369a1 112%);
+    }
+    .ambient::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .14;
+      background-image:
+        linear-gradient(rgba(56,189,248,.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,.18) 1px, transparent 1px);
+      background-size: 58px 58px;
+      mask-image: linear-gradient(to bottom, transparent, #000 20%, #000 72%, transparent);
+    }
+    .ambient::after {
+      content: "";
+      position: absolute;
+      width: 640px;
+      height: 640px;
+      right: -230px;
+      top: 15%;
+      border: 1px solid rgba(56,189,248,.16);
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 72px rgba(56,189,248,.03),
+        0 0 0 144px rgba(56,189,248,.025);
+      animation: orbit 16s ease-in-out infinite;
+    }
+    .glow {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      filter: blur(82px);
+      opacity: .22;
+      animation: drift 11s ease-in-out infinite;
+    }
+    .glow-one { top: 12%; left: 8%; background: var(--sky-500); }
+    .glow-two { right: 18%; bottom: 3%; background: var(--purple-500); animation-delay: -5s; }
+
+    @keyframes drift {
+      0%, 100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(20px,-24px,0) scale(1.08); }
+    }
+    @keyframes orbit {
+      0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
+      50% { transform: translate3d(-18px,12px,0) rotate(3deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,.35); }
+      50% { opacity: .8; box-shadow: 0 0 0 7px rgba(74,222,128,0); }
+    }
+
+    .site-nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 50;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      background: rgba(2,6,23,.72);
+      backdrop-filter: blur(18px) saturate(135%);
+      -webkit-backdrop-filter: blur(18px) saturate(135%);
+    }
+    .nav-inner {
+      width: min(100%, 92rem);
+      min-height: 76px;
+      margin: 0 auto;
+      padding: 0 clamp(18px, 3vw, 40px);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 58px;
-      padding: 10px clamp(16px, 4vw, 36px);
-      border-bottom: 1px solid rgba(148, 175, 207, .18);
-      background: #07111f;
+      gap: 24px;
     }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .02em; }
-    .mark {
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 9px;
+      font-family: var(--font-heading);
+      font-size: 1.22rem;
+      font-weight: 700;
+      letter-spacing: -.025em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
       display: grid;
       place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #4d9fff, #2563eb);
+      flex: 0 0 auto;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--sky-600), var(--sky-500));
+      box-shadow: 0 10px 28px rgba(14,165,233,.2);
     }
-    .back { color: #9bc9ff; text-decoration: none; font-size: .9rem; font-weight: 700; }
-    iframe {
+    .brand-two { color: var(--orange-500); }
+    .brand-cloud { color: var(--sky-500); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(20px, 2vw, 32px);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .nav-links a {
+      position: relative;
+      color: rgba(255,255,255,.74);
+      font-size: .875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -9px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--sky-400);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform .2s ease;
+    }
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] { color: white; }
+    .nav-links a:hover::after,
+    .nav-links a[aria-current="page"]::after { transform: scaleX(1); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .nav-cta,
+    .mobile-toggle {
+      min-height: 44px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 9px;
+      background: rgba(255,255,255,.06);
+      color: white;
+      cursor: pointer;
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 14px;
+      color: rgba(255,255,255,.84);
+      font-size: .8rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .nav-cta:hover,
+    .mobile-toggle:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.34); }
+    .nav-cta:hover { transform: translateY(-1px); }
+    .mobile-toggle {
+      width: 44px;
+      padding: 0;
+      display: none;
+      place-items: center;
+    }
+    .mobile-menu {
+      display: none;
+      margin: 0 16px 16px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(15,23,42,.97);
+      box-shadow: 0 22px 60px rgba(2,6,23,.48);
+    }
+    .mobile-menu[hidden] { display: none; }
+    .mobile-menu a {
+      display: flex;
+      align-items: center;
+      min-height: 46px;
+      padding: 0 14px;
+      border-radius: 9px;
+      color: rgba(255,255,255,.8);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .mobile-menu a:hover,
+    .mobile-menu a[aria-current="page"] { background: rgba(255,255,255,.08); color: white; }
+
+    .page-shell { position: relative; z-index: 1; min-height: 100svh; }
+    .assistant-layout {
+      width: min(100%, 92rem);
+      min-height: 100svh;
+      margin: 0 auto;
+      padding: 108px clamp(18px, 3vw, 40px) 32px;
+      display: grid;
+      grid-template-columns: minmax(300px, .78fr) minmax(620px, 1.62fr);
+      gap: clamp(28px, 4vw, 64px);
+      align-items: center;
+    }
+    .intro { max-width: 590px; padding: 22px 0; }
+    .eyebrows { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid rgba(56,189,248,.24);
+      border-radius: 999px;
+      background: rgba(14,165,233,.13);
+      color: var(--sky-400);
+      font-family: var(--font-heading);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .075em;
+      text-transform: uppercase;
+    }
+    .eyebrow-purple { border-color: rgba(192,132,252,.24); background: rgba(124,58,237,.14); color: #c084fc; }
+    .intro h1 {
+      max-width: 640px;
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: clamp(2.75rem, 4.8vw, 5.15rem);
+      font-weight: 700;
+      line-height: 1.015;
+      letter-spacing: -.055em;
+    }
+    .gradient-text {
+      display: block;
+      color: transparent;
+      background: linear-gradient(90deg, var(--sky-400) 0%, #a78bfa 56%, #fb923c 106%);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+    .intro-copy {
+      max-width: 590px;
+      margin: 26px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.3vw, 1.14rem);
+      line-height: 1.72;
+    }
+    .capabilities {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+      margin: 28px 0 0;
+    }
+    .capability {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 11px;
+      background: rgba(255,255,255,.045);
+      color: rgba(255,255,255,.78);
+      font-size: .84rem;
+      font-weight: 600;
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .capability:hover { transform: translateY(-2px); background: rgba(255,255,255,.07); border-color: rgba(56,189,248,.28); }
+    .capability-icon {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      background: rgba(14,165,233,.13);
+      color: var(--sky-400);
+    }
+    .trust-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 24px;
+      color: rgba(255,255,255,.62);
+      font-size: .78rem;
+      font-weight: 600;
+    }
+    .trust-item { display: inline-flex; align-items: center; gap: 7px; }
+    .trust-item svg { color: var(--green-400); }
+    .intro-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .button-primary,
+    .button-secondary {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 17px;
+      border-radius: 9px;
+      font-family: var(--font-heading);
+      font-size: .86rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .button-primary {
+      background: var(--orange-500);
+      color: white;
+      box-shadow: 0 12px 30px rgba(249,115,22,.24);
+    }
+    .button-primary:hover { transform: translateY(-2px); background: #fb8528; box-shadow: 0 16px 36px rgba(249,115,22,.3); }
+    .button-secondary { border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.055); color: rgba(255,255,255,.82); }
+    .button-secondary:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.34); background: rgba(255,255,255,.085); }
+
+    .assistant-panel-wrap { min-width: 0; scroll-margin-top: 88px; }
+    .assistant-panel {
+      position: relative;
+      height: min(790px, calc(100svh - 130px));
+      min-height: 620px;
+      overflow: hidden;
+      isolation: isolate;
+      border: 1px solid rgba(255,255,255,.17);
+      border-radius: 24px;
+      background: rgba(7,17,31,.92);
+      box-shadow:
+        0 42px 90px rgba(2,6,23,.52),
+        0 0 0 1px rgba(14,165,233,.06),
+        0 0 70px rgba(14,165,233,.12);
+    }
+    .assistant-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(56,189,248,.34), transparent 24%, transparent 72%, rgba(124,58,237,.3));
+    }
+    .panel-bar {
+      position: relative;
+      z-index: 4;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 11px 16px 11px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.09);
+      background: rgba(15,23,42,.94);
+    }
+    .panel-identity { min-width: 0; display: flex; align-items: center; gap: 11px; }
+    .panel-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(3,105,161,.95), rgba(124,58,237,.88));
+      box-shadow: 0 10px 24px rgba(14,165,233,.18);
+    }
+    .panel-title {
+      overflow: hidden;
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: .96rem;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .panel-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 3px 0 0;
+      color: rgba(255,255,255,.62);
+      font-size: .71rem;
+      font-weight: 600;
+    }
+    .status-dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--green-400); animation: pulse 2s ease-in-out infinite; }
+    .panel-open {
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 9px;
+      background: rgba(255,255,255,.055);
+      color: rgba(255,255,255,.74);
+      font-size: .75rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s ease, border-color .2s ease, color .2s ease;
+    }
+    .panel-open:hover { color: white; background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.3); }
+    .loading-state {
+      position: absolute;
+      inset: 68px 0 0;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      padding: 26px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(14,165,233,.12), transparent 38%),
+        #07111f;
+      transition: opacity .35s ease, visibility .35s ease;
+    }
+    .loading-content { max-width: 360px; }
+    .loading-mark {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(56,189,248,.25);
+      border-radius: 16px;
+      background: rgba(14,165,233,.1);
+      color: var(--sky-400);
+      box-shadow: 0 0 30px rgba(14,165,233,.12);
+    }
+    .loading-content strong { display: block; font-family: var(--font-heading); font-size: 1rem; }
+    .loading-content p { margin: 8px 0 0; color: var(--subtle); font-size: .86rem; line-height: 1.6; }
+    .loading-content a { color: var(--sky-400); font-weight: 700; }
+    .assistant-frame {
+      position: relative;
+      z-index: 2;
       display: block;
       width: 100%;
-      height: calc(100vh - 58px);
+      height: calc(100% - 68px);
       border: 0;
       background: #07111f;
+      opacity: 0;
+      transition: opacity .35s ease;
     }
-    .fallback {
-      position: fixed;
-      inset: 58px 0 0;
-      z-index: 0;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      color: #9bb0c9;
-      text-align: center;
+    .assistant-panel.is-loaded .assistant-frame { opacity: 1; }
+    .assistant-panel.is-loaded .loading-state { opacity: 0; visibility: hidden; }
+    .panel-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 12px 4px 0;
+      color: rgba(255,255,255,.58);
+      font-size: .72rem;
+      line-height: 1.5;
     }
-    .fallback a { color: #4d9fff; }
+    .panel-caption a { color: rgba(255,255,255,.72); font-weight: 700; text-decoration: none; }
+    .panel-caption a:hover { color: var(--sky-400); }
+
+    @media (max-width: 1180px) {
+      .assistant-layout { grid-template-columns: minmax(280px, .68fr) minmax(560px, 1.32fr); gap: 28px; }
+      .intro h1 { font-size: clamp(2.65rem, 4.8vw, 4.25rem); }
+      .nav-links { gap: 20px; }
+    }
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+      .mobile-toggle { display: grid; }
+      .mobile-menu:not([hidden]) { display: block; }
+      .assistant-layout {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding-top: 108px;
+        padding-bottom: 38px;
+      }
+      .intro { max-width: 760px; padding-bottom: 0; }
+      .intro h1 { max-width: 760px; font-size: clamp(3.1rem, 8vw, 5rem); }
+      .intro-copy { max-width: 680px; }
+      .capabilities { max-width: 680px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .capability { min-width: 0; flex-direction: column; align-items: flex-start; }
+      .assistant-panel { height: min(820px, 78svh); min-height: 650px; }
+    }
+    @media (max-width: 680px) {
+      .nav-inner { min-height: 70px; }
+      .brand { font-size: 1.08rem; }
+      .brand-mark { width: 34px; height: 34px; }
+      .nav-cta { display: none; }
+      .assistant-layout { padding-top: 94px; padding-inline: 16px; }
+      .intro { padding-top: 12px; }
+      .intro h1 { font-size: clamp(2.7rem, 13vw, 4rem); }
+      .intro-copy { margin-top: 20px; line-height: 1.62; }
+      .capabilities { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .capability { flex-direction: row; align-items: center; }
+      .assistant-panel { height: 77svh; min-height: 610px; border-radius: 18px; }
+      .panel-bar { min-height: 64px; padding-inline: 12px; }
+      .panel-title { font-size: .86rem; }
+      .panel-status { font-size: .66rem; }
+      .panel-open { width: 44px; padding: 0; }
+      .panel-open span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+      .assistant-frame { height: calc(100% - 64px); }
+      .loading-state { inset-block-start: 64px; }
+      .panel-caption { align-items: flex-start; flex-direction: column; gap: 4px; }
+    }
+    @media (max-width: 420px) {
+      .eyebrows { margin-bottom: 18px; }
+      .intro h1 { font-size: clamp(2.5rem, 13vw, 3.45rem); }
+      .capabilities { grid-template-columns: 1fr; }
+      .intro-actions { flex-direction: column; }
+      .button-primary, .button-secondary { width: 100%; }
+      .trust-row { display: grid; gap: 9px; }
+      .assistant-panel { min-height: 580px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
-  <header class="bar">
-    <div class="brand"><span class="mark" aria-hidden="true">☁</span><span>UP2CLOUD AI Assistant</span></div>
-    <a class="back" href="/">Back to UP2CLOUD</a>
-  </header>
-  <div class="fallback">
-    <p>If the assistant does not load, <a href="https://up2cloud-ai-assistant.vercel.app">open it directly</a>.</p>
+  <a class="skip-link" href="#main-content">Skip to the AI assistant</a>
+
+  <div class="ambient" aria-hidden="true">
+    <span class="glow glow-one"></span>
+    <span class="glow glow-two"></span>
   </div>
-  <iframe
-    src="https://up2cloud-ai-assistant.vercel.app"
-    title="UP2CLOUD AI Cloud Engineering Assistant"
-    allow="clipboard-write"
-    loading="eager"
-  ></iframe>
+
+  <div class="page-shell">
+    <nav class="site-nav" aria-label="Main navigation">
+      <div class="nav-inner">
+        <a class="brand" href="/" aria-label="UP2CLOUD home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-10A5 5 0 1 0 6.12 11.1 4 4 0 0 0 3 15Z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+          </span>
+          <span>UP<span class="brand-two">2</span><span class="brand-cloud">CLOUD</span></span>
+        </a>
+
+        <ul class="nav-links" role="list">
+          <li><a href="/#services">Services</a></li>
+          <li><a href="/#how-we-work">Delivery</a></li>
+          <li><a href="/ai-assistent-model/" aria-current="page">AI Assistant</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a class="nav-cta" href="https://up2cloud-ai-assistant.vercel.app" target="_blank" rel="noopener noreferrer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 5h5v5m0-5-9 9M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Full screen
+          </a>
+          <button class="mobile-toggle" id="mobile-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+            <svg class="menu-open-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="mobile-menu" id="mobile-menu" hidden>
+        <a href="/#services">Services</a>
+        <a href="/#how-we-work">Delivery</a>
+        <a href="/ai-assistent-model/" aria-current="page">AI Assistant</a>
+        <a href="/about/">About</a>
+        <a href="/blog/">Blog</a>
+        <a href="/#contact">Contact</a>
+      </div>
+    </nav>
+
+    <main class="assistant-layout" id="main-content">
+      <section class="intro" aria-labelledby="page-title">
+        <div class="eyebrows">
+          <span class="eyebrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+            Platform Engineering
+          </span>
+          <span class="eyebrow eyebrow-purple">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 10V3L4 14h7v7l9-11h-7Z"/></svg>
+            AI-Augmented
+          </span>
+        </div>
+
+        <h1 id="page-title">Cloud guidance.<span class="gradient-text">Built for production.</span></h1>
+        <p class="intro-copy">Explore architecture decisions, troubleshoot infrastructure, and uncover FinOps opportunities with an AI assistant grounded in senior cloud engineering practice.</p>
+
+        <div class="capabilities" aria-label="Assistant capabilities">
+          <div class="capability">
+            <span class="capability-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-10A5 5 0 1 0 6.12 11.1 4 4 0 0 0 3 15Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>
+            Multi-cloud architecture
+          </div>
+          <div class="capability">
+            <span class="capability-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="m8 9-4 3 4 3m8-6 4 3-4 3m-3-9-2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            DevOps &amp; IaC
+          </div>
+          <div class="capability">
+            <span class="capability-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            FinOps optimization
+          </div>
+          <div class="capability">
+            <span class="capability-icon" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            Security &amp; reliability
+          </div>
+        </div>
+
+        <div class="trust-row">
+          <span class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m9 12 2 2 4-4m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>AWS · Azure · GCP</span>
+          <span class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m9 12 2 2 4-4m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>10+ years in production</span>
+        </div>
+
+        <div class="intro-actions">
+          <a class="button-primary" href="#assistant-panel">
+            Start a conversation
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 14 0m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="button-secondary" href="/">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Back to UP2CLOUD
+          </a>
+        </div>
+      </section>
+
+      <section class="assistant-panel-wrap" id="assistant-panel" aria-labelledby="assistant-title">
+        <div class="assistant-panel" id="assistant-shell">
+          <header class="panel-bar">
+            <div class="panel-identity">
+              <span class="panel-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3a3 3 0 0 0-3 3v1H7a3 3 0 0 0-3 3v5a3 3 0 0 0 3 3h1l4 3v-3h5a3 3 0 0 0 3-3v-5a3 3 0 0 0-3-3h-2V6a3 3 0 0 0-3-3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 12h.01M12 12h.01M16 12h.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </span>
+              <div>
+                <h2 class="panel-title" id="assistant-title">UP2CLOUD AI Assistant</h2>
+                <p class="panel-status" role="status"><span class="status-dot" aria-hidden="true"></span>Ready for cloud engineering questions</p>
+              </div>
+            </div>
+            <a class="panel-open" href="https://up2cloud-ai-assistant.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Open the AI assistant in a new tab">
+              <span>Open full screen</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 5h5v5m0-5-9 9M19 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </header>
+
+          <div class="loading-state" aria-live="polite">
+            <div class="loading-content">
+              <span class="loading-mark" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 0 0 4 4h9a5 5 0 1 0-.1-10A5 5 0 1 0 6.12 11.1 4 4 0 0 0 3 15Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+              <strong>Connecting to the assistant</strong>
+              <p>If loading takes too long, <a href="https://up2cloud-ai-assistant.vercel.app" target="_blank" rel="noopener noreferrer">open the secure workspace directly</a>.</p>
+            </div>
+          </div>
+
+          <iframe
+            class="assistant-frame"
+            id="assistant-frame"
+            src="https://up2cloud-ai-assistant.vercel.app"
+            title="UP2CLOUD AI Cloud Engineering Assistant"
+            aria-describedby="assistant-description"
+            allow="clipboard-write"
+            loading="eager"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+        <div class="panel-caption" id="assistant-description">
+          <span>AI guidance can be inaccurate. Validate recommendations before production use.</span>
+          <a href="/privacy/">Privacy &amp; data protection</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var toggle = document.getElementById('mobile-toggle');
+      var menu = document.getElementById('mobile-menu');
+      var panel = document.getElementById('assistant-shell');
+      var frame = document.getElementById('assistant-frame');
+
+      function closeMenu() {
+        if (!toggle || !menu) return;
+        menu.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open navigation menu');
+      }
+
+      if (toggle && menu) {
+        toggle.addEventListener('click', function () {
+          var willOpen = menu.hidden;
+          menu.hidden = !willOpen;
+          toggle.setAttribute('aria-expanded', String(willOpen));
+          toggle.setAttribute('aria-label', willOpen ? 'Close navigation menu' : 'Open navigation menu');
+        });
+
+        menu.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', closeMenu);
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') {
+            closeMenu();
+            toggle.focus();
+          }
+        });
+      }
+
+      if (frame && panel) {
+        frame.addEventListener('load', function () {
+          panel.classList.add('is-loaded');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
