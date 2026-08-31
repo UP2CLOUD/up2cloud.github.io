@@ -9,14 +9,23 @@
   4. Replace FORMSPREE_ENDPOINT below with that URL
 
   ANALYTICS / SEARCH CONSOLE / ADS SETUP:
-  The GA_MEASUREMENT_ID / GOOGLE_ADS_ID / GOOGLE_SITE_VERIFICATION_ID
-  placeholders below are replaced at build time by `sed`, same as
+  The GOOGLE_ADS_ID / GOOGLE_SITE_VERIFICATION_ID placeholders below are
+  replaced at build time by `sed`, same as
   FORMSPREE_ENDPOINT above — set the real values in the `env:` block of
   .github/workflows/deploy-pages.yml, not in this file. See that workflow's
   comments for where to get each ID.
 -->
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q');
+  </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UP2CLOUD — Platform Engineering & FinOps Consulting</title>
@@ -5062,74 +5071,19 @@ nav.scrolled + #tech-stack,
 <!-- Google Search Console ownership verification — see setup comment at top of file -->
 <meta name="google-site-verification" content="GOOGLE_SITE_VERIFICATION_ID" />
 
-<!--
-  Google tag (gtag.js) — GA4 + Google Ads.
-  Loaded after idle/interaction for performance, same pattern as the Hotjar
-  loader above. Web Vitals metrics can fire before gtag is ready (e.g. LCP on
-  a bounce visit with no interaction), so they're queued in
-  window.__up2cloudVitalsQueue and flushed once gtag becomes available —
-  nothing is silently dropped.
--->
+<!-- Optional Google Ads destination uses the Google tag loaded after <head>. -->
 <script>
-  window.__up2cloudVitalsQueue = window.__up2cloudVitalsQueue || [];
-
-  window.addEventListener('load', function () {
-    var GA_ID = 'G-JVQKLM1R3Q';
-    var ADS_ID = 'GOOGLE_ADS_ID';
-
-    var loadGtag = function () {
-      if (window.__up2cloudGtagLoaded || location.protocol !== 'https:') return;
-      // Unconfigured placeholder (build-time sed hasn't run) — skip entirely
-      // rather than firing a request for a fake ID. Checked by SHAPE
-      // (real GA4 IDs start "G-"), not by comparing against the placeholder
-      // string: sed does a blind global replace, so a literal placeholder-vs-
-      // placeholder comparison would ALSO get substituted and always match,
-      // permanently disabling analytics even after a real ID is configured.
-      if (!/^G-/.test(GA_ID)) return;
-      window.__up2cloudGtagLoaded = true;
-
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA_ID, { anonymize_ip: true });
-      if (/^AW-/.test(ADS_ID)) {
-        gtag('config', ADS_ID);
-      }
-
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
-
-      // Guard: the web-vitals module (fetched from unpkg) may not have
-      // finished loading/executing yet when this fires.
-      if (typeof window.__up2cloudSendVital === 'function') {
-        window.__up2cloudVitalsQueue.splice(0).forEach(function (metric) {
-          window.__up2cloudSendVital(metric);
-        });
-      }
-    };
-
-    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (eventName) {
-      window.addEventListener(eventName, loadGtag, { once: true, passive: true });
-    });
-
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(loadGtag, { timeout: 6000 });
-    } else {
-      setTimeout(loadGtag, 6000);
-    }
-  });
+  var GOOGLE_ADS_ID = 'GOOGLE_ADS_ID';
+  if (/^AW-/.test(GOOGLE_ADS_ID)) {
+    gtag('config', GOOGLE_ADS_ID);
+  }
 </script>
 
 <!-- Core Web Vitals → GA4 performance events (LCP, CLS, INP, FCP, TTFB) -->
 <script type="module">
   import { onCLS, onLCP, onINP, onFCP, onTTFB } from 'https://unpkg.com/web-vitals@4?module';
 
-  // Defensive re-init in case this module executes before the gtag script's
-  // top-level code (e.g. if that script were ever moved) — keeps both sides
-  // of the queue handshake independent of markup order.
+  // Keep a fallback queue in case this module is reused without the Google tag.
   window.__up2cloudVitalsQueue = window.__up2cloudVitalsQueue || [];
 
   window.__up2cloudSendVital = function (metric) {
@@ -5147,9 +5101,7 @@ nav.scrolled + #tech-stack,
     });
   };
 
-  // Flush immediately if gtag already loaded before this module finished
-  // fetching (the module script's own network round-trip can be slower
-  // than the interaction/idle-gated gtag loader in rare cases).
+  // Flush any metrics queued before the Google tag bootstrap became available.
   if (typeof window.gtag === 'function') {
     window.__up2cloudVitalsQueue.splice(0).forEach(window.__up2cloudSendVital);
   }
