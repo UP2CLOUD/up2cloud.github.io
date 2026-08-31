@@ -136,6 +136,7 @@ jobs:
           cp -r about   public/about   2>/dev/null || true
           cp -r privacy public/privacy 2>/dev/null || true
           cp -r blog    public/blog    2>/dev/null || true
+          cp -r ai-assistent-model public/ai-assistent-model 2>/dev/null || true
           cp -r assets  public/assets  2>/dev/null || true
 
       - name: Resolve HTML includes (_includes/*.html)

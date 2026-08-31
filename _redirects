@@ -24,5 +24,8 @@
 /privacy/index_old.html /privacy/ 301
 /privacy/index_old      /privacy/ 301
 
+# Canonical URL for the Vercel-hosted AI assistant shell.
+/ai-assistent-model /ai-assistent-model/ 301
+
 # 404 fallback
 /* /404.html 404
