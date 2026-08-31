@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">UP2CLOUD AI Cloud Engineering Assistant</title>
+  <desc id="desc">Cloud guidance built for production, covering architecture, Terraform, FinOps, and security.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#020617"/>
+      <stop offset="0.56" stop-color="#0B2341"/>
+      <stop offset="1" stop-color="#075985"/>
+    </linearGradient>
+    <linearGradient id="headline" x1="72" y1="230" x2="680" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="0.56" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#FB923C"/>
+    </linearGradient>
+    <linearGradient id="panelLine" x1="744" y1="126" x2="1124" y2="544" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8" stop-opacity="0.7"/>
+      <stop offset="0.48" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0.55"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(1010 120) rotate(120) scale(440 440)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#7C3AED" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="52" height="52" patternUnits="userSpaceOnUse">
+      <path d="M52 0H0V52" fill="none" stroke="#38BDF8" stroke-opacity="0.075"/>
+    </pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="24" stdDeviation="26" flood-color="#020617" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <circle cx="1092" cy="72" r="250" fill="none" stroke="#38BDF8" stroke-opacity="0.11"/>
+  <circle cx="1092" cy="72" r="188" fill="none" stroke="#38BDF8" stroke-opacity="0.09"/>
+
+  <g transform="translate(72 58)">
+    <rect width="54" height="54" rx="14" fill="#071B30" stroke="#0EA5E9" stroke-opacity="0.75"/>
+    <path d="M13 34.5a7.5 7.5 0 0 0 7.5 7.5H36a9 9 0 1 0-.3-18A11 11 0 0 0 15.2 27 7.5 7.5 0 0 0 13 34.5Z" fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-linejoin="round"/>
+    <text x="72" y="39" fill="#FFFFFF" font-family="Helvetica" font-size="31" font-weight="700" letter-spacing="0.5">UP</text>
+    <text x="117" y="39" fill="#F97316" font-family="Helvetica" font-size="31" font-weight="700">2</text>
+    <text x="136" y="39" fill="#0EA5E9" font-family="Helvetica" font-size="31" font-weight="700">CLOUD</text>
+  </g>
+
+  <g transform="translate(72 150)">
+    <rect width="224" height="34" rx="17" fill="#0EA5E9" fill-opacity="0.13" stroke="#38BDF8" stroke-opacity="0.42"/>
+    <circle cx="20" cy="17" r="5" fill="#4ADE80"/>
+    <text x="34" y="22" fill="#BAE6FD" font-family="Helvetica" font-size="13" font-weight="700" letter-spacing="1.15">FREE CLOUD AI TOOL</text>
+  </g>
+
+  <text x="72" y="256" fill="#FFFFFF" font-family="Helvetica" font-size="59" font-weight="700" letter-spacing="-2.5">Cloud guidance.</text>
+  <text x="72" y="326" fill="url(#headline)" font-family="Helvetica" font-size="59" font-weight="700" letter-spacing="-2.5">Built for production.</text>
+  <text x="72" y="378" fill="#CBD5E1" font-family="Helvetica" font-size="21">Ask questions, generate Terraform, estimate AWS costs,</text>
+  <text x="72" y="407" fill="#CBD5E1" font-family="Helvetica" font-size="21">and explore secure cloud architecture patterns.</text>
+
+  <g transform="translate(72 452)" font-family="Helvetica" font-size="15" font-weight="700">
+    <rect width="144" height="39" rx="19.5" fill="#FFFFFF" fill-opacity="0.065" stroke="#FFFFFF" stroke-opacity="0.14"/>
+    <text x="21" y="25" fill="#E2E8F0">ARCHITECTURE</text>
+    <rect x="154" width="118" height="39" rx="19.5" fill="#FFFFFF" fill-opacity="0.065" stroke="#FFFFFF" stroke-opacity="0.14"/>
+    <text x="176" y="25" fill="#E2E8F0">TERRAFORM</text>
+    <rect x="282" width="91" height="39" rx="19.5" fill="#FFFFFF" fill-opacity="0.065" stroke="#FFFFFF" stroke-opacity="0.14"/>
+    <text x="304" y="25" fill="#E2E8F0">FINOPS</text>
+    <rect x="383" width="111" height="39" rx="19.5" fill="#FFFFFF" fill-opacity="0.065" stroke="#FFFFFF" stroke-opacity="0.14"/>
+    <text x="404" y="25" fill="#E2E8F0">SECURITY</text>
+  </g>
+
+  <g transform="translate(72 559)">
+    <circle cx="7" cy="-6" r="5" fill="#4ADE80"/>
+    <text x="22" y="0" fill="#94A3B8" font-family="Helvetica" font-size="17" font-weight="600">up2cloud.tech/ai-assistent-model</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="736" y="126" width="392" height="418" rx="25" fill="#07111F" stroke="url(#panelLine)" stroke-width="2"/>
+    <rect x="737" y="127" width="390" height="72" rx="24" fill="#0F1D31"/>
+    <path d="M737 175H1127" stroke="#FFFFFF" stroke-opacity="0.1"/>
+    <rect x="760" y="146" width="34" height="34" rx="10" fill="#0369A1"/>
+    <path d="M768 167a5 5 0 0 0 5 5h9a6 6 0 1 0-.2-12 7 7 0 0 0-13 2 5 5 0 0 0-.8 5Z" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/>
+    <text x="808" y="159" fill="#FFFFFF" font-family="Helvetica" font-size="15" font-weight="700">UP2CLOUD AI Assistant</text>
+    <circle cx="814" cy="176" r="4" fill="#4ADE80"/>
+    <text x="825" y="181" fill="#94A3B8" font-family="Helvetica" font-size="11" font-weight="600">API Online</text>
+
+    <text x="762" y="231" fill="#7DD3FC" font-family="Helvetica" font-size="11" font-weight="700" letter-spacing="1.2">READY-TO-RUN REQUESTS</text>
+
+    <g transform="translate(760 250)">
+      <rect width="344" height="66" rx="13" fill="#0D1B2D" stroke="#38BDF8" stroke-opacity="0.26"/>
+      <rect x="14" y="14" width="38" height="38" rx="10" fill="#0EA5E9" fill-opacity="0.12"/>
+      <path d="M25 34h16M33 26v16" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+      <text x="66" y="28" fill="#FFFFFF" font-family="Helvetica" font-size="14" font-weight="700">AWS cost optimization plan</text>
+      <text x="66" y="47" fill="#94A3B8" font-family="Helvetica" font-size="11">Quick wins, risk, and expected savings</text>
+      <path d="M321 30h9m-4-4 4 4-4 4" fill="none" stroke="#38BDF8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g transform="translate(760 328)">
+      <rect width="344" height="66" rx="13" fill="#0D1B2D" stroke="#A78BFA" stroke-opacity="0.24"/>
+      <rect x="14" y="14" width="38" height="38" rx="10" fill="#7C3AED" fill-opacity="0.13"/>
+      <path d="m25 28-6 5 6 5m16-10 6 5-6 5m-5-15-6 20" fill="none" stroke="#C4B5FD" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="66" y="28" fill="#FFFFFF" font-family="Helvetica" font-size="14" font-weight="700">Generate production Terraform</text>
+      <text x="66" y="47" fill="#94A3B8" font-family="Helvetica" font-size="11">Secure modules with variables and outputs</text>
+      <path d="M321 30h9m-4-4 4 4-4 4" fill="none" stroke="#A78BFA" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <g transform="translate(760 406)">
+      <rect width="344" height="66" rx="13" fill="#0D1B2D" stroke="#FB923C" stroke-opacity="0.24"/>
+      <rect x="14" y="14" width="38" height="38" rx="10" fill="#F97316" fill-opacity="0.12"/>
+      <path d="M25 40V30m8 10V24m8 16v-7" fill="none" stroke="#FB923C" stroke-width="2" stroke-linecap="round"/>
+      <text x="66" y="28" fill="#FFFFFF" font-family="Helvetica" font-size="14" font-weight="700">Estimate monthly AWS costs</text>
+      <text x="66" y="47" fill="#94A3B8" font-family="Helvetica" font-size="11">Clear totals and service-level breakdown</text>
+      <path d="M321 30h9m-4-4 4 4-4 4" fill="none" stroke="#FB923C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <rect x="760" y="490" width="344" height="34" rx="10" fill="#2563EB"/>
+    <text x="932" y="512" text-anchor="middle" fill="#FFFFFF" font-family="Helvetica" font-size="13" font-weight="700">START EXPLORING</text>
+  </g>
+</svg>
