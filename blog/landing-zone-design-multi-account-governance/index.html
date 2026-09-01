@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Landing Zone Design &amp; Multi-Account Governance — UP2CLOUD</title>
+  <meta name="description" content="A model for AWS landing zone governance: OUs for boundaries, SCPs for guardrails, drift-detecting controls — codified, not manual review." />
+  <meta name="keywords" content="landing zone design, AWS Organizations, service control policies, organizational units, multi-account strategy, cloud governance, guardrails as code, account vending machine, drift detection, policy as code" />
+  <meta property="og:title" content="Landing Zone Design &amp; Multi-Account Governance — UP2CLOUD" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://up2cloud.tech/blog/landing-zone-design-multi-account-governance/" />
+  <link rel="canonical" href="https://up2cloud.tech/blog/landing-zone-design-multi-account-governance/" />
+  <meta property="article:published_time" content="2026-09-01" />
+  <!-- include: _includes/favicon.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="../../assets/css/tailwind.min.css" as="style" />
+  <link rel="stylesheet" href="../../assets/css/tailwind.min.css" />
+  <style>
+    *,*::before,*::after { box-sizing:border-box }
+    html { scroll-behavior:smooth; overscroll-behavior:none }
+    body { font-family:'DM Sans',sans-serif; background:#0F172A; color:#fff; margin:0 }
+    h1,h2,h3,h4 { font-family:'Space Grotesk',sans-serif }
+    .glass { background:rgba(255,255,255,.07); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.12) }
+    .gradient-text { background:linear-gradient(90deg,#0EA5E9,#38BDF8,#7DD3FC); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+    .badge { background:rgba(3,105,161,.15); color:#38BDF8; font-size:.72rem; font-weight:600; padding:.25rem .75rem; border-radius:999px; letter-spacing:.05em; text-transform:uppercase }
+    .badge-sky { background:rgba(3,105,161,.18); color:#38BDF8 }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease }
+    .reveal.visible { opacity:1; transform:none }
+    .prose p { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; font-size:1.0625rem }
+    .prose h2 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#fff; margin-top:2.5rem; margin-bottom:1rem }
+    .prose h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.2rem; color:rgba(255,255,255,.9); margin-top:2rem; margin-bottom:.75rem }
+    .prose ul { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; padding-left:1.5rem; list-style-type:disc }
+    .prose ul li { margin-bottom:.5rem }
+    .prose strong { color:#fff; font-weight:600 }
+    .prose pre { background:#0a0f1a; border:1px solid rgba(14,165,233,.2); border-radius:12px; padding:1.25rem 1.5rem; overflow-x:auto; margin-bottom:1.5rem }
+    .prose pre code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#94d4f7; line-height:1.7; white-space:pre }
+    .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#7dd3fc; background:rgba(14,165,233,.1); padding:.1rem .35rem; border-radius:4px }
+    .prose pre code { background:none; padding:0; color:#94d4f7 }
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(56,189,248,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
+  </style>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Landing Zone Design: Governance as Code for Multi-Account AWS",
+  "description": "A model for AWS landing zone governance: OUs for boundaries, SCPs for guardrails, drift-detecting controls — codified, not manual review.",
+  "datePublished": "2026-09-01",
+  "dateModified": "2026-09-01",
+  "author": {
+    "@type": "Person",
+    "name": "Cesar A. Nogueira",
+    "url": "https://up2cloud.tech/about/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "UP2CLOUD",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://up2cloud.tech/assets/img/og-image.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://up2cloud.tech/blog/landing-zone-design-multi-account-governance/"
+  },
+  "image": "https://up2cloud.tech/assets/img/og-image.png"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://up2cloud.tech/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://up2cloud.tech/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Landing Zone Design: Governance as Code for Multi-Account AWS",
+      "item": "https://up2cloud.tech/blog/landing-zone-design-multi-account-governance/"
+    }
+  ]
+}
+  </script>
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <meta property="og:description" content="A model for AWS landing zone governance: OUs for boundaries, SCPs for guardrails, drift-detecting controls — codified, not manual review." />
+  <meta name="author" content="César Nogueira" />
+  <meta property="article:author" content="https://up2cloud.tech/about/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@up2cloud" />
+  <meta name="twitter:title" content="Landing Zone Design &amp; Multi-Account Governance — UP2CLOUD" />
+  <meta name="twitter:description" content="A model for AWS landing zone governance: OUs for boundaries, SCPs for guardrails, drift-detecting controls — codified, not manual review." />
+  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:rgba(15,23,42,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-white rounded" aria-label="UP2CLOUD Home">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="relative" id="article-lang-picker">
+        <button id="article-lang-btn" onclick="toggleArticleLang(event)" class="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium border border-white/20 rounded-lg px-2.5 py-1.5 transition-colors hover:border-white/40 cursor-pointer" aria-haspopup="true" aria-expanded="false">
+          <span id="article-lang-flag" class="text-sm leading-none">🇺🇸</span>
+          <span id="article-lang-code" class="font-semibold tracking-wide">EN</span>
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="article-lang-menu" class="hidden absolute right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-50 min-w-[140px]" style="background:rgba(15,23,42,.97);backdrop-filter:blur(16px)">
+          <button onclick="setArticleLang('en')" data-lang="en" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇺🇸</span><span>English</span></button>
+          <button onclick="setArticleLang('pt')" data-lang="pt" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇧🇷</span><span>Português</span></button>
+          <button onclick="setArticleLang('es')" data-lang="es" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇪🇸</span><span>Español</span></button>
+          <button onclick="setArticleLang('fr')" data-lang="fr" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇫🇷</span><span>Français</span></button>
+        </div>
+      </div>
+      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_blog">Blog</a>
+      <a href="/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_back">← Back to site</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)" data-i18n="blog_cta_touch">Get in Touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-32 pb-12 relative overflow-hidden" style="background:radial-gradient(circle at 15% 20%,rgba(14,165,233,.18),transparent 35%),radial-gradient(circle at 85% 10%,rgba(3,105,161,.15),transparent 30%),linear-gradient(135deg,#020617 0%,#0F172A 50%,#0c2240 100%)">
+  <div class="absolute w-96 h-96 rounded-full opacity-15 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-5%;right:-5%;filter:blur(70px)"></div>
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/blog/" class="text-white/50 hover:text-white text-sm transition-colors">Blog</a>
+      <span class="text-white/25">/</span>
+      <span class="badge badge-sky">Cloud</span>
+    </div>
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+      Landing Zone Design: Governance as Code for Multi-Account AWS
+    </h1>
+    <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
+      <div class="flex items-center gap-3">
+        <img src="/assets/img/cesar.webp" alt="Cesar A. Nogueira" width="48" height="48" loading="lazy" class="w-8 h-8 rounded-full object-cover" style="object-position:64% 62%;transform:scale(1.5);transform-origin:center" />
+        <span class="text-white/70 font-medium">Cesar A. Nogueira</span>
+      </div>
+      <span>April 22, 2025</span>
+      <span>·</span>
+      <span>12 <span data-i18n="blog_min_read">min read</span></span>
+    </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Diagram of Terraform's layered module structure — resource modules, composition modules, and root configurations — flowing through a policy-gated CI/CD pipeline into production apply">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".5"><rect x="10" y="50" width="40" height="30" rx="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".65"><rect x="70" y="38" width="40" height="42" rx="4"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".8"><rect x="130" y="26" width="40" height="54" rx="4"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#7DD3FC"><rect x="190" y="12" width="40" height="68" rx="4"/></g>
+      <path class="draw" d="M250 46 L280 46 L280 22 L385 22" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="385" cy="22" r="4" fill="#F97316"/>
+      <text x="292" y="14" fill="#FB923C" font-size="9" font-family="Space Grotesk,sans-serif" font-weight="700">apply</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">modules</text>
+      <text x="190" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">environments</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ARTICLE BODY -->
+<article class="py-12" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6 prose reveal">
+
+<p>The revised body — I only changed the one sentence in Section 2 that misattributed governance content to Azure&#39;s Well-Architected Framework:</p>
+<h2>1. Where single-account and ad hoc multi-account setups break down</h2>
+<p>Most organizations don&#39;t design their way into an AWS account structure — they accumulate one. It starts with a single account, everything tagged by team or project, and IAM permissions granted as people ask for them. Eventually someone notices that a developer with access to the staging S3 bucket can also touch production billing alarms, or that a compromised credential in one workload has a blast radius covering every other workload in the company. The fix is usually &quot;let&#39;s create separate accounts,&quot; which solves the isolation problem for about a quarter — until account creation itself becomes the bottleneck.</p>
+<p>At that point, a second failure mode appears: accounts get created on request, each one hand-built by whoever picked up the ticket. One account gets CloudTrail enabled from day one; another doesn&#39;t, because the person provisioning it forgot, or didn&#39;t know it was expected. One account gets a restrictive IAM boundary; another gets <code>AdministratorAccess</code> because the requester was in a hurry and nobody pushed back. Six months later, a security review has to look at every single account individually because there&#39;s no guarantee any two of them were built the same way.</p>
+<p>Both patterns — &quot;one big account with tags&quot; and &quot;accounts created on request&quot; — fail at the same root cause: governance lives in a person&#39;s memory, a wiki page, or a checklist, not in a system that enforces it. A checklist doesn&#39;t stop a misconfigured account from going live; it just documents what should have happened, after the fact. Controls applied once at account creation don&#39;t survive contact with time — teams add resources, roles, and one-off exceptions, and none of that drifts back toward the original baseline unless something is actively pulling it there. <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Organizations</a> treats AWS accounts as &quot;natural boundaries for permission, security, costs, and workloads,&quot; and recommends a multi-account environment as a best practice — but the boundary only holds value if what happens inside each boundary is consistent and enforced, not improvised per account.</p>
+<h2>2. A landing zone is a system, not a setup checklist</h2>
+<p>The architecture patterns below are illustrated with AWS primitives — organizational units, service control policies, Control Tower — because they map to concrete, testable artifacts. The same structural argument applies on other clouds through different primitives: GCP&#39;s <a href="https://docs.cloud.google.com/architecture/landing-zones" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">landing zone guidance</a> and its broader <a href="https://docs.cloud.google.com/architecture/framework" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">architecture framework</a> describe the equivalent resource-hierarchy and organization-policy approach, and Azure&#39;s <a href="https://learn.microsoft.com/en-us/azure/well-architected/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Well-Architected Framework</a> makes the same case at the workload level — its cost optimization, security, and operational excellence pillars all assume a consistent, enforced baseline rather than per-workload improvisation. What follows is one concrete implementation of a cloud-agnostic principle, not an AWS-only concern.</p>
+<p>A landing zone is the codified combination of account structure, identity federation, network baseline, and policy enforcement that every new account inherits automatically, without a human re-deciding it each time. It is not a runbook that a cloud engineer follows during account creation — it&#39;s the set of policy artifacts, version-controlled and applied programmatically, that make correct configuration the only configuration a new account can have.</p>
+<p>This is the thesis in concrete terms: durable governance requires organizational units (OUs), service control policies (SCPs), and drift-detecting controls to exist as code under version control — reviewable in a pull request, testable, and reproducible — rather than as steps someone performs once and hopes stick. AWS&#39;s own framing draws the same distinction: <a href="https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Control Tower</a> exists specifically because &quot;if you are hosting more than a handful of accounts, it&#39;s beneficial to have an orchestration layer that facilitates account deployment and account governance,&quot; and it applies guardrails to keep organizations and accounts from <em>drift</em> — explicitly defined as &quot;divergence from best practices.&quot;</p>
+<p>The distinction between one-time setup and codified policy is the difference between a control that decays and a control that self-enforces. A checklist item (&quot;enable CloudTrail on new accounts&quot;) depends on someone remembering to do it, every time, forever. An SCP that denies <code>cloudtrail:StopLogging</code> and <code>cloudtrail:DeleteTrail</code> at the OU level makes the outcome structural — it doesn&#39;t matter who created the account or whether they read the checklist. The same logic applies across identity federation, network baselines, and logging: each one is either an artifact that gets applied automatically to every account in scope, or it&#39;s a hope.</p>
+<h2>3. Designing the OU hierarchy: where account boundaries actually go</h2>
+<p>OU boundaries should follow risk and blast-radius logic, not organizational convenience. Three axes matter in practice: environment (production vs. non-production), workload sensitivity (regulated data, public-facing services, internal tooling), and team or business unit ownership. The mistake most teams make is designing OUs around whichever axis is easiest to explain in a slide — usually the org chart — rather than the axis that actually determines which policies apply.</p>
+<p>A workable starting hierarchy looks like this:</p>
+<pre><code>Root
+├── Security          (log archive, audit/read-only account)
+├── Infrastructure     (shared networking, DNS, tooling accounts)
+├── Workloads
+│   ├── Prod
+│   └── NonProd
+└── Sandbox            (unrestricted experimentation, tightly capped spend)</code></pre>
+<p>The reason this shape works is that it lets policy inheritance do the enforcement instead of relying on per-account exceptions. An SCP attached to <code>Workloads/Prod</code> — for example, requiring MFA for any IAM changes, or denying deletion of KMS keys — applies to every account placed under it, present and future, with zero additional configuration. Compare that to a flat account list where the same policy has to be attached individually to each account and re-attached every time a new one is created; that&#39;s exactly the &quot;someone has to remember&quot; failure mode the landing zone is meant to eliminate.</p>
+<p>Deeper nesting buys finer-grained policy control, but it comes at a real cost: every additional OU layer is another place SCPs can silently diverge, another thing a new engineer has to understand before they can reason about what&#39;s allowed where. The practical recommendation is to start shallow — the five OUs above are enough for most organizations at launch — and only split further when a specific SCP requirement demands it (for example, splitting <code>Workloads/Prod</code> into a PCI-scoped sub-OU once a payments workload actually needs stricter controls than the rest of production). Don&#39;t pre-build OU depth for hypothetical future policies; add nesting when a real, distinct control need shows up, not before.</p>
+<h2>4. Guardrails as policy: enforcing SCPs instead of asking nicely</h2>
+<p>Preventive and detective controls do different jobs and both are necessary. SCPs are preventive: they set the maximum permissions available in an account, regardless of what IAM policies inside that account grant — even a full-admin role in a member account can&#39;t take an action an SCP denies at the OU level. Detective controls, typically AWS Config rules or Security Hub findings, catch what SCPs structurally can&#39;t: third-party actions taken outside the API surface SCPs cover, resource configurations that become non-compliant after the fact, or cross-service interactions that no single SCP statement anticipated. A landing zone needs both because SCPs stop the bad API call, but they can&#39;t inspect the state of a resource that already exists.</p>
+<p>A concrete example: denying an account from leaving the organization and restricting which regions can be used. Here&#39;s the SCP itself:</p>
+<pre><code class="language-json">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Sid&quot;: &quot;DenyLeaveOrganization&quot;,
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;Action&quot;: &quot;organizations:LeaveOrganization&quot;,
+      &quot;Resource&quot;: &quot;*&quot;
+    },
+    {
+      &quot;Sid&quot;: &quot;DenyOutsideApprovedRegions&quot;,
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;NotAction&quot;: [
+        &quot;iam:*&quot;,
+        &quot;organizations:*&quot;,
+        &quot;route53:*&quot;,
+        &quot;cloudfront:*&quot;,
+        &quot;support:*&quot;,
+        &quot;sts:*&quot;,
+        &quot;kms:*&quot;,
+        &quot;waf:*&quot;,
+        &quot;wafv2:*&quot;,
+        &quot;shield:*&quot;,
+        &quot;config:*&quot;,
+        &quot;ce:*&quot;,
+        &quot;budgets:*&quot;,
+        &quot;trustedadvisor:*&quot;,
+        &quot;health:*&quot;,
+        &quot;account:*&quot;,
+        &quot;tax:*&quot;
+      ],
+      &quot;Resource&quot;: &quot;*&quot;,
+      &quot;Condition&quot;: {
+        &quot;StringNotEquals&quot;: {
+          &quot;aws:RequestedRegion&quot;: [&quot;us-east-1&quot;, &quot;eu-west-1&quot;]
+        }
+      }
+    }
+  ]
+}</code></pre>
+<p>Treat this <code>NotAction</code> list as a starting point, not a finished policy. It covers the global/non-regional services most organizations rely on, but the exact set depends on which services an organization actually uses — omitting a service that&#39;s genuinely global for your workloads (a third-party marketplace integration, a less common global endpoint) will silently break legitimate cross-region calls to it once this reaches production. Audit actual API usage — CloudTrail event history is a reasonable source — before attaching this to any OU that carries production traffic.</p>
+<p>And attached in Terraform at the OU level, not the account level:</p>
+<pre><code class="language-hcl">resource &quot;aws_organizations_policy&quot; &quot;region_and_org_guardrail&quot; {
+  name    = &quot;deny-leave-org-and-region-restriction&quot;
+  type    = &quot;SERVICE_CONTROL_POLICY&quot;
+  content = file(&quot;${path.module}/policies/region-and-org-guardrail.json&quot;)
+}
+
+resource &quot;aws_organizations_policy_attachment&quot; &quot;workloads_prod&quot; {
+  policy_id = aws_organizations_policy.region_and_org_guardrail.id
+  target_id = aws_organizations_organizational_unit.workloads_prod.id
+}</code></pre>
+<p>Attaching at the OU means every account provisioned into <code>Workloads/Prod</code> — today or in a year — inherits the restriction automatically, with no per-account step.</p>
+<p>The other half of this thesis matters just as much: don&#39;t block teams with organization-wide blanket denies where the risk doesn&#39;t actually live everywhere. A rule against launching oversized, expensive EC2 instance types belongs on <code>Sandbox</code>, where unmonitored spend is the actual risk, not on <code>Workloads/Prod</code>, where a legitimate capacity-planning decision would get blocked for no security reason. SCPs scoped too broadly are the fastest way to train engineers to treat governance as an obstacle to route around rather than infrastructure to build on.</p>
+<h2>5. Provisioning accounts without re-auditing each one by hand</h2>
+<p>The account vending pattern replaces manual account setup with a pipeline — a Terraform module, <a href="https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Control Tower&#39;s Account Factory</a>, or custom automation — that creates a new account and applies its baseline configuration atomically, as one operation rather than a sequence of manual steps someone might skip. AWS Organizations already supports this natively: accounts can be created programmatically via the CLI, SDKs, or API, with baseline resources and permissions provisioned centrally using tools like CloudFormation StackSets, as described in the <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Organizations documentation</a>.</p>
+<p>The key point is that if provisioning is a codified module invocation, every account starts compliant by construction — there is no &quot;new account&quot; state that predates the baseline, because the baseline is part of what &quot;new account&quot; means. Manual review shifts from being the default gate every account has to pass through, to being exception handling for the rare case where an account genuinely needs to deviate from the standard shape.</p>
+<p>A typical vended baseline includes: automatic OU placement based on account purpose (so SCP inheritance takes effect immediately), CloudTrail and Config delivery configured to write into a central log-archive account rather than staying local, the org&#39;s default deny-all SCP applied by inheritance before any workload resources are created, and a break-glass IAM role for emergency access that bypasses normal federation without bypassing logging. None of this requires the account requester to know anything about security configuration — it&#39;s a property of the pipeline, not of their diligence.</p>
+<h2>6. Catching drift before it becomes an incident</h2>
+<p>SCPs are not sufficient on their own, and treating them as sufficient is a common mistake. They prevent <em>new</em> violations going forward, but they do nothing about resources that already existed before a policy was tightened, or that were created through a legitimately granted exception that was never revisited. A public S3 bucket created before a bucket-policy SCP was written stays public; the SCP only stops the next one.</p>
+<p>This is where detective, continuously-evaluating controls close the gap. AWS Config conformance packs bundle a set of Config rules and remediation actions that continuously check accounts against a baseline — flagging or auto-remediating things like unencrypted volumes, security groups open to <code>0.0.0.0/0</code>, or IAM users without MFA — regardless of when the offending resource was created. Tools like Open Policy Agent or Cloud Custodian serve a similar function outside the AWS-native tooling, evaluating live resource state against declarative policy and either alerting or acting.</p>
+<p>This is the mechanism that actually keeps the thesis true over time. A landing zone audited once at launch is accurate for exactly as long as nothing changes — which, in practice, is measured in days. Drift detection is what turns &quot;we designed this to be compliant&quot; into &quot;we know, continuously, whether it still is.&quot; Without it, a landing zone degrades into the same wiki-and-hope governance model it was built to replace, just with better paperwork at the start.</p>
+<h2>7. Migrating from a single account without stalling delivery</h2>
+<p>Migrating an existing single-account (or ungoverned multi-account) environment into a landing zone works best sequenced, not big-banged. Stand up the OU structure, baseline SCPs, and centralized logging first, entirely independent of any workload migration — this is infrastructure that can be built and tested without touching a single running service. Only once that baseline exists should workload accounts move or get recreated into it, one at a time or in small batches, rather than as a single cutover weekend.</p>
+<p>The real obstacle here isn&#39;t technical, it&#39;s behavioral: teams that hit a guardrail that blocks their work will either escalate for an exception or quietly find a way around it, and either outcome undermines the landing zone if it happens repeatedly. The mitigation is to scope initial SCPs conservatively — deny only the highest-risk, clearest-cut actions (leaving the organization, disabling logging, deleting audit trails) — and expand the guardrail set over time as teams adapt and as false-positive friction gets identified and resolved. A landing zone that ships maximally strict on day one generates enough exception requests to bury the team maintaining it; one that ships with a tight, well-justified initial set earns the credibility to add more later.</p>
+<p>Track the migration itself as a backlog — which accounts are on the new baseline, which are still pending, which have open exceptions — the same way any other engineering work gets tracked, rather than relying on someone&#39;s memory of &quot;we&#39;re mostly done.&quot; A migration that isn&#39;t itself tracked in a system tends to stall at &quot;mostly migrated&quot; indefinitely, which just recreates the original ungoverned-sprawl problem for the accounts that never made it across.</p>
+<h2>8. Anti-patterns that quietly undo a landing zone</h2>
+<p>A landing zone rarely fails all at once; it erodes through small, individually reasonable decisions that never get reconciled back into the policy source. The most common one is the manually granted SCP exception: someone needs a one-off carve-out to unblock a deadline, an admin attaches a narrower policy or detaches the offending statement directly in the AWS console, and it&#39;s never codified back into Terraform. Six months later nobody remembers why that account is different, and the next audit has to treat it as a special case rather than as policy.</p>
+<p>A second anti-pattern is OU structure that mirrors the org chart instead of risk and environment boundaries — an OU per business unit, each with its own copy of roughly the same SCPs. This looks organized but forces policy duplication: a change to the logging baseline now has to be applied N times instead of once, and the N copies inevitably diverge. OU boundaries should answer &quot;does this group of accounts need different policy,&quot; not &quot;does this group of accounts report to a different VP.&quot;</p>
+<p>The third is treating account-vending automation as a migration tool rather than the permanent way new accounts get created. Once the initial batch of accounts is migrated, it&#39;s tempting to let the automation lapse and go back to ad hoc account creation for the next request that doesn&#39;t quite fit the template. That&#39;s the same failure mode from section 1, reintroduced through the back door — and it guarantees a second migration project a year or two later.</p>
+<h2>What to do next</h2>
+<p>Start by writing the OU hierarchy and a minimal SCP set (deny-leave-organization, region restriction, deny-disable-logging) as Terraform under version control. Before applying the region-restriction SCP anywhere near production, audit which global services your accounts actually call and confirm the <code>NotAction</code> exemption list covers them — then apply the policy to a test organization first. Pick one account-vending mechanism — <a href="https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Control Tower&#39;s Account Factory</a> if a managed orchestration layer fits, or a custom Terraform module using <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS Organizations</a> APIs if more control is needed — and commit to it as the only path for new accounts going forward. Add one AWS Config conformance pack scoped to the baseline you&#39;ve defined, and treat every finding it produces as a signal to either fix the resource or codify the exception, never to ignore. Finally, build the migration backlog before migrating anything, so the state of &quot;who&#39;s on the new baseline&quot; is a query, not a guess.</p>
+
+    <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
+      Working through this in production? Explore the
+      <a href="/#services" class="text-sky-light hover:underline">Cloud &amp; DevOps services</a>
+      or read more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
+    </p>
+
+  </div>
+</article>
+
+<!-- Blog Engagement: Likes + Comments -->
+<section class="max-w-3xl mx-auto px-6 py-2">
+  <div id="likes-mount"></div>
+  <div id="comments-mount"></div>
+</section>
+<script src="/assets/js/blog-engagement.js" defer></script>
+
+
+<!-- Related Posts -->
+<section class="py-12 border-t border-white/5" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="font-heading font-bold text-2xl text-white mb-8">Related Insights</h2>
+    <div class="grid sm:grid-cols-2 gap-6">
+
+      <a href="/blog/platform-engineering-finops-2026/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">Finops</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">Platform Engineering + FinOps in 2026: How Elite Cloud Teams Reduce Costs Without Slowing Developers</h3>
+      </a>
+
+      <a href="/blog/cloud-cost-anomaly-detection-ai/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">FinOps</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">How AI Anomaly Detection Catches Cloud Cost Spikes Before They Hurt</h3>
+      </a>
+
+    </div>
+  </div>
+</section>
+<!-- CTA -->
+<section class="py-16" style="background:#020617">
+  <div class="max-w-3xl mx-auto px-6 reveal">
+    <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(3,105,161,.2),rgba(14,165,233,.15));border:1px solid rgba(14,165,233,.2)">
+      <div class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-20%;right:-10%;filter:blur(50px)"></div>
+      <span class="badge badge-sky inline-block mb-4">IaC Consulting</span>
+      <h2 class="font-heading font-bold text-3xl text-white mb-4">Need help scaling your Terraform codebase?</h2>
+      <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
+        We help teams design module libraries, implement policy-as-code guardrails, and build CI/CD pipelines that make infrastructure changes safe and fast.
+      </p>
+      <a href="/#contact" class="inline-flex items-center gap-2 font-semibold text-white px-8 py-3.5 rounded-xl transition-all hover:opacity-90" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        Let's Talk
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#020617;border-top:1px solid rgba(255,255,255,.07)" class="py-12 mt-0">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-white/40">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/" class="hover:text-white/70 transition-colors">Home</a>
+      <a href="/blog/" class="hover:text-white/70 transition-colors">Blog</a>
+      <a href="/about/" class="hover:text-white/70 transition-colors">About</a>
+      <a href="/#contact" class="hover:text-white/70 transition-colors">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
+</script>
+<script>
+(function(){
+  const LANG_META = {
+    en:{flag:'🇺🇸',code:'EN'}, pt:{flag:'🇧🇷',code:'PT'},
+    es:{flag:'🇪🇸',code:'ES'}, fr:{flag:'🇫🇷',code:'FR'}
+  };
+  const cache = {};
+  async function loadLang(lang) {
+    if (cache[lang]) return cache[lang];
+    try {
+      const r = await fetch('/assets/i18n/' + lang + '.json');
+      if (!r.ok) throw 0;
+      cache[lang] = await r.json();
+    } catch(e) { cache[lang] = cache['en'] || {}; }
+    return cache[lang];
+  }
+  function applyLang(t) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+    });
+  }
+  const POST_SLUG = 'terraform-iac-best-practices';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
+  async function setArticleLang(lang) {
+    document.getElementById('article-lang-menu')?.classList.add('hidden');
+    document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
+    const meta = LANG_META[lang];
+    if (!meta) return;
+    localStorage.setItem('up2cloud-lang', lang);
+    document.getElementById('article-lang-flag').textContent = meta.flag;
+    document.getElementById('article-lang-code').textContent = meta.code;
+    document.querySelectorAll('.article-lang-opt').forEach(b => {
+      b.style.background = b.dataset.lang === lang ? 'rgba(14,165,233,.15)':'';
+      b.style.color = b.dataset.lang === lang ? '#fff':'';
+    });
+    const t = await loadLang(lang);
+    applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
+  }
+  function toggleArticleLang(e) {
+    e && e.stopPropagation();
+    const m = document.getElementById('article-lang-menu');
+    const open = m.classList.toggle('hidden');
+    document.getElementById('article-lang-btn').setAttribute('aria-expanded', String(!open));
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('article-lang-picker');
+    if (p && !p.contains(e.target)) document.getElementById('article-lang-menu')?.classList.add('hidden');
+  });
+  window.setArticleLang = setArticleLang;
+  window.toggleArticleLang = toggleArticleLang;
+  const saved = localStorage.getItem('up2cloud-lang') || 'en';
+  loadLang('en').then(() => setArticleLang(saved));
+})();
+</script>
+<script>const yearEl = document.getElementById("year"); if (yearEl) yearEl.textContent = new Date().getFullYear();</script></body>
+</html>
