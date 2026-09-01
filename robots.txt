@@ -48,9 +48,6 @@ Disallow: /
 User-agent: Amazonbot
 Disallow: /
 
-User-agent: ChatGPT-User
-Disallow: /
-
 User-agent: Claude-Web
 Disallow: /
 
@@ -66,8 +63,15 @@ Disallow: /
 User-agent: Meta-ExternalAgent
 Disallow: /
 
-User-agent: PerplexityBot
-Disallow: /
-
 User-agent: Applebot-Extended
 Disallow: /
+
+# ChatGPT-User and PerplexityBot are on-demand answer-engine fetchers, not
+# training crawlers: they run when a person asks ChatGPT or Perplexity a
+# live question and it browses out to answer, the same category as
+# LinkedInBot above. Blocking them meant UP2CLOUD could never appear in an
+# AI-generated answer on either platform, which cuts against /connect (the
+# MCP server built specifically so AI agents can query company info).
+# Left unblocked here, matching cesarnogueira.tech's Content-Signal split
+# (ai-train=no, search=yes, ai-input=yes) between training and on-demand use.
+# They fall through to the default `User-agent: *` group above.
