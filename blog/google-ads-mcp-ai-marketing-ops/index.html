@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Ads MCP: AI Agents for Marketing Ops — UP2CLOUD</title>
+  <meta name="description" content="Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend." />
+  <meta name="keywords" content="Google Ads MCP, Model Context Protocol, MCP server, AI agents, Google Ads API, GAQL, marketing ops, AI governance, Claude Code, FinOps" />
+  <meta property="og:title" content="Google Ads MCP: AI Agents for Marketing Ops — UP2CLOUD" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://up2cloud.tech/blog/google-ads-mcp-ai-marketing-ops/" />
+  <link rel="canonical" href="https://up2cloud.tech/blog/google-ads-mcp-ai-marketing-ops/" />
+  <meta property="article:published_time" content="2026-09-02" />
+  <!-- include: _includes/favicon.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="../../assets/css/tailwind.min.css" as="style" />
+  <link rel="stylesheet" href="../../assets/css/tailwind.min.css" />
+  <style>
+    *,*::before,*::after { box-sizing:border-box }
+    html { scroll-behavior:smooth; overscroll-behavior:none }
+    body { font-family:'DM Sans',sans-serif; background:#0F172A; color:#fff; margin:0 }
+    h1,h2,h3,h4 { font-family:'Space Grotesk',sans-serif }
+    .glass { background:rgba(255,255,255,.07); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.12) }
+    .gradient-text { background:linear-gradient(90deg,#0EA5E9,#38BDF8,#7DD3FC); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+    .badge { background:rgba(3,105,161,.15); color:#38BDF8; font-size:.72rem; font-weight:600; padding:.25rem .75rem; border-radius:999px; letter-spacing:.05em; text-transform:uppercase }
+    .badge-purple { background:rgba(124,58,237,.18); color:#A78BFA }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease }
+    .reveal.visible { opacity:1; transform:none }
+    .prose p { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; font-size:1.0625rem }
+    .prose h2 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#fff; margin-top:2.5rem; margin-bottom:1rem }
+    .prose h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.2rem; color:rgba(255,255,255,.9); margin-top:2rem; margin-bottom:.75rem }
+    .prose ul { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; padding-left:1.5rem; list-style-type:disc }
+    .prose ul li { margin-bottom:.5rem }
+    .prose strong { color:#fff; font-weight:600 }
+    .prose pre { background:#0a0f1a; border:1px solid rgba(14,165,233,.2); border-radius:12px; padding:1.25rem 1.5rem; overflow-x:auto; margin-bottom:1.5rem }
+    .prose pre code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#94d4f7; line-height:1.7; white-space:pre; background:none; padding:0 }
+    .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#7dd3fc; background:rgba(14,165,233,.1); padding:.1rem .35rem; border-radius:4px }
+    @media(prefers-reduced-motion:reduce){.reveal{animation:none;transition:none;opacity:1;transform:none}}
+  </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Google Ads MCP: AI Agents for Marketing Ops",
+    "description": "Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend.",
+    "datePublished": "2026-09-02",
+    "author": {
+      "@type": "Person",
+      "name": "Cesar A. Nogueira",
+      "url": "https://up2cloud.tech/about/"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "UP2CLOUD",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://up2cloud.tech/assets/img/og-image.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://up2cloud.tech/blog/google-ads-mcp-ai-marketing-ops/"
+    },
+    "image": "https://up2cloud.tech/assets/img/og-image.png"
+  }
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://up2cloud.tech/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://up2cloud.tech/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Google Ads MCP: AI Agents for Marketing Ops",
+      "item": "https://up2cloud.tech/blog/google-ads-mcp-ai-marketing-ops/"
+    }
+  ]
+}
+  </script>
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <meta property="og:description" content="Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend." />
+  <meta name="author" content="César Nogueira" />
+  <meta property="article:author" content="https://up2cloud.tech/about/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@up2cloud" />
+  <meta name="twitter:title" content="Google Ads MCP: AI Agents for Marketing Ops — UP2CLOUD" />
+  <meta name="twitter:description" content="Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend." />
+  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:rgba(15,23,42,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-white rounded" aria-label="UP2CLOUD Home">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="/blog" class="text-white/70 hover:text-white text-sm transition-colors">← All posts</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">Get in Touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ARTICLE HERO -->
+<section class="pt-28 pb-12" style="background:linear-gradient(135deg,#020617 0%,#0F172A 40%,#0C4A6E 75%,#0369A1 100%)">
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="badge badge-purple">AI</span>
+    </div>
+    <h1 class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+      Google Ads MCP: <span class="gradient-text">AI Agents for Marketing Ops</span>
+    </h1>
+    <div class="flex items-center gap-4 text-white/40 text-sm">
+      <span>September 2, 2026</span>
+      <span>·</span>
+      <span>6 min read</span>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLE BODY -->
+<article class="py-14" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6 prose">
+
+    <p>Google publishes an official <a href="https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server" class="text-sky-light hover:underline">Google Ads MCP server</a> — a Model Context Protocol endpoint that lets an AI agent query a Google Ads account directly. We wired it into our own toolchain here at UP2CLOUD to support keyword research and campaign auditing, and the design is worth calling out: it's read-only by construction, not by policy.</p>
+
+    <h2>What it actually exposes</h2>
+    <p>The server ships three tools, all read-only:</p>
+    <ul>
+      <li><code>list_accessible_customers</code> — the customer IDs and account names an authenticated user can see</li>
+      <li><code>search</code> — arbitrary <a href="https://developers.google.com/google-ads/api/docs/query/overview" class="text-sky-light hover:underline">GAQL</a> queries against metrics, budgets, and campaign status</li>
+      <li><code>get_resource_metadata</code> — schema metadata for resource types like campaigns and ad groups</li>
+    </ul>
+    <p>There is no mutation path. An agent connected to this server cannot pause a campaign, change a bid, or create an asset — it can only read what GAQL exposes. That's a deliberate constraint, and it's the right one for anything touching ad spend.</p>
+
+    <h2>Why read-only-by-design matters</h2>
+    <p>The same governance instinct we apply to infrastructure — least privilege, no standing write access, everything auditable — applies to marketing spend once an AI agent is in the loop. A misconfigured write-capable agent against a live Ads account is a budget incident waiting to happen, the same category of risk as an over-permissioned service account in a cloud project. Google shipping this as read-only means the blast radius of a bad prompt or a runaway loop is bounded to wasted API quota, not wasted ad spend.</p>
+    <p>That constraint doesn't make the tool less useful — diagnosis and research don't need write access. Every legitimate use case below is read-only by nature.</p>
+
+    <h2>Setup, in short</h2>
+    <p>It runs locally via <code>pipx</code>, or as a container on Cloud Run for shared/team access. Locally, it's one entry in an MCP client config:</p>
+    <pre><code>{
+  "mcpServers": {
+    "google-ads-mcp": {
+      "command": "pipx",
+      "args": ["run", "--spec",
+        "git+https://github.com/googleads/google-ads-mcp.git",
+        "google-ads-mcp"],
+      "env": {
+        "GOOGLE_PROJECT_ID": "${GOOGLE_PROJECT_ID}",
+        "GOOGLE_ADS_DEVELOPER_TOKEN": "${GOOGLE_ADS_DEVELOPER_TOKEN}",
+        "GOOGLE_ADS_MCP_OAUTH_CLIENT_ID": "${GOOGLE_ADS_MCP_OAUTH_CLIENT_ID}",
+        "GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET": "${GOOGLE_ADS_MCP_OAUTH_CLIENT_SECRET}"
+      }
+    }
+  }
+}</code></pre>
+    <p>Credentials come from environment variables at runtime, never hardcoded in the config file — the same rule we apply to every secret in this codebase, from the chatbot's Groq key to the newsletter's Brevo key. You'll need a Google Ads developer token, a Google Cloud project with the Ads API enabled, and an OAuth client. First connection triggers the standard OAuth consent flow in the browser.</p>
+
+    <h2>What we use it for</h2>
+    <ul>
+      <li><strong>Keyword research</strong> — querying <code>keyword_view</code> and <code>search_term_view</code> for volume and CPC on terms relevant to Platform Engineering, FinOps, and DevOps consulting, to inform both blog topics and ad copy.</li>
+      <li><strong>Campaign auditing</strong> — pulling Quality Score, CTR, and spend by campaign before deciding where budget goes, instead of eyeballing the Ads UI.</li>
+      <li><strong>Landing page alignment</strong> — checking which search terms actually convert against which landing sections exist on the site, to close content gaps.</li>
+    </ul>
+    <p>Any decision that follows — pausing a campaign, raising a bid, shipping new ad copy — still happens by hand in the Google Ads UI. The MCP server informs that decision; it doesn't make it.</p>
+
+    <h2>Where this fits with organic SEO</h2>
+    <p>Paid and organic aren't separate workstreams here. The keyword data this server surfaces feeds the same meta descriptions, headings, and structured data (<code>BlogPosting</code>, <code>Organization</code>, <code>LocalBusiness</code>) that drive this site's organic ranking — a single research pass covers both. If a term has strong CPC and search volume, it's a candidate for a landing section; if it's a long-tail question with low competition, it's a candidate for a blog post like this one.</p>
+
+    <h2>Conclusion</h2>
+    <p>Read-only MCP servers are becoming the sane default for AI agents that touch anything with financial consequences — ad accounts, billing APIs, production databases. Google Ads MCP is a clean example of that pattern done right: real diagnostic power, zero write surface. If your team is letting an AI agent anywhere near ad spend, read-only should be the starting posture, not an afterthought.</p>
+
+  </div>
+</article>
+
+<!-- Blog Engagement: Likes + Comments -->
+<section class="max-w-3xl mx-auto px-6 py-2">
+  <div id="likes-mount"></div>
+  <div id="comments-mount"></div>
+</section>
+<script src="/assets/js/blog-engagement.js" defer></script>
+
+<!-- CTA -->
+<section class="py-16" style="background:#020617">
+  <div class="max-w-3xl mx-auto px-6 reveal">
+    <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(3,105,161,.15),rgba(124,58,237,.12));border:1px solid rgba(14,165,233,.2)">
+      <h2 class="font-heading font-bold text-3xl text-white mb-4">Ready to optimise your cloud?</h2>
+      <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
+        Book a free 45-minute cloud audit. We'll identify quick wins and build a prioritised action plan — no strings attached.
+      </p>
+      <a href="/#contact" class="inline-flex items-center gap-2 font-semibold text-white px-8 py-3.5 rounded-xl transition-all hover:opacity-90" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        Book Free Audit
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#020617;border-top:1px solid rgba(255,255,255,.07)" class="py-12 mt-0">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-white/40">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span>© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/" class="hover:text-white/70 transition-colors">Home</a>
+      <a href="/blog" class="hover:text-white/70 transition-colors">Blog</a>
+      <a href="/about" class="hover:text-white/70 transition-colors">About</a>
+      <a href="/#contact" class="hover:text-white/70 transition-colors">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+</script>
+</body>
+</html>

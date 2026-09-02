@@ -1,5 +1,14 @@
 [
   {
+    "slug": "google-ads-mcp-ai-marketing-ops",
+    "title": "Google Ads MCP: AI Agents for Marketing Ops",
+    "excerpt": "Google shipped an official read-only MCP server for Google Ads: GAQL queries and campaign metadata, no write access. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend.",
+    "date": "2026-09-02",
+    "category": "AI",
+    "badgeClass": "badge-purple",
+    "featured": false
+  },
+  {
     "slug": "openclaw-autonomous-infra-ops",
     "title": "OpenClaw + Cloud Infrastructure: The Future of Autonomous AI Ops",
     "excerpt": "How combining OpenClaw's AI intelligence with production-grade infrastructure creates a self-healing, autonomous cloud environment that resolves incidents in seconds.",
