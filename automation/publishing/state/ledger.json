@@ -1,9 +1,140 @@
 {
-  "version": 1627,
-  "updatedAt": "2026-09-02T15:47:54.826Z",
+  "version": 1645,
+  "updatedAt": "2026-09-02T20:54:53.599Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260902201408_c4e6d6",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-09-02T20:14:08.561Z",
+      "updatedAt": "2026-09-02T20:54:53.593Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-02T20:14:08.571Z",
+          "completedAt": "2026-09-02T20:14:08.587Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-02T20:14:08.598Z",
+          "completedAt": "2026-09-02T20:15:04.747Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 111078
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-02T20:15:04.752Z",
+          "completedAt": "2026-09-02T20:15:36.398Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 3673
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-02T20:15:36.404Z",
+          "completedAt": "2026-09-02T20:17:46.446Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 22668
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-02T20:17:46.452Z",
+          "completedAt": "2026-09-02T20:25:16.347Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 31353
+          }
+        },
+        "validate": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-09-02T20:25:16.353Z",
+          "completedAt": "2026-09-02T20:54:53.593Z",
+          "error": "Quality gates blocked publication:\n  [review] The article does not provide any attribution for the statistics and benchmarks mentioned in the text. While there are no explicit statistics or benchmarks mentioned, it is still important to provide attribution for any data or research that is cited.",
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260902153130_504545",
       "mode": "draft",
@@ -7255,137 +7386,6 @@
           "startedAt": "2026-08-26T02:00:05.490Z",
           "completedAt": "2026-08-26T02:00:06.496Z",
           "error": "Quality gates blocked publication:\n  [word_count] Article is 742 words, below minimum 1200",
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260826013147_63a44d",
-      "mode": "dry-run",
-      "trigger": "workflow_dispatch",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-26T01:31:47.668Z",
-      "updatedAt": "2026-08-26T01:33:06.979Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-26T01:31:47.675Z",
-          "completedAt": "2026-08-26T01:31:47.697Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 666
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-26T01:31:47.705Z",
-          "completedAt": "2026-08-26T01:32:00.812Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 99802
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-26T01:32:00.815Z",
-          "completedAt": "2026-08-26T01:32:09.901Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 1544
-          }
-        },
-        "draft": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-26T01:32:09.905Z",
-          "completedAt": "2026-08-26T01:33:03.748Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "outline",
-              "body"
-            ],
-            "size": 9725
-          }
-        },
-        "review": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-26T01:33:03.751Z",
-          "completedAt": "2026-08-26T01:33:05.836Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "findings",
-              "applied",
-              "body"
-            ],
-            "size": 7748
-          }
-        },
-        "validate": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-26T01:33:05.840Z",
-          "completedAt": "2026-08-26T01:33:06.979Z",
-          "error": "Quality gates blocked publication:\n  [word_count] Article is 665 words, below minimum 1200",
           "output": null
         },
         "localize": {
