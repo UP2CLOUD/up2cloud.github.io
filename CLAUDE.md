@@ -261,3 +261,4 @@ The CI pipeline validates both with `terraform fmt -check` and `terraform valida
 - [`BLOG_NEWSLETTER.md`](BLOG_NEWSLETTER.md) — blog engagement (likes/comments) and newsletter subscription flows in detail.
 - [`ROBOTS_AND_SEO.md`](ROBOTS_AND_SEO.md) — `robots.txt`, `sitemap.xml`, and structured-data conventions.
 - [`SECURITY.md`](SECURITY.md) — vulnerability disclosure policy and supported scope.
+- [`GOOGLE_ADS_MCP.md`](GOOGLE_ADS_MCP.md) — Google Ads MCP server (`.mcp.json`) setup and how to use it for keyword research and campaign/ranking analysis.
