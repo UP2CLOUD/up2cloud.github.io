@@ -38,6 +38,12 @@ o servidor falha ao iniciar (comportamento esperado, não é bug).
 Primeiro uso dispara o OAuth consent flow do Google no browser para gerar o
 refresh token.
 
+**Erro `pipx needs uv>=X, but uv reports Y`**: acontece quando o `uv` instalado
+na máquina é mais antigo que o exigido pelo backend padrão do pipx. Contornar
+com `pipx run --backend pip --spec ...` (mesmo pacote, troca só o backend de
+resolução) ou atualizar o `uv` (`uv self update`). Testado e confirmado
+funcional com `--backend pip`.
+
 ## Tools expostas (read-only)
 
 - `list_accessible_customers` — lista customer IDs/contas acessíveis
