@@ -13,7 +13,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Google Ads MCP: AI Agents for Marketing Ops — UP2CLOUD</title>
-  <meta name="description" content="Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend." />
+  <meta name="description" content="Google shipped a read-only MCP server for Google Ads: how to wire it into an AI workflow, and why read-only is the right posture for agents touching ad spend." />
   <meta name="keywords" content="Google Ads MCP, Model Context Protocol, MCP server, AI agents, Google Ads API, GAQL, marketing ops, AI governance, Claude Code, FinOps" />
   <meta property="og:title" content="Google Ads MCP: AI Agents for Marketing Ops — UP2CLOUD" />
   <meta property="og:type" content="article" />
@@ -56,7 +56,7 @@
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "Google Ads MCP: AI Agents for Marketing Ops",
-    "description": "Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend.",
+    "description": "Google shipped a read-only MCP server for Google Ads: how to wire it into an AI workflow, and why read-only is the right posture for agents touching ad spend.",
     "datePublished": "2026-09-02",
     "author": {
       "@type": "Person",
@@ -75,7 +75,7 @@
       "@type": "WebPage",
       "@id": "https://up2cloud.tech/blog/google-ads-mcp-ai-marketing-ops/"
     },
-    "image": "https://up2cloud.tech/assets/img/og-image.png"
+    "image": "https://up2cloud.tech/assets/img/blog/google-ads-mcp-ai-marketing-ops-og.png"
   }
   </script>
   <script type="application/ld+json">
@@ -104,15 +104,15 @@
   ]
 }
   </script>
-  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
-  <meta property="og:description" content="Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend." />
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/blog/google-ads-mcp-ai-marketing-ops-og.png" />
+  <meta property="og:description" content="Google shipped a read-only MCP server for Google Ads: how to wire it into an AI workflow, and why read-only is the right posture for agents touching ad spend." />
   <meta name="author" content="César Nogueira" />
   <meta property="article:author" content="https://up2cloud.tech/about/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@up2cloud" />
   <meta name="twitter:title" content="Google Ads MCP: AI Agents for Marketing Ops — UP2CLOUD" />
-  <meta name="twitter:description" content="Google shipped an official read-only MCP server for Google Ads. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend." />
-  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <meta name="twitter:description" content="Google shipped a read-only MCP server for Google Ads: how to wire it into an AI workflow, and why read-only is the right posture for agents touching ad spend." />
+  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/blog/google-ads-mcp-ai-marketing-ops-og.png" />
 </head>
 <body>
 
@@ -165,7 +165,7 @@
     <p>There is no mutation path. An agent connected to this server cannot pause a campaign, change a bid, or create an asset — it can only read what GAQL exposes. That's a deliberate constraint, and it's the right one for anything touching ad spend.</p>
 
     <h2>Why read-only-by-design matters</h2>
-    <p>The same governance instinct we apply to infrastructure — least privilege, no standing write access, everything auditable — applies to marketing spend once an AI agent is in the loop. A misconfigured write-capable agent against a live Ads account is a budget incident waiting to happen, the same category of risk as an over-permissioned service account in a cloud project. Google shipping this as read-only means the blast radius of a bad prompt or a runaway loop is bounded to wasted API quota, not wasted ad spend.</p>
+    <p>The same governance instinct we apply to <a href="/blog/openclaw-autonomous-infra-ops/" class="text-sky-light hover:underline">autonomous infrastructure agents</a> — least privilege, no standing write access, everything auditable — applies to marketing spend once an AI agent is in the loop. A misconfigured write-capable agent against a live Ads account is a budget incident waiting to happen, the same category of risk as an over-permissioned service account in a cloud project. Google shipping this as read-only means the blast radius of a bad prompt or a runaway loop is bounded to wasted API quota, not wasted ad spend.</p>
     <p>That constraint doesn't make the tool less useful — diagnosis and research don't need write access. Every legitimate use case below is read-only by nature.</p>
 
     <h2>Setup, in short</h2>
@@ -197,7 +197,7 @@
     <p>Any decision that follows — pausing a campaign, raising a bid, shipping new ad copy — still happens by hand in the Google Ads UI. The MCP server informs that decision; it doesn't make it.</p>
 
     <h2>Where this fits with organic SEO</h2>
-    <p>Paid and organic aren't separate workstreams here. The keyword data this server surfaces feeds the same meta descriptions, headings, and structured data (<code>BlogPosting</code>, <code>Organization</code>, <code>LocalBusiness</code>) that drive this site's organic ranking — a single research pass covers both. If a term has strong CPC and search volume, it's a candidate for a landing section; if it's a long-tail question with low competition, it's a candidate for a blog post like this one.</p>
+    <p>Paid and organic aren't separate workstreams here. The keyword data this server surfaces feeds the same meta descriptions, headings, and structured data (<code>BlogPosting</code>, <code>Organization</code>, <code>LocalBusiness</code>) that drive this site's organic ranking — a single research pass covers both. If a term has strong CPC and search volume, it's a candidate for a landing section; if it's a long-tail question with low competition, it's a candidate for a blog post like this one. It's the same principle behind treating <a href="/blog/platform-engineering-finops-2026/" class="text-sky-light hover:underline">FinOps as a shared discipline</a> instead of a siloed cost-review meeting — one data source, multiple teams pulling from it.</p>
 
     <h2>Conclusion</h2>
     <p>Read-only MCP servers are becoming the sane default for AI agents that touch anything with financial consequences — ad accounts, billing APIs, production databases. Google Ads MCP is a clean example of that pattern done right: real diagnostic power, zero write surface. If your team is letting an AI agent anywhere near ad spend, read-only should be the starting posture, not an afterthought.</p>
