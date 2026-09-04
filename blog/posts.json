@@ -1,12 +1,20 @@
 [
   {
+    "slug": "cloud-egress-control-private-endpoints",
+    "title": "Locking Down Cloud Egress: Private Endpoints Over Public Routes",
+    "excerpt": "Learn how VPC endpoints, PrivateLink, and Private Service Connect replace NAT gateways and public IPs for controlled cloud egress.",
+    "date": "2026-09-04",
+    "category": "Cloud",
+    "badgeClass": "badge-sky",
+    "featured": true
+  },
+  {
     "slug": "google-ads-mcp-ai-marketing-ops",
     "title": "Google Ads MCP: AI Agents for Marketing Ops",
     "excerpt": "Google shipped an official read-only MCP server for Google Ads: GAQL queries and campaign metadata, no write access. Here is how to wire it into an AI workflow safely, and why read-only-by-design is the right posture for agents touching ad spend.",
     "date": "2026-09-02",
     "category": "AI",
-    "badgeClass": "badge-purple",
-    "featured": false
+    "badgeClass": "badge-purple"
   },
   {
     "slug": "openclaw-autonomous-infra-ops",
@@ -14,8 +22,7 @@
     "excerpt": "How combining OpenClaw's AI intelligence with production-grade infrastructure creates a self-healing, autonomous cloud environment that resolves incidents in seconds.",
     "date": "2026-05-09",
     "category": "AI",
-    "badgeClass": "badge-purple",
-    "featured": true
+    "badgeClass": "badge-purple"
   },
   {
     "slug": "platform-engineering-finops-2026",
@@ -23,26 +30,23 @@
     "excerpt": "Modern cloud teams are no longer choosing between developer velocity and cost optimization. In this article, we explore how Platform Engineering and FinOps are converging in 2026 to create scalable, self-service cloud platforms with built-in governance, automation, and real-time cost intelligence.",
     "date": "2026-05-08",
     "category": "FinOps",
-    "badgeClass": "badge-green",
-    "featured": false
+    "badgeClass": "badge-green"
   },
   {
     "slug": "cloud-cost-anomaly-detection-ai",
     "title": "How AI Anomaly Detection Catches Cloud Cost Spikes Before They Hurt",
-    "excerpt": "Most cloud bills spike silently for days before anyone notices. Here's how AI-powered anomaly detection catches cost explosions in minutes \u2014 not weeks \u2014 and the architecture we use at UP2CLOUD to do it.",
+    "excerpt": "Most cloud bills spike silently for days before anyone notices. Here's how AI-powered anomaly detection catches cost explosions in minutes — not weeks — and the architecture we use at UP2CLOUD to do it.",
     "date": "2026-05-08",
     "category": "FinOps",
-    "badgeClass": "badge-green",
-    "featured": false
+    "badgeClass": "badge-green"
   },
   {
     "slug": "finops-cloud-cost-reduction",
     "title": "FinOps in Practice: How We Reduced Cloud Costs by 42% for a Global Retailer",
-    "excerpt": "How UP2CLOUD's FinOps audit methodology \u2014 tagging strategy, rightsizing, reserved instances, and spot fleets \u2014 delivered $4,200/month in cloud savings for a global retailer.",
+    "excerpt": "How UP2CLOUD's FinOps audit methodology — tagging strategy, rightsizing, reserved instances, and spot fleets — delivered $4,200/month in cloud savings for a global retailer.",
     "date": "2025-04-08",
     "category": "FinOps",
-    "badgeClass": "badge-green",
-    "featured": true
+    "badgeClass": "badge-green"
   },
   {
     "slug": "terraform-iac-best-practices",
@@ -50,17 +54,15 @@
     "excerpt": "Module structure, remote state management, workspace strategy, policy as code with Sentinel/OPA, and CI/CD integration for teams managing hundreds of resources.",
     "date": "2025-04-22",
     "category": "DevOps",
-    "badgeClass": "badge-sky",
-    "featured": false
+    "badgeClass": "badge-sky"
   },
   {
     "slug": "ai-incident-response-automation",
     "title": "AI-Powered Incident Response: From Alert to Resolution in Under 60 Seconds",
-    "excerpt": "How AI agents detect, correlate, and resolve production incidents in under 60 seconds \u2014 reducing MTTR by 10\u00d7 and eliminating 3am wake-up calls for on-call engineers.",
+    "excerpt": "How AI agents detect, correlate, and resolve production incidents in under 60 seconds — reducing MTTR by 10× and eliminating 3am wake-up calls for on-call engineers.",
     "date": "2025-05-05",
     "category": "AI",
-    "badgeClass": "badge-purple",
-    "featured": false
+    "badgeClass": "badge-purple"
   },
   {
     "slug": "kubernetes-security-checklist",
@@ -68,8 +70,7 @@
     "excerpt": "A practical Kubernetes security checklist for 2025: RBAC, Pod Security Standards, network policies, secrets management, supply-chain controls, and runtime threat detection.",
     "date": "2025-05-12",
     "category": "Security",
-    "badgeClass": "badge-orange",
-    "featured": false
+    "badgeClass": "badge-orange"
   },
   {
     "slug": "platform-engineering-vs-devops",
@@ -77,16 +78,14 @@
     "excerpt": "Platform Engineering is redefining how teams build and ship software. Learn how Internal Developer Platforms, golden paths, and self-service tooling differ from traditional DevOps practices.",
     "date": "2025-05-19",
     "category": "DevOps",
-    "badgeClass": "badge-sky",
-    "featured": false
+    "badgeClass": "badge-sky"
   },
   {
     "slug": "devsecops-business-case",
     "title": "The Business Case for DevSecOps: Ship Faster Without Sacrificing Security",
-    "excerpt": "Late-stage vulnerabilities cost 30\u00d7 more to fix than shift-left catches. Here's the ROI case for integrating SAST, DAST, IaC scanning, and compliance as code into your CI/CD pipeline.",
+    "excerpt": "Late-stage vulnerabilities cost 30× more to fix than shift-left catches. Here's the ROI case for integrating SAST, DAST, IaC scanning, and compliance as code into your CI/CD pipeline.",
     "date": "2025-05-26",
     "category": "Security",
-    "badgeClass": "badge-orange",
-    "featured": false
+    "badgeClass": "badge-orange"
   }
 ]
