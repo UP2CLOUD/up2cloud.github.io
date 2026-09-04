@@ -1,9 +1,159 @@
 {
-  "version": 1745,
-  "updatedAt": "2026-09-04T02:04:18.178Z",
+  "version": 1766,
+  "updatedAt": "2026-09-04T10:26:19.251Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260904100633_888ba3",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-09-04T10:06:33.269Z",
+      "updatedAt": "2026-09-04T10:26:19.243Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:06:33.278Z",
+          "completedAt": "2026-09-04T10:06:33.294Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 666
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:06:33.305Z",
+          "completedAt": "2026-09-04T10:06:56.438Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 99828
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:06:56.447Z",
+          "completedAt": "2026-09-04T10:07:28.509Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 4756
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:07:28.517Z",
+          "completedAt": "2026-09-04T10:09:28.600Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 22672
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:09:28.606Z",
+          "completedAt": "2026-09-04T10:14:09.799Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 22296
+          }
+        },
+        "validate": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:14:09.806Z",
+          "completedAt": "2026-09-04T10:25:55.384Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "passed",
+              "blocking",
+              "warnings",
+              "findings",
+              "contentHash",
+              "words",
+              "authoritativeCitations",
+              "recheckFindings",
+              "body"
+            ],
+            "size": 31386
+          }
+        },
+        "localize": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:25:55.390Z",
+          "completedAt": "2026-09-04T10:26:17.142Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "bundle",
+              "problems"
+            ],
+            "size": 1083
+          }
+        },
+        "publish_blog": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-09-04T10:26:17.148Z",
+          "completedAt": "2026-09-04T10:26:19.243Z",
+          "error": "GitHub API POST /repos/UP2CLOUD/up2cloud.github.io/pulls → 403: {\"message\":\"GitHub Actions is not permitted to create or approve pull requests.\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#create-a-pull-request\",\"status\":\"403\"}",
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260904014833_f085d1",
       "mode": "draft",
@@ -7418,107 +7568,6 @@
           "attempts": 1,
           "startedAt": "2026-08-26T18:22:15.465Z",
           "completedAt": "2026-08-26T18:22:33.426Z",
-          "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
-          "output": null
-        },
-        "brief": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "draft": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "review": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "validate": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260826122707_208994",
-      "mode": "draft",
-      "trigger": "schedule",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-26T12:27:07.203Z",
-      "updatedAt": "2026-08-26T12:27:25.173Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-26T12:27:07.210Z",
-          "completedAt": "2026-08-26T12:27:07.342Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 658
-          }
-        },
-        "research": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-26T12:27:07.350Z",
-          "completedAt": "2026-08-26T12:27:25.173Z",
           "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
           "output": null
         },
