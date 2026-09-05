@@ -1,9 +1,159 @@
 {
-  "version": 1868,
-  "updatedAt": "2026-09-05T14:25:00.208Z",
+  "version": 1889,
+  "updatedAt": "2026-09-05T19:58:49.257Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260905194007_b3902f",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-09-05T19:40:07.049Z",
+      "updatedAt": "2026-09-05T19:58:49.247Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:40:07.058Z",
+          "completedAt": "2026-09-05T19:40:07.074Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 653
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:40:07.085Z",
+          "completedAt": "2026-09-05T19:40:32.457Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 95475
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:40:32.464Z",
+          "completedAt": "2026-09-05T19:40:54.002Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 3805
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:40:54.008Z",
+          "completedAt": "2026-09-05T19:42:49.574Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 23928
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:42:49.580Z",
+          "completedAt": "2026-09-05T19:48:19.368Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 27060
+          }
+        },
+        "validate": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:48:19.374Z",
+          "completedAt": "2026-09-05T19:57:36.170Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "passed",
+              "blocking",
+              "warnings",
+              "findings",
+              "contentHash",
+              "words",
+              "authoritativeCitations",
+              "recheckFindings",
+              "body"
+            ],
+            "size": 28781
+          }
+        },
+        "localize": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:57:36.178Z",
+          "completedAt": "2026-09-05T19:58:17.779Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "bundle",
+              "problems"
+            ],
+            "size": 1063
+          }
+        },
+        "publish_blog": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-09-05T19:58:17.785Z",
+          "completedAt": "2026-09-05T19:58:49.247Z",
+          "error": "git push failed: To https://github.com/UP2CLOUD/up2cloud.github.io\n ! [rejected]        automation/blog-2026-09-05-landing-zone-design-multi-account-governance -> automation/blog-2026-09-05-landing-zone-design-multi-account-governance (non-fast-forward)\nerror: failed to push some refs to 'https://github.com/UP2CLOUD/up2cloud.github.io'\nhint: Updates were rejected because the tip of your current branch is behind\nhint: its remote counterpart. If you want to integrate the remote changes,\nhint: use 'git pull' before",
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260905140840_ca21b9",
       "mode": "draft",
@@ -7646,155 +7796,6 @@
           "startedAt": "2026-08-27T06:33:48.813Z",
           "completedAt": "2026-08-27T06:33:52.154Z",
           "error": "git fetch failed: Command failed: git -c http.https://github.com/.extraheader=Authorization: Basic eC1hY2Nlc3MtdG9rZW46Z2hzXzE1MzY4X2V5SmhiR2NpT2lKRlV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoZFdRaU9pSmhkWFJvYm1RaUxDSmpkSGdpT2lKdVIwTjNlR3RSWjFOdFRrazJWVXB3ZERab1ozZ3hWVWQwUzFsUVVWVkxZM0ExUWpGNE5tWnVXV1YxVldSUE9USnFiamMyVW5ocklpd2laWGh3SWpveE56ZzNPREUxT0RreExDSnBZWFFpT2pFM09EYzRNVEl5T1RFc0ltbHpjeUk2SW1kcGRHaDFZaUlzSW1wMGFTSTZJams1WmprNVltVTVMV1ZqTVdZdE5HRTBaaTFpT0dVekxUWXpNMlF3WVRoaVlURmpOaUlzSW5abGNpSTZNMzAueWVnSjJZaFhGU3hrdFlLZTNiak4tZGpVRTNuOVJBZWx0eWxDN0J1Si1RS3RDNDh0VDRNRlJFLWhpaHNSZmZ5aXdHMkEtcm5mZDdfcDBFYmgzeXRQSHc= fetch origin main",
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260827053255_b751c2",
-      "mode": "draft",
-      "trigger": "schedule",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-27T05:32:55.988Z",
-      "updatedAt": "2026-08-27T05:35:00.745Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:32:55.995Z",
-          "completedAt": "2026-08-27T05:32:56.144Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 658
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:32:56.152Z",
-          "completedAt": "2026-08-27T05:33:12.271Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 100095
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:33:12.274Z",
-          "completedAt": "2026-08-27T05:33:20.242Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 1195
-          }
-        },
-        "draft": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:33:20.246Z",
-          "completedAt": "2026-08-27T05:34:50.415Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "outline",
-              "body"
-            ],
-            "size": 13319
-          }
-        },
-        "review": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:34:50.419Z",
-          "completedAt": "2026-08-27T05:34:52.532Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "findings",
-              "applied",
-              "body"
-            ],
-            "size": 11477
-          }
-        },
-        "validate": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:34:52.535Z",
-          "completedAt": "2026-08-27T05:34:53.735Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "passed",
-              "blocking",
-              "warnings",
-              "findings",
-              "contentHash",
-              "words",
-              "authoritativeCitations",
-              "recheckFindings"
-            ],
-            "size": 401
-          }
-        },
-        "localize": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:34:53.738Z",
-          "completedAt": "2026-08-27T05:34:57.617Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "bundle",
-              "problems"
-            ],
-            "size": 629
-          }
-        },
-        "publish_blog": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-27T05:34:57.621Z",
-          "completedAt": "2026-08-27T05:35:00.745Z",
-          "error": "git fetch failed: Command failed: git -c http.https://github.com/.extraheader=Authorization: Basic eC1hY2Nlc3MtdG9rZW46Z2hzXzE1MzY4X2V5SmhiR2NpT2lKRlV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoZFdRaU9pSmhkWFJvYm1RaUxDSmpkSGdpT2lJMk1EVkZMV3BCZVRoSllXZzBOREJGVldwSGQyaHlUM1pxV0hKaFFuTXlkR3RqUzA1R2IxbGhaMDVzV2pJelVrUTRVbFE0UVZoSklpd2laWGh3SWpveE56ZzNPREV5TXpjd0xDSnBZWFFpT2pFM09EYzRNRGczTnpBc0ltbHpjeUk2SW1kcGRHaDFZaUlzSW1wMGFTSTZJall5T0dKaVkyUXlMV0U1TUdNdE5EWmxZUzA1T1RNd0xUYzJNekUxTWpjeU1XWmxNQ0lzSW5abGNpSTZNMzAubHJTcmd4am9tWjd5dnJWMXZsZTFFRFYzdHFRcXlET2hfbGl1UHdicWwwVDdNc3pkMHlNMU5KWGI3Y3ZoeXM1aFJXU1B6aVNvczRDZXNiMlFRd05EWmc= fetch origin main",
           "output": null
         },
         "verify_deployment": {
