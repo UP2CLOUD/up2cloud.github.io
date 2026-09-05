@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cross-Cloud Workload Identity Federation — UP2CLOUD</title>
+  <meta name="description" content="How AWS OIDC federation, GCP Workload Identity Federation, and SPIFFE/SPIRE let pipelines exchange short-lived tokens for scoped cloud credentials." />
+  <meta name="keywords" content="workload identity federation, cross-cloud identity federation, AWS OIDC federation, GCP workload identity federation, SPIFFE SPIRE, short-lived credentials, CI/CD cloud authentication, keyless authentication, IAM access key rotation, service account key elimination" />
+  <meta property="og:title" content="Cross-Cloud Workload Identity Federation — UP2CLOUD" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://up2cloud.tech/blog/cross-cloud-workload-identity-federation/" />
+  <link rel="canonical" href="https://up2cloud.tech/blog/cross-cloud-workload-identity-federation/" />
+  <meta property="article:published_time" content="2026-09-05" />
+  <!-- include: _includes/favicon.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="../../assets/css/tailwind.min.css" as="style" />
+  <link rel="stylesheet" href="../../assets/css/tailwind.min.css" />
+  <style>
+    *,*::before,*::after { box-sizing:border-box }
+    html { scroll-behavior:smooth; overscroll-behavior:none }
+    body { font-family:'DM Sans',sans-serif; background:#0F172A; color:#fff; margin:0 }
+    h1,h2,h3,h4 { font-family:'Space Grotesk',sans-serif }
+    .glass { background:rgba(255,255,255,.07); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.12) }
+    .gradient-text { background:linear-gradient(90deg,#0EA5E9,#38BDF8,#7DD3FC); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+    .badge { background:rgba(3,105,161,.15); color:#38BDF8; font-size:.72rem; font-weight:600; padding:.25rem .75rem; border-radius:999px; letter-spacing:.05em; text-transform:uppercase }
+    .badge-sky { background:rgba(3,105,161,.18); color:#38BDF8 }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease }
+    .reveal.visible { opacity:1; transform:none }
+    .prose p { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; font-size:1.0625rem }
+    .prose h2 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#fff; margin-top:2.5rem; margin-bottom:1rem }
+    .prose h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.2rem; color:rgba(255,255,255,.9); margin-top:2rem; margin-bottom:.75rem }
+    .prose ul { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; padding-left:1.5rem; list-style-type:disc }
+    .prose ul li { margin-bottom:.5rem }
+    .prose strong { color:#fff; font-weight:600 }
+    .prose pre { background:#0a0f1a; border:1px solid rgba(14,165,233,.2); border-radius:12px; padding:1.25rem 1.5rem; overflow-x:auto; margin-bottom:1.5rem }
+    .prose pre code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#94d4f7; line-height:1.7; white-space:pre }
+    .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#7dd3fc; background:rgba(14,165,233,.1); padding:.1rem .35rem; border-radius:4px }
+    .prose pre code { background:none; padding:0; color:#94d4f7 }
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(56,189,248,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
+  </style>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Cross-Cloud Identity Federation: Replacing Static IAM Keys",
+  "description": "How AWS OIDC federation, GCP Workload Identity Federation, and SPIFFE/SPIRE let pipelines exchange short-lived tokens for scoped cloud credentials.",
+  "datePublished": "2026-09-05",
+  "dateModified": "2026-09-05",
+  "author": {
+    "@type": "Person",
+    "name": "Cesar A. Nogueira",
+    "url": "https://up2cloud.tech/about/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "UP2CLOUD",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://up2cloud.tech/assets/img/og-image.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://up2cloud.tech/blog/cross-cloud-workload-identity-federation/"
+  },
+  "image": "https://up2cloud.tech/assets/img/og-image.png"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://up2cloud.tech/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://up2cloud.tech/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cross-Cloud Identity Federation: Replacing Static IAM Keys",
+      "item": "https://up2cloud.tech/blog/cross-cloud-workload-identity-federation/"
+    }
+  ]
+}
+  </script>
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <meta property="og:description" content="How AWS OIDC federation, GCP Workload Identity Federation, and SPIFFE/SPIRE let pipelines exchange short-lived tokens for scoped cloud credentials." />
+  <meta name="author" content="César Nogueira" />
+  <meta property="article:author" content="https://up2cloud.tech/about/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@up2cloud" />
+  <meta name="twitter:title" content="Cross-Cloud Workload Identity Federation — UP2CLOUD" />
+  <meta name="twitter:description" content="How AWS OIDC federation, GCP Workload Identity Federation, and SPIFFE/SPIRE let pipelines exchange short-lived tokens for scoped cloud credentials." />
+  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:rgba(15,23,42,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-white rounded" aria-label="UP2CLOUD Home">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="relative" id="article-lang-picker">
+        <button id="article-lang-btn" onclick="toggleArticleLang(event)" class="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium border border-white/20 rounded-lg px-2.5 py-1.5 transition-colors hover:border-white/40 cursor-pointer" aria-haspopup="true" aria-expanded="false">
+          <span id="article-lang-flag" class="text-sm leading-none">🇺🇸</span>
+          <span id="article-lang-code" class="font-semibold tracking-wide">EN</span>
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="article-lang-menu" class="hidden absolute right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-50 min-w-[140px]" style="background:rgba(15,23,42,.97);backdrop-filter:blur(16px)">
+          <button onclick="setArticleLang('en')" data-lang="en" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇺🇸</span><span>English</span></button>
+          <button onclick="setArticleLang('pt')" data-lang="pt" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇧🇷</span><span>Português</span></button>
+          <button onclick="setArticleLang('es')" data-lang="es" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇪🇸</span><span>Español</span></button>
+          <button onclick="setArticleLang('fr')" data-lang="fr" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇫🇷</span><span>Français</span></button>
+        </div>
+      </div>
+      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_blog">Blog</a>
+      <a href="/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_back">← Back to site</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)" data-i18n="blog_cta_touch">Get in Touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-32 pb-12 relative overflow-hidden" style="background:radial-gradient(circle at 15% 20%,rgba(14,165,233,.18),transparent 35%),radial-gradient(circle at 85% 10%,rgba(3,105,161,.15),transparent 30%),linear-gradient(135deg,#020617 0%,#0F172A 50%,#0c2240 100%)">
+  <div class="absolute w-96 h-96 rounded-full opacity-15 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-5%;right:-5%;filter:blur(70px)"></div>
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/blog/" class="text-white/50 hover:text-white text-sm transition-colors">Blog</a>
+      <span class="text-white/25">/</span>
+      <span class="badge badge-sky">Cloud</span>
+    </div>
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+      Cross-Cloud Identity Federation: Replacing Static IAM Keys
+    </h1>
+    <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
+      <div class="flex items-center gap-3">
+        <img src="/assets/img/cesar.webp" alt="Cesar A. Nogueira" width="48" height="48" loading="lazy" class="w-8 h-8 rounded-full object-cover" style="object-position:64% 62%;transform:scale(1.5);transform-origin:center" />
+        <span class="text-white/70 font-medium">Cesar A. Nogueira</span>
+      </div>
+      <span>April 22, 2025</span>
+      <span>·</span>
+      <span>12 <span data-i18n="blog_min_read">min read</span></span>
+    </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Diagram of Terraform's layered module structure — resource modules, composition modules, and root configurations — flowing through a policy-gated CI/CD pipeline into production apply">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".5"><rect x="10" y="50" width="40" height="30" rx="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".65"><rect x="70" y="38" width="40" height="42" rx="4"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".8"><rect x="130" y="26" width="40" height="54" rx="4"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#7DD3FC"><rect x="190" y="12" width="40" height="68" rx="4"/></g>
+      <path class="draw" d="M250 46 L280 46 L280 22 L385 22" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="385" cy="22" r="4" fill="#F97316"/>
+      <text x="292" y="14" fill="#FB923C" font-size="9" font-family="Space Grotesk,sans-serif" font-weight="700">apply</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">modules</text>
+      <text x="190" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">environments</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ARTICLE BODY -->
+<article class="py-12" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6 prose reveal">
+
+<h2>The standing risk of long-lived cloud credentials</h2>
+<p>Every static IAM access key or service-account JSON file shares the same structural flaw: once it exists, it exists indefinitely. It sits in a CI secret store, a <code>.env</code> file, a config map, or worse, a laptop&#39;s home directory, and it remains valid until someone actively revokes it. Encrypting the secret at rest, restricting who can read the vault, and rotating it on a schedule all reduce the odds of exposure, but none of them change the fundamental shape of the risk: a single leaked value grants access for as long as it takes someone to notice.</p>
+<p>That &quot;as long as it takes someone to notice&quot; clause is the real problem. Rotation policies are typically calendar-driven rather than event-driven. A key copied into a build log, committed to a public repo by accident, or exfiltrated from a compromised CI runner keeps working until an audit catches it, a security scanner flags it, or an attacker&#39;s use of it triggers an alert. There is no expiry built into the credential itself. The blast radius is bounded only by the scope of the IAM policy attached to it, and in practice those policies tend to accrete permissions over time rather than shed them.</p>
+<p>This becomes acute the moment a workload needs to reach across a trust boundary — a GitHub Actions pipeline deploying to AWS, a GKE workload reading from an on-prem database, a CI job pushing artifacts to a different cloud than the one it runs in. Each of these crossings historically meant minting a durable secret and distributing it: an AWS access key pasted into GitHub Secrets, a GCP service-account JSON key downloaded and stored as a CI variable. Every one of those is a standing liability that didn&#39;t need to exist, because the actual requirement was never &quot;a permanent secret&quot; — it was &quot;prove who I am, right now, for the next few minutes.&quot;</p>
+<p>Cross-cloud identity federation exists to close that gap: replace the durable secret with a short-lived, cryptographically verifiable assertion that a trusted party issues and the target cloud checks on the spot.</p>
+<h2>The federation pattern: trading a token for a credential</h2>
+<p>Strip away the vendor-specific naming and every identity federation implementation reduces to the same three-step exchange:</p>
+<ol class="list-decimal pl-6 text-white/70 leading-relaxed mb-5"><li class="mb-2">A trusted identity provider (an OIDC issuer) mints a short-lived signed token — a JWT — that asserts facts about the calling workload: which repository triggered it, which branch, which service account, which SPIFFE trust domain.</li><li class="mb-2">The workload presents that token to the target cloud&#39;s token-exchange endpoint (AWS STS, Google&#39;s Security Token Service).</li><li class="mb-2">The cloud verifies the token&#39;s signature against the issuer&#39;s published public keys, checks the token&#39;s claims against a pre-configured trust policy, and — if everything matches — issues scoped, temporary cloud credentials that expire in minutes to hours.</li></ol>
+<p>The property that makes this materially different from static keys is not just that the resulting credential is short-lived — it&#39;s that <strong>no long-lived secret exists at any point in the chain</strong>. There&#39;s nothing to leak from a secret store, because there&#39;s no secret in the secret store. The OIDC token&#39;s own value is bounded by a short expiry window — typically minutes — rather than being single-use: it&#39;s a bearer credential, so anyone holding a valid, unexpired copy could present it again within that window. The security benefit comes from that short TTL plus the fact that a fresh token is minted per job, not from the token being consumed on use, which is why protecting it in transit and keeping it out of logs still matters for as long as it remains valid. Trust is established exactly once, when an administrator registers the identity provider and writes the trust policy; every subsequent request is verified cryptographically against that configuration, with no human back in the loop.</p>
+<p><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS&#39;s documentation on OIDC federation</a> frames this directly: applications should be configured &quot;to request temporary AWS security credentials dynamically when needed using OIDC federation&quot; rather than storing AWS credentials long-term outside AWS. AWS&#39;s OIDC federation, <a href="https://docs.cloud.google.com/iam/docs/workload-identity-federation" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Google Cloud&#39;s Workload Identity Federation</a>, and the open <a href="https://spiffe.io/docs/latest/spiffe-about/overview/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">SPIFFE/SPIRE</a> project are three independent implementations of this same token-for-credential trade. None of them requires a company to run its own centralized identity broker — each cloud validates tokens against whatever OIDC issuer it&#39;s told to trust, whether that&#39;s GitHub Actions, GitLab CI, a Kubernetes cluster&#39;s service account issuer, or a self-hosted SPIRE server.</p>
+<h2>AWS: OIDC identity provider and IAM role trust policies</h2>
+<p>Setting up federation in AWS starts with registering the external OIDC issuer as an IAM identity provider. For GitHub Actions, that means registering <code>token.actions.githubusercontent.com</code> as a trusted issuer, either through the console, Terraform, or the CLI:</p>
+<pre><code class="language-bash">aws iam create-open-id-connect-provider \
+  --url https://token.actions.githubusercontent.com \
+  --client-id-list sts.amazonaws.com</code></pre>
+<p>The <code>--thumbprint-list</code> flag is optional and can be omitted, as it is above: IAM retrieves the top intermediate CA thumbprint automatically, and AWS validates OIDC endpoints with trusted TLS certificates — which GitHub&#39;s is — directly against its library of root CAs. Thumbprint matching only comes into play as a fallback for issuers that don&#39;t present a certificate from a trusted root. A hardcoded thumbprint copied from an older tutorial can also simply be wrong, since GitHub has rotated its signing CA before.</p>
+<p>That registration alone grants nothing — it just tells AWS which issuer&#39;s signatures to trust. The actual authorization lives in the IAM role&#39;s trust policy, which constrains <em>which</em> tokens from that issuer are allowed to assume the role:</p>
+<pre><code class="language-json">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Principal&quot;: {
+        &quot;Federated&quot;: &quot;arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com&quot;
+      },
+      &quot;Action&quot;: &quot;sts:AssumeRoleWithWebIdentity&quot;,
+      &quot;Condition&quot;: {
+        &quot;StringEquals&quot;: {
+          &quot;token.actions.githubusercontent.com:aud&quot;: &quot;sts.amazonaws.com&quot;
+        },
+        &quot;StringLike&quot;: {
+          &quot;token.actions.githubusercontent.com:sub&quot;: &quot;repo:octo-org/octo-repo:ref:refs/heads/main&quot;
+        }
+      }
+    }
+  ]
+}</code></pre>
+<p>The <code>aud</code> condition confirms the token was minted for AWS specifically, but it&#39;s the <code>sub</code> condition that does the real access control. GitHub&#39;s OIDC tokens encode the repository, and optionally the branch or environment, into the <code>sub</code> claim. A trust policy that only checks <code>aud</code> and skips <code>sub</code> — or worse, uses a wildcard like <code>repo:octo-org/*:*</code> — effectively lets <em>any</em> workflow in <em>any</em> repository under that org assume the role, which recreates the same standing-risk problem federation was supposed to eliminate, just with an extra network hop. Scoping <code>sub</code> down to a specific repo and branch (or a specific <code>environment:</code> claim, when GitHub Environments are used) is what keeps the blast radius of a compromised workflow file contained to that one pipeline.</p>
+<p>Once the trust policy is scoped correctly, the credentials returned by <code>AssumeRoleWithWebIdentity</code> are ordinary temporary session credentials — an access key, secret key, and session token, all expiring on a timer with no rotation or lifecycle to manage. Nothing was ever written to a secret store on the AWS side.</p>
+<h2>GCP: Workload Identity Federation and service account impersonation</h2>
+<p>Google Cloud&#39;s take on the same pattern is Workload Identity Federation, and it deliberately routes around the older approach it replaces: downloading a service account&#39;s JSON key file, storing it in CI, and using it directly. That legacy pattern has exactly the standing-risk profile described above — a downloadable, non-expiring private key that grants whatever the service account can do, for as long as the key exists.</p>
+<p>Workload Identity Federation instead maps an external token to a Google identity that&#39;s allowed to <em>impersonate</em> a service account, never to hold its key. Setting it up means creating a workload identity pool, then a provider inside that pool with an attribute mapping and condition that filters which external tokens are honored:</p>
+<pre><code class="language-bash">gcloud iam workload-identity-pools create &quot;github-pool&quot; \
+  --location=&quot;global&quot; \
+  --display-name=&quot;GitHub Actions pool&quot;
+
+gcloud iam workload-identity-pools providers create-oidc &quot;github-provider&quot; \
+  --location=&quot;global&quot; \
+  --workload-identity-pool=&quot;github-pool&quot; \
+  --issuer-uri=&quot;https://token.actions.githubusercontent.com&quot; \
+  --attribute-mapping=&quot;google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.ref=assertion.ref&quot; \
+  --attribute-condition=&quot;assertion.repository==&#39;octo-org/octo-repo&#39;&quot;</code></pre>
+<p>The <code>attribute-mapping</code> flag translates claims from the external OIDC token into attributes Google IAM can reason about, and <code>attribute-condition</code> is the enforcement point equivalent to AWS&#39;s <code>sub</code> restriction — without it, any token from the registered issuer would map through. The service account itself then needs a binding that only allows impersonation from principals matching that specific repository and, ideally, a specific ref:</p>
+<pre><code class="language-bash">gcloud iam service-accounts add-iam-policy-binding \
+  &quot;deploy-sa@my-project.iam.gserviceaccount.com&quot; \
+  --role=&quot;roles/iam.workloadIdentityUser&quot; \
+  --member=&quot;principalSet://iam.googleapis.com/projects/123456789/locations/global/workloadIdentityPools/github-pool/attribute.repository/octo-org/octo-repo&quot;</code></pre>
+<p><a href="https://docs.cloud.google.com/iam/docs/workload-identity-federation" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Google&#39;s Workload Identity Federation documentation</a> frames the entire mechanism around this impersonation model rather than key issuance. At no point in this flow does GCP generate a downloadable long-lived key — the CI job exchanges its GitHub-issued OIDC token for a short-lived Google access token scoped to exactly the service account it&#39;s permitted to impersonate, and that token expires on its own within the hour.</p>
+<h2>Beyond CI/CD: SPIFFE/SPIRE for workloads outside any cloud IAM boundary</h2>
+<p>CI/CD pipelines are the easiest place to introduce federation because GitHub, GitLab, and similar platforms already act as convenient OIDC issuers. But plenty of workloads don&#39;t run inside a CI system at all — a service running on-prem, a VM in a colo, a pod in a Kubernetes cluster that needs to authenticate to a cloud it isn&#39;t running in. None of these have a natural OIDC issuer handed to them by a SaaS platform.</p>
+<p>This is the gap <a href="https://spiffe.io/docs/latest/spiffe-about/overview/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">SPIFFE</a> and its reference implementation, SPIRE, fill. SPIFFE defines a cloud-agnostic identity format — a SPIFFE ID, expressed as a URI like <code>spiffe://example.org/ns/payments/sa/worker</code> — and a corresponding signed document, the SVID (SPIFFE Verifiable Identity Document), that a workload can present as proof of that identity. Critically, SPIFFE doesn&#39;t depend on any single cloud&#39;s notion of an identity provider; a SPIRE server issuing SVIDs to workloads on bare metal is functionally equivalent, from the perspective of a verifier, to GitHub Actions issuing OIDC tokens to a workflow run.</p>
+<p>Extending this across a cloud boundary involves two distinct mechanisms that are easy to conflate but solve different problems. The first is trust domain federation proper: a SPIRE server in one trust domain (say, an on-prem data center) can be configured to federate with a SPIRE server in a <em>different SPIFFE trust domain</em>, exchanging trust bundles so that each side can validate SVIDs minted by the other. This is a peer relationship between two systems that both implement SPIFFE — it&#39;s how two independently operated SPIRE deployments come to trust each other&#39;s workload identities directly. AWS and GCP don&#39;t implement SPIFFE and aren&#39;t SPIFFE trust domains, so they can&#39;t be a party to this kind of federation.</p>
+<p>The second mechanism is what actually lets a SPIRE-issued identity reach AWS or GCP: SPIRE&#39;s separate OIDC Discovery Provider plugin, which exposes the SPIRE server&#39;s JWT-SVIDs through a standard JWKS and <code>openid-configuration</code> endpoint. Once that plugin is deployed, the SPIRE server looks like any other OIDC issuer from AWS&#39;s or GCP&#39;s point of view, and can be registered as a trusted issuer in an AWS IAM OIDC identity provider or a GCP workload identity pool the same way <code>token.actions.githubusercontent.com</code> is registered for GitHub Actions — with the same <code>sub</code>/attribute-condition scoping described above governing which SVIDs are actually allowed to assume a role or impersonate a service account. This is what makes the pattern useful for hybrid and multi-cloud estates: no single cloud&#39;s built-in identity concept covers workloads running outside it, but a SPIRE server fronted by the OIDC Discovery Provider can stand in as the issuer for all of them, generalizing the token-exchange pattern past any one vendor&#39;s implementation — without requiring AWS or GCP to join a SPIFFE trust domain that they have no mechanism to participate in.</p>
+<h2>Scoping trust: attribute conditions and least privilege</h2>
+<p>Federation removes the standing-secret problem only if the trust configuration is scoped tightly. A federated setup with a wildcard <code>sub</code> claim, an unrestricted <code>attribute-condition</code>, or a SPIFFE trust domain that accepts any workload identity within it reintroduces exactly the risk federation exists to remove — it just moves the point of failure from &quot;a leaked key&quot; to &quot;a misconfigured trust policy that treats an entire identity provider as equally trustworthy.&quot;</p>
+<p>The scoping discipline that matters here operates on multiple axes simultaneously:</p>
+<ul><li><strong>Repository and branch</strong> (or environment) for CI-issued tokens — restrict <code>sub</code> to the specific workflow that legitimately needs the role, not the whole org.</li><li><strong>SPIFFE path segments</strong> for SPIRE-issued identities — a trust policy that matches <code>spiffe://example.org/ns/payments/*</code> is meaningfully different from one that matches all of <code>spiffe://example.org/*</code>.</li><li><strong>Audience</strong> — confirming the token was minted for the specific cloud being called, not just any recipient.</li></ul>
+<p>None of this substitutes for scoping the IAM role or service account itself. A perfectly scoped trust condition attached to an over-permissioned role — one with <code>AdministratorAccess</code> or broad <code>roles/editor</code> bindings — still hands out excessive access the moment the trust condition is satisfied. Federation and least-privilege IAM are separate controls that need to be applied together: narrow the <em>who can assume this</em> condition, and separately narrow the <em>what this role can do</em> policy. The goal the whole pattern is chasing isn&#39;t just temporary credentials — it&#39;s temporary <strong>and</strong> scoped. Either one alone leaves a gap.</p>
+<h2>Migrating pipelines off static keys without breaking them</h2>
+<p>Ripping out static keys in one pass is how outages happen. A phased cutover keeps the pipeline working throughout:</p>
+<ol class="list-decimal pl-6 text-white/70 leading-relaxed mb-5"><li class="mb-2"><strong>Stand up federation alongside existing keys.</strong> Register the OIDC provider, write the trust policy or workload identity pool config, and grant the target role or service account the same permissions the static key currently has. Don&#39;t touch the existing key yet.</li><li class="mb-2"><strong>Cut pipelines over one at a time.</strong> Update each workflow to request federated credentials (<code>aws-actions/configure-aws-credentials</code> with <code>role-to-assume</code> for GitHub Actions, or <code>google-github-actions/auth</code> with <code>workload_identity_provider</code> for GCP) and verify it runs successfully end to end before moving to the next pipeline.</li><li class="mb-2"><strong>Watch for stragglers.</strong> AWS surfaces an access key&#39;s last-used timestamp directly in IAM (<code>aws iam get-access-key-last-used</code>), and CloudTrail records every API call&#39;s credential type. On GCP, key usage isn&#39;t reliably visible without Data Access audit logs enabled on the relevant APIs, which are off by default — without that, the logs will show no trail at all, not confirmation the key is idle. The IAM &quot;unused service account key&quot; Recommender surfaces stale keys without requiring that audit-log configuration and is the more reliable first check. Don&#39;t rely on documentation or memory of &quot;which pipelines still use the old key&quot; — check the logs or the Recommender.</li><li class="mb-2"><strong>Deprecate in order, not all at once.</strong> First disable the ability to create <em>new</em> static keys for the account or service account. Then, once usage data confirms zero recent activity, deactivate (don&#39;t immediately delete) the existing keys — deactivation is reversible if something was missed. After a quiet period, delete the keys outright, then finally remove the IAM permissions that allowed key creation in the first place.</li></ol>
+<p>A few operational failure modes are worth planning for rather than discovering in production. Audience mismatches are the most common first-run failure — a trust policy checking for <code>aud: sts.amazonaws.com</code> will silently reject a token minted with a different audience string, and the error message from STS doesn&#39;t always make the mismatch obvious. Clock skew matters because OIDC tokens carry short validity windows; a CI runner or SPIRE agent with a badly drifted clock can have its tokens rejected as expired or not-yet-valid. And identity provider outages are a new failure mode that didn&#39;t exist with static keys — if GitHub&#39;s OIDC issuer or the SPIRE server is unreachable, no new credentials can be minted at all, which is a real availability trade-off against the security gained and worth accounting for in pipelines that can&#39;t tolerate any downtime.</p>
+<h2>What to do next</h2>
+<p>Start by auditing what&#39;s actually using long-lived credentials today — pull access-key-last-used data from IAM and service-account key usage from GCP&#39;s Recommender or Cloud Audit Logs (if enabled) before assuming which pipelines matter most. Pick the single highest-value pipeline (the one with the most sensitive target permissions, not necessarily the most-used one) and federate it first, using it to validate the trust policy scoping before rolling the pattern out further. For anything running outside CI/CD entirely — on-prem services, cross-cluster workloads — evaluate whether a SPIRE deployment is warranted before reaching for cloud-specific workarounds. Whichever path is chosen, treat the trust policy&#39;s <code>sub</code>/<code>aud</code>/attribute conditions as the security boundary they are, and review them with the same scrutiny given to the IAM policy on the other end.</p>
+
+    <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
+      Working through this in production? Explore the
+      <a href="/#services" class="text-sky-light hover:underline">Cloud &amp; DevOps services</a>
+      or read more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
+    </p>
+
+  </div>
+</article>
+
+<!-- Blog Engagement: Likes + Comments -->
+<section class="max-w-3xl mx-auto px-6 py-2">
+  <div id="likes-mount"></div>
+  <div id="comments-mount"></div>
+</section>
+<script src="/assets/js/blog-engagement.js" defer></script>
+
+
+<!-- Related Posts -->
+<section class="py-12 border-t border-white/5" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="font-heading font-bold text-2xl text-white mb-8">Related Insights</h2>
+    <div class="grid sm:grid-cols-2 gap-6">
+
+      <a href="/blog/platform-engineering-finops-2026/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">Finops</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">Platform Engineering + FinOps in 2026: How Elite Cloud Teams Reduce Costs Without Slowing Developers</h3>
+      </a>
+
+      <a href="/blog/cloud-cost-anomaly-detection-ai/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">FinOps</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">How AI Anomaly Detection Catches Cloud Cost Spikes Before They Hurt</h3>
+      </a>
+
+    </div>
+  </div>
+</section>
+<!-- CTA -->
+<section class="py-16" style="background:#020617">
+  <div class="max-w-3xl mx-auto px-6 reveal">
+    <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(3,105,161,.2),rgba(14,165,233,.15));border:1px solid rgba(14,165,233,.2)">
+      <div class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-20%;right:-10%;filter:blur(50px)"></div>
+      <span class="badge badge-sky inline-block mb-4">IaC Consulting</span>
+      <h2 class="font-heading font-bold text-3xl text-white mb-4">Need help scaling your Terraform codebase?</h2>
+      <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
+        We help teams design module libraries, implement policy-as-code guardrails, and build CI/CD pipelines that make infrastructure changes safe and fast.
+      </p>
+      <a href="/#contact" class="inline-flex items-center gap-2 font-semibold text-white px-8 py-3.5 rounded-xl transition-all hover:opacity-90" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        Let's Talk
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#020617;border-top:1px solid rgba(255,255,255,.07)" class="py-12 mt-0">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-white/40">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/" class="hover:text-white/70 transition-colors">Home</a>
+      <a href="/blog/" class="hover:text-white/70 transition-colors">Blog</a>
+      <a href="/about/" class="hover:text-white/70 transition-colors">About</a>
+      <a href="/#contact" class="hover:text-white/70 transition-colors">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
+</script>
+<script>
+(function(){
+  const LANG_META = {
+    en:{flag:'🇺🇸',code:'EN'}, pt:{flag:'🇧🇷',code:'PT'},
+    es:{flag:'🇪🇸',code:'ES'}, fr:{flag:'🇫🇷',code:'FR'}
+  };
+  const cache = {};
+  async function loadLang(lang) {
+    if (cache[lang]) return cache[lang];
+    try {
+      const r = await fetch('/assets/i18n/' + lang + '.json');
+      if (!r.ok) throw 0;
+      cache[lang] = await r.json();
+    } catch(e) { cache[lang] = cache['en'] || {}; }
+    return cache[lang];
+  }
+  function applyLang(t) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+    });
+  }
+  const POST_SLUG = 'terraform-iac-best-practices';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
+  async function setArticleLang(lang) {
+    document.getElementById('article-lang-menu')?.classList.add('hidden');
+    document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
+    const meta = LANG_META[lang];
+    if (!meta) return;
+    localStorage.setItem('up2cloud-lang', lang);
+    document.getElementById('article-lang-flag').textContent = meta.flag;
+    document.getElementById('article-lang-code').textContent = meta.code;
+    document.querySelectorAll('.article-lang-opt').forEach(b => {
+      b.style.background = b.dataset.lang === lang ? 'rgba(14,165,233,.15)':'';
+      b.style.color = b.dataset.lang === lang ? '#fff':'';
+    });
+    const t = await loadLang(lang);
+    applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
+  }
+  function toggleArticleLang(e) {
+    e && e.stopPropagation();
+    const m = document.getElementById('article-lang-menu');
+    const open = m.classList.toggle('hidden');
+    document.getElementById('article-lang-btn').setAttribute('aria-expanded', String(!open));
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('article-lang-picker');
+    if (p && !p.contains(e.target)) document.getElementById('article-lang-menu')?.classList.add('hidden');
+  });
+  window.setArticleLang = setArticleLang;
+  window.toggleArticleLang = toggleArticleLang;
+  const saved = localStorage.getItem('up2cloud-lang') || 'en';
+  loadLang('en').then(() => setArticleLang(saved));
+})();
+</script>
+<script>const yearEl = document.getElementById("year"); if (yearEl) yearEl.textContent = new Date().getFullYear();</script></body>
+</html>
