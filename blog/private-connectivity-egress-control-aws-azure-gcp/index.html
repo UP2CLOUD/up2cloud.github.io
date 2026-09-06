@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JVQKLM1R3Q"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JVQKLM1R3Q');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Connectivity &amp; Egress Control — UP2CLOUD</title>
+  <meta name="description" content="AWS PrivateLink, Azure Private Link, and GCP private access let platform teams reach managed services over the backbone, not the public internet." />
+  <meta name="keywords" content="AWS PrivateLink, Azure Private Link, Google Cloud Private Service Connect, VPC endpoints, egress control, network security architecture, VPC Service Controls, NAT gateway alternatives, Well-Architected Framework, service-to-service traffic" />
+  <meta property="og:title" content="Private Connectivity &amp; Egress Control — UP2CLOUD" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://up2cloud.tech/blog/private-connectivity-egress-control-aws-azure-gcp/" />
+  <link rel="canonical" href="https://up2cloud.tech/blog/private-connectivity-egress-control-aws-azure-gcp/" />
+  <meta property="article:published_time" content="2026-09-06" />
+  <!-- include: _includes/favicon.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="../../assets/css/tailwind.min.css" as="style" />
+  <link rel="stylesheet" href="../../assets/css/tailwind.min.css" />
+  <style>
+    *,*::before,*::after { box-sizing:border-box }
+    html { scroll-behavior:smooth; overscroll-behavior:none }
+    body { font-family:'DM Sans',sans-serif; background:#0F172A; color:#fff; margin:0 }
+    h1,h2,h3,h4 { font-family:'Space Grotesk',sans-serif }
+    .glass { background:rgba(255,255,255,.07); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.12) }
+    .gradient-text { background:linear-gradient(90deg,#0EA5E9,#38BDF8,#7DD3FC); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+    .badge { background:rgba(3,105,161,.15); color:#38BDF8; font-size:.72rem; font-weight:600; padding:.25rem .75rem; border-radius:999px; letter-spacing:.05em; text-transform:uppercase }
+    .badge-sky { background:rgba(3,105,161,.18); color:#38BDF8 }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease }
+    .reveal.visible { opacity:1; transform:none }
+    .prose p { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; font-size:1.0625rem }
+    .prose h2 { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#fff; margin-top:2.5rem; margin-bottom:1rem }
+    .prose h3 { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.2rem; color:rgba(255,255,255,.9); margin-top:2rem; margin-bottom:.75rem }
+    .prose ul { color:rgba(255,255,255,.72); line-height:1.8; margin-bottom:1.25rem; padding-left:1.5rem; list-style-type:disc }
+    .prose ul li { margin-bottom:.5rem }
+    .prose strong { color:#fff; font-weight:600 }
+    .prose pre { background:#0a0f1a; border:1px solid rgba(14,165,233,.2); border-radius:12px; padding:1.25rem 1.5rem; overflow-x:auto; margin-bottom:1.5rem }
+    .prose pre code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#94d4f7; line-height:1.7; white-space:pre }
+    .prose code { font-family:'Courier New',Courier,monospace; font-size:.88rem; color:#7dd3fc; background:rgba(14,165,233,.1); padding:.1rem .35rem; border-radius:4px }
+    .prose pre code { background:none; padding:0; color:#94d4f7 }
+    .prose ul.reveal-list li { opacity:0; transform:translateX(-10px); transition:opacity .5s ease, transform .5s ease }
+    .prose ul.reveal-list.visible li { opacity:1; transform:none }
+    .prose ul.reveal-list.visible li:nth-child(1){transition-delay:.05s}
+    .prose ul.reveal-list.visible li:nth-child(2){transition-delay:.15s}
+    .prose ul.reveal-list.visible li:nth-child(3){transition-delay:.25s}
+    .prose ul.reveal-list.visible li:nth-child(4){transition-delay:.35s}
+    .prose ul.reveal-list.visible li:nth-child(5){transition-delay:.45s}
+    .hero-diagram path.draw { stroke-dasharray:600; stroke-dashoffset:600; animation:drawline 2s ease-out .3s forwards }
+    .hero-diagram .bar { transform:scaleY(0); transform-origin:bottom; animation:growbar .8s cubic-bezier(.2,.8,.3,1) forwards }
+    @keyframes drawline { to { stroke-dashoffset:0 } }
+    @keyframes growbar { to { transform:scaleY(1) } }
+    .ref-list a { display:flex; align-items:flex-start; gap:.6rem; padding:.85rem 1rem; border-radius:10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); transition:border-color .2s ease, background .2s ease }
+    .ref-list a:hover { border-color:rgba(56,189,248,.4); background:rgba(255,255,255,.07) }
+    @media(prefers-reduced-motion:reduce){.reveal,.reveal-list li,.hero-diagram path.draw,.hero-diagram .bar{animation:none;transition:none;opacity:1;transform:none;stroke-dashoffset:0}}
+  </style>
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Private Connectivity and Egress Control Across AWS, Azure, GCP",
+  "description": "AWS PrivateLink, Azure Private Link, and GCP private access let platform teams reach managed services over the backbone, not the public internet.",
+  "datePublished": "2026-09-06",
+  "dateModified": "2026-09-06",
+  "author": {
+    "@type": "Person",
+    "name": "Cesar A. Nogueira",
+    "url": "https://up2cloud.tech/about/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "UP2CLOUD",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://up2cloud.tech/assets/img/og-image.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://up2cloud.tech/blog/private-connectivity-egress-control-aws-azure-gcp/"
+  },
+  "image": "https://up2cloud.tech/assets/img/og-image.png"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://up2cloud.tech/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://up2cloud.tech/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Private Connectivity and Egress Control Across AWS, Azure, GCP",
+      "item": "https://up2cloud.tech/blog/private-connectivity-egress-control-aws-azure-gcp/"
+    }
+  ]
+}
+  </script>
+  <meta property="og:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+  <meta property="og:description" content="AWS PrivateLink, Azure Private Link, and GCP private access let platform teams reach managed services over the backbone, not the public internet." />
+  <meta name="author" content="César Nogueira" />
+  <meta property="article:author" content="https://up2cloud.tech/about/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@up2cloud" />
+  <meta name="twitter:title" content="Private Connectivity &amp; Egress Control — UP2CLOUD" />
+  <meta name="twitter:description" content="AWS PrivateLink, Azure Private Link, and GCP private access let platform teams reach managed services over the backbone, not the public internet." />
+  <meta name="twitter:image" content="https://up2cloud.tech/assets/img/og-image.png" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:rgba(15,23,42,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07)">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 focus-visible:outline-2 focus-visible:outline-white rounded" aria-label="UP2CLOUD Home">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="font-heading font-700 text-xl text-white tracking-tight">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="relative" id="article-lang-picker">
+        <button id="article-lang-btn" onclick="toggleArticleLang(event)" class="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium border border-white/20 rounded-lg px-2.5 py-1.5 transition-colors hover:border-white/40 cursor-pointer" aria-haspopup="true" aria-expanded="false">
+          <span id="article-lang-flag" class="text-sm leading-none">🇺🇸</span>
+          <span id="article-lang-code" class="font-semibold tracking-wide">EN</span>
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div id="article-lang-menu" class="hidden absolute right-0 top-full mt-2 rounded-xl overflow-hidden shadow-2xl border border-white/10 z-50 min-w-[140px]" style="background:rgba(15,23,42,.97);backdrop-filter:blur(16px)">
+          <button onclick="setArticleLang('en')" data-lang="en" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇺🇸</span><span>English</span></button>
+          <button onclick="setArticleLang('pt')" data-lang="pt" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇧🇷</span><span>Português</span></button>
+          <button onclick="setArticleLang('es')" data-lang="es" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇪🇸</span><span>Español</span></button>
+          <button onclick="setArticleLang('fr')" data-lang="fr" class="article-lang-opt w-full flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-colors text-xs text-left"><span>🇫🇷</span><span>Français</span></button>
+        </div>
+      </div>
+      <a href="/blog/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_blog">Blog</a>
+      <a href="/" class="text-white/70 hover:text-white text-sm transition-colors" data-i18n="blog_nav_back">← Back to site</a>
+      <a href="/#contact" class="text-xs font-semibold text-white px-4 py-2 rounded-lg" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)" data-i18n="blog_cta_touch">Get in Touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="pt-32 pb-12 relative overflow-hidden" style="background:radial-gradient(circle at 15% 20%,rgba(14,165,233,.18),transparent 35%),radial-gradient(circle at 85% 10%,rgba(3,105,161,.15),transparent 30%),linear-gradient(135deg,#020617 0%,#0F172A 50%,#0c2240 100%)">
+  <div class="absolute w-96 h-96 rounded-full opacity-15 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-5%;right:-5%;filter:blur(70px)"></div>
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/blog/" class="text-white/50 hover:text-white text-sm transition-colors">Blog</a>
+      <span class="text-white/25">/</span>
+      <span class="badge badge-sky">Cloud</span>
+    </div>
+    <h1 id="article-hero-title" class="font-heading font-bold text-4xl sm:text-5xl leading-tight text-white mb-6">
+      Private Connectivity and Egress Control Across AWS, Azure, GCP
+    </h1>
+    <div class="flex flex-wrap items-center gap-4 text-sm text-white/50 mb-8">
+      <div class="flex items-center gap-3">
+        <img src="/assets/img/cesar.webp" alt="Cesar A. Nogueira" width="48" height="48" loading="lazy" class="w-8 h-8 rounded-full object-cover" style="object-position:64% 62%;transform:scale(1.5);transform-origin:center" />
+        <span class="text-white/70 font-medium">Cesar A. Nogueira</span>
+      </div>
+      <span>April 22, 2025</span>
+      <span>·</span>
+      <span>15 <span data-i18n="blog_min_read">min read</span></span>
+    </div>
+    <svg class="hero-diagram" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Diagram of Terraform's layered module structure — resource modules, composition modules, and root configurations — flowing through a policy-gated CI/CD pipeline into production apply">
+      <g class="bar" style="animation-delay:.1s" fill="#38BDF8" opacity=".5"><rect x="10" y="50" width="40" height="30" rx="4"/></g>
+      <g class="bar" style="animation-delay:.2s" fill="#38BDF8" opacity=".65"><rect x="70" y="38" width="40" height="42" rx="4"/></g>
+      <g class="bar" style="animation-delay:.3s" fill="#38BDF8" opacity=".8"><rect x="130" y="26" width="40" height="54" rx="4"/></g>
+      <g class="bar" style="animation-delay:.4s" fill="#7DD3FC"><rect x="190" y="12" width="40" height="68" rx="4"/></g>
+      <path class="draw" d="M250 46 L280 46 L280 22 L385 22" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="385" cy="22" r="4" fill="#F97316"/>
+      <text x="292" y="14" fill="#FB923C" font-size="9" font-family="Space Grotesk,sans-serif" font-weight="700">apply</text>
+      <text x="10" y="88" fill="rgba(255,255,255,.35)" font-size="7" font-family="DM Sans,sans-serif">modules</text>
+      <text x="190" y="88" fill="rgba(255,255,255,.5)" font-size="7" font-family="DM Sans,sans-serif">environments</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ARTICLE BODY -->
+<article class="py-12" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6 prose reveal">
+
+<h2>Why Default-Open Egress Is a Design Liability, Not a Networking Detail</h2>
+<p>Most VPCs and VNets start life with a NAT gateway, a handful of public IPs on bastion hosts or load balancers, and security groups or NSGs that default-allow outbound traffic on all ports. That configuration works fine for a five-service prototype. It becomes a liability once the service count grows: every workload that reaches a managed database, a secrets store, an object bucket, or a third-party API does so by routing through a NAT gateway to the public internet, then relying on the destination&#39;s TLS and IAM to keep things honest. The network itself asserts nothing. An engineer auditing that VPC six months later has no answer to &quot;which of these two hundred instances can reach which external services&quot; beyond reading application code and IAM policies, because the routing layer doesn&#39;t encode intent.</p>
+<p>This is the crux of what AWS, Azure, and Google Cloud all now treat as a first-class architectural decision rather than an operational afterthought. Each provider&#39;s Well-Architected material folds network isolation and controlled data flow into its security pillar — <a href="https://docs.aws.amazon.com/wellarchitected" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS&#39;s Well-Architected Tool</a> is built around reviewing workloads against exactly these kinds of structural risks, and the <a href="https://learn.microsoft.com/en-us/azure/well-architected/" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Azure Well-Architected Framework</a> and <a href="https://docs.cloud.google.com/architecture/framework" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Google Cloud&#39;s Well-Architected Framework</a> both structure their guidance around design choices you make once and then live with, not settings you tune after an incident. The tension every platform team is actually resolving is simple to state and hard to operationalize: workloads need to reach managed services, partner SaaS, and first-party cloud APIs, but every packet that transits the public internet is a packet an auditor has to justify, a path a misconfigured route table can expose, and a potential exfiltration channel if credentials leak. Private connectivity primitives — PrivateLink, Private Link, Private Service Connect — exist to collapse that tension: reachability without a public hop.</p>
+<h2>AWS PrivateLink: Interface Endpoints, Gateway Endpoints, and Endpoint Policies</h2>
+<p>AWS splits VPC endpoints into two mechanically different things that get conflated constantly. <strong>Gateway endpoints</strong> are route-table entries, not network interfaces — they exist only for S3 and DynamoDB, cost nothing extra, and work by adding a prefix-list route in your subnet&#39;s route table that sends S3/DynamoDB-bound traffic over AWS&#39;s internal network instead of a NAT gateway. <strong>Interface endpoints</strong> are the general case: an elastic network interface with a private IP, provisioned in your subnet, fronted by AWS PrivateLink, that gives you a private DNS name resolving inside the VPC for the target service — most heavily-used AWS services expose one (Secrets Manager, KMS, ECR, CloudWatch Logs among them), though a handful of services don&#39;t support interface endpoints at all, notably the global services IAM and Route 53.</p>
+<p><a href="https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">AWS PrivateLink</a> also extends past first-party AWS services. A vendor can front their service with a Network Load Balancer and publish it as a VPC endpoint service; you then connect to it with an interface endpoint in your own VPC, and traffic never touches the public internet or requires VPC peering or a Transit Gateway attachment between your account and theirs. This is how a lot of B2B SaaS and data platforms (observability vendors, data warehouses, security tooling) offer &quot;private connectivity&quot; as a tier — it&#39;s PrivateLink under the hood, and it means the vendor&#39;s account boundary stays intact while your traffic stays off the internet.</p>
+<p>The control point people skip is the <strong>endpoint policy</strong> — an IAM-like resource policy attached directly to the endpoint, independent of any IAM policy on the calling principal. If you don&#39;t attach one, AWS defaults to full access, meaning any principal in the VPC with underlying IAM permissions can call any resource in that service through the endpoint, including resources in other accounts. A restrictive endpoint policy scoped to specific bucket ARNs or a specific Secrets Manager secret is what actually turns &quot;traffic doesn&#39;t cross the internet&quot; into &quot;traffic can&#39;t reach unintended resources even privately.&quot;</p>
+<h2>Azure Private Link vs. Service Endpoints: Choosing the Right Primitive</h2>
+<p>Azure gives you two primitives that look similar in a diagram and behave very differently in practice. A <strong>Service Endpoint</strong> extends your VNet&#39;s identity onto the Azure backbone for a specific service (Storage, SQL, Key Vault) — traffic leaves the subnet over Microsoft&#39;s network rather than the public internet, but it still resolves to the service&#39;s public IP, and no interface is created in your VNet. A <strong>Private Endpoint</strong>, by contrast, provisions an actual NIC with a private IP address from your VNet&#39;s address space, and that IP becomes how the service is reached — which means on-premises networks connected via ExpressRoute or VPN, and peered VNets, can reach it too, something a Service Endpoint cannot do because Service Endpoints don&#39;t propagate across peering by default.</p>
+<p><a href="https://learn.microsoft.com/en-us/azure/private-link/private-link-overview" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Azure Private Link</a> states this plainly: it lets you access Azure PaaS services and Azure-hosted partner services &quot;over a private endpoint in your virtual network,&quot; with traffic to the service traveling the Microsoft backbone rather than the public internet, and — notably — you can publish your own service behind a Private Link service and deliver it to other tenants, mirroring PrivateLink&#39;s producer/consumer model on AWS.</p>
+<p>The practical difference shows up in three places. First, <strong>NSGs</strong>: because a Private Endpoint has a real NIC and private IP, you can write NSG rules and Azure Firewall rules against it like any other VNet resource — but only once network policy enforcement is turned on for that subnet. NSG and UDR enforcement on a private-endpoint subnet is disabled by default (the subnet-level <code>privateEndpointNetworkPolicies</code> setting), so deploying a Private Endpoint does not, by itself, put it under an existing NSG&#39;s control; that setting has to be explicitly enabled first, per <a href="https://learn.microsoft.com/en-us/azure/private-link/private-link-overview" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">Azure Private Link</a>. A Service Endpoint isn&#39;t a addressable object in that sense, so your control is limited to what the service-level firewall on the PaaS resource allows. Second, <strong>DNS</strong>: Private Endpoint requires a private DNS zone (or your own DNS override) so that the PaaS resource&#39;s standard hostname resolves to the private IP instead of the public one — Service Endpoint needs no DNS change since the public hostname is retained. Third, <strong>cross-boundary reach</strong>: Private Endpoint is the only option if on-premises or a peered VNet in another subscription needs access, or if you need strict IP-based allow-listing on the resource itself.</p>
+<p>Rule of thumb: reach for Service Endpoints when everything lives in one VNet, you want zero DNS overhead, and the built-in resource firewall (VNet rules) is sufficient. Reach for Private Endpoint the moment on-premises connectivity, cross-VNet/cross-tenant access, or compliance requirements demanding a private IP and full NSG-level control enter the picture — and remember to enable subnet network policies before assuming NSG rules are actually being enforced against it.</p>
+<h2>Google Cloud&#39;s Layered Model: Private Google Access, Private Service Connect, VPC Service Controls</h2>
+<p>Google Cloud splits the problem into three independent layers that compose rather than substitute for each other.</p>
+<p><strong>Private Google Access</strong> is the baseline: a per-subnet setting that lets VM instances or GKE nodes without external IP addresses reach Google APIs and services (Cloud Storage, BigQuery, Pub/Sub) over Google&#39;s internal network instead of through a NAT gateway. On its own, the subnet flag routes that traffic to the APIs&#39; normal public IP ranges over Google&#39;s network — it does not change what those hostnames resolve to. Resolving to the restricted (<code>restricted.googleapis.com</code>) or private (<code>private.googleapis.com</code>) virtual IP ranges is a separate, optional DNS configuration layered on top of the subnet flag, not an automatic consequence of enabling it. It&#39;s the equivalent of &quot;give my internet-less compute a route to first-party APIs&quot; and requires essentially no infrastructure beyond the subnet flag; the restricted/private VIP behavior requires the additional DNS step.</p>
+<p><strong>Private Service Connect (PSC)</strong> is the producer/consumer layer, and it&#39;s the closest conceptual match to AWS PrivateLink and Azure Private Link. On the consumer side, PSC lets you create an endpoint with an internal IP address in your VPC that forwards to a Google API bundle or to a published service — including third-party and partner services published by another organization&#39;s VPC. On the producer side, you can publish your own service behind an internal load balancer and expose it to consumer VPCs (including across organizations) without VPC peering, without exposing anything publicly, and without the consumer needing routes back into your network. It&#39;s a strict superset in intent of Private Google Access: not just Google&#39;s own APIs, but any service a producer chooses to publish.</p>
+<p><strong>VPC Service Controls</strong> sits above both of those and solves a different problem entirely — it is not a connectivity mechanism, it&#39;s a data-exfiltration perimeter. <a href="https://docs.cloud.google.com/vpc-service-controls/docs/overview" class="text-sky-400 hover:text-sky-300 underline" target="_blank" rel="noopener noreferrer nofollow">VPC Service Controls</a> lets you draw a boundary around a set of Google Cloud resources (a set of projects, typically) such that API calls to services inside that perimeter are blocked from contexts outside it, regardless of IAM permissions. The scenario it&#39;s designed for is a stolen service account key or an insider with valid credentials: even with valid IAM rights to a BigQuery dataset, a request originating outside the approved perimeter (a personal laptop, a compromised host in another project) gets denied at the network/API layer, not just the identity layer. This is the piece platform teams most often skip, because Private Google Access and PSC solve &quot;how do I reach it privately,&quot; while VPC Service Controls solves &quot;how do I stop it from leaving even if someone gets in.&quot;</p>
+<h2>Worked Example: Restricting Egress to a Managed Service with Terraform</h2>
+<p>Concretely: a private subnet with instances that need to read a secret from Secrets Manager and objects from S3, with no NAT gateway and no <code>0.0.0.0/0</code> egress rule. The before-state security group typically looks like this, and it&#39;s the thing you&#39;re removing:</p>
+<pre><code class="language-hcl">resource &quot;aws_security_group_rule&quot; &quot;legacy_egress_all&quot; {
+  type              = &quot;egress&quot;
+  from_port         = 0
+  to_port           = 0
+  protocol          = &quot;-1&quot;
+  cidr_blocks       = [&quot;0.0.0.0/0&quot;]
+  security_group_id = aws_security_group.app.id
+}</code></pre>
+<p>Replace it with interface and gateway endpoints scoped by policy, and security group rules that only allow egress to those endpoints. Note that the interface endpoint (Secrets Manager) and the gateway endpoint (S3) need to be authorized differently at the security-group layer, because a gateway endpoint has no ENI or security group of its own:</p>
+<pre><code class="language-hcl">resource &quot;aws_vpc_endpoint&quot; &quot;secretsmanager&quot; {
+  vpc_id              = aws_vpc.main.id
+  service_name        = &quot;com.amazonaws.${var.region}.secretsmanager&quot;
+  vpc_endpoint_type   = &quot;Interface&quot;
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.endpoints.id]
+  private_dns_enabled = true
+
+  policy = jsonencode({
+    Version = &quot;2012-10-17&quot;
+    Statement = [{
+      Effect    = &quot;Allow&quot;
+      Principal = &quot;*&quot;
+      Action    = &quot;secretsmanager:GetSecretValue&quot;
+      Resource  = aws_secretsmanager_secret.app.arn
+    }]
+  })
+}
+
+resource &quot;aws_vpc_endpoint&quot; &quot;s3&quot; {
+  vpc_id            = aws_vpc.main.id
+  service_name      = &quot;com.amazonaws.${var.region}.s3&quot;
+  vpc_endpoint_type = &quot;Gateway&quot;
+  route_table_ids   = aws_route_table.private[*].id
+
+  policy = jsonencode({
+    Version = &quot;2012-10-17&quot;
+    Statement = [{
+      Effect    = &quot;Allow&quot;
+      Principal = &quot;*&quot;
+      Action    = [&quot;s3:GetObject&quot;, &quot;s3:PutObject&quot;]
+      Resource  = &quot;${aws_s3_bucket.app_data.arn}/*&quot;
+    }]
+  })
+}
+
+data &quot;aws_ec2_managed_prefix_list&quot; &quot;s3&quot; {
+  name = &quot;com.amazonaws.${var.region}.s3&quot;
+}
+
+# Interface endpoint traffic: app -&gt; endpoints SG, both directions required.
+resource &quot;aws_security_group_rule&quot; &quot;app_egress_endpoints&quot; {
+  type                     = &quot;egress&quot;
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = &quot;tcp&quot;
+  source_security_group_id = aws_security_group.endpoints.id
+  security_group_id        = aws_security_group.app.id
+}
+
+resource &quot;aws_security_group_rule&quot; &quot;endpoints_ingress_app&quot; {
+  type                     = &quot;ingress&quot;
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = &quot;tcp&quot;
+  source_security_group_id = aws_security_group.app.id
+  security_group_id        = aws_security_group.endpoints.id
+}
+
+# Gateway endpoint traffic: no ENI/security group exists for S3, so egress
+# is authorized against the endpoint&#39;s own prefix list, not a security group.
+resource &quot;aws_security_group_rule&quot; &quot;app_egress_s3_prefix_list&quot; {
+  type              = &quot;egress&quot;
+  from_port         = 443
+  to_port           = 443
+  protocol          = &quot;tcp&quot;
+  prefix_list_ids   = [data.aws_ec2_managed_prefix_list.s3.id]
+  security_group_id = aws_security_group.app.id
+}</code></pre>
+<p>Note the endpoint <code>policy</code> blocks: without them, both endpoints default to AWS&#39;s full-access policy (<code>Principal: &quot;*&quot;</code>, <code>Action: &quot;*&quot;</code>, <code>Resource: &quot;*&quot;</code>), which allows any action against any resource reachable through that service — not scoped to the calling account, so a caller with sufficiently permissive IAM can reach resources in other accounts through the same endpoint. This defeats the purpose of scoping access. The <code>s3:GetObject</code>/<code>PutObject</code> restriction to a single bucket ARN and the <code>secretsmanager:GetSecretValue</code> restriction to a single secret ARN are what make this &quot;least-privilege private access&quot; rather than &quot;private access to everything.&quot; Two security-group details are easy to miss and will silently break this setup if skipped: the S3 gateway endpoint has no ENI or security group, so it must be authorized via <code>prefix_list_ids</code> on the app&#39;s egress rule, not <code>source_security_group_id</code>; and the interface endpoint needs an explicit ingress rule on <code>aws_security_group.endpoints</code> from the app&#39;s security group, since security groups are stateful per-resource, not automatically bidirectional between two different groups.</p>
+<p>The same shape exists on the other two providers, differing mainly in whether you&#39;re creating a NIC-based resource or a route-based one. On Azure, <code>azurerm_private_endpoint</code> attaches to a subnet and links to a <code>private_connection_resource_id</code> (a Key Vault, Storage Account, or SQL server), paired with an <code>azurerm_private_dns_zone</code> and zone-group association so the resource&#39;s standard hostname resolves internally. On GCP, the producer side uses <code>google_compute_service_attachment</code> behind an internal load balancer, and the consumer side uses <code>google_compute_forwarding_rule</code> with a target of that service attachment (or a Google APIs bundle) to create the PSC endpoint. The Terraform resource names differ; the architectural decision — provision a private, policy-scoped path instead of default egress — is identical.</p>
+<h2>DNS, Routing, and the Failure Modes Private Connectivity Introduces</h2>
+<p>The most common bug report after standing up any of these endpoints is &quot;I created the endpoint but traffic is still going out through the NAT gateway / public internet.&quot; It is almost always DNS. AWS interface endpoints only intercept the service&#39;s default hostname if <code>private_dns_enabled</code> is true and the VPC has DNS resolution and DNS hostnames enabled; if your application hardcodes a regional or non-standard hostname, the private DNS zone won&#39;t match, and traffic falls through to the public route. Azure Private Endpoint requires an explicit private DNS zone linked to the VNet — if that link is missing, the PaaS resource&#39;s FQDN still resolves publicly, and NSG or firewall rules become irrelevant because the traffic never targets the private IP at all. GCP&#39;s PSC endpoints rely on correct DNS records pointing at the endpoint&#39;s internal IP, and the restricted/private VIP ranges for Private Google Access require their own DNS records layered on top of the subnet flag; using the wrong domain suffix silently sends traffic to the public API surface.</p>
+<p>The second class of failure is transitive routing. VPC peering on AWS is explicitly non-transitive — if VPC A is peered to VPC B, and VPC B has the interface endpoint, VPC A cannot reach it through B without its own peering connection or a route through a Transit Gateway. The same limitation applies to VNet peering on Azure. This pushes most multi-VPC/VNet architectures toward a hub-spoke pattern: centralize interface/private endpoints in a shared services VPC or VNet, and use Transit Gateway (AWS) or hub VNet peering plus DNS forwarding rules (Azure) so spoke networks can resolve and route to the shared endpoint without each spoke needing its own copy.</p>
+<p>A practical troubleshooting checklist, in the order that catches the most issues fastest:</p>
+<ol class="list-decimal pl-6 text-white/70 leading-relaxed mb-5"><li class="mb-2"><strong>DNS resolution</strong> — does the service hostname resolve to a private IP from inside the affected subnet? (<code>dig</code>/<code>nslookup</code> from an instance, not your laptop.)</li><li class="mb-2"><strong>Route tables</strong> — for gateway endpoints, is the prefix-list route present in the route table actually attached to the subnet in question?</li><li class="mb-2"><strong>Security group/NSG pairing</strong> — egress allowed from the client to the endpoint, and ingress allowed on the endpoint&#39;s security group from the client subnet; both directions are checked independently and a mismatch on either side silently drops traffic. On Azure, also confirm subnet network policies are enabled — an NSG attached to a private-endpoint subnet has no effect on that traffic until <code>privateEndpointNetworkPolicies</code> is turned on.</li><li class="mb-2"><strong>Endpoint policy scope</strong> — is the specific action/resource combination the application needs actually permitted, or was the policy written against the wrong ARN/resource ID?</li></ol>
+<h2>Enforcing Egress as Policy, Not Convention</h2>
+<p>An endpoint that exists is not the same as an endpoint that&#39;s mandatory. Without an enforcement layer, nothing stops a future engineer from re-adding a NAT gateway route or attaching a public IP to a new instance, and the private path quietly becomes optional rather than the only path.</p>
+<p>On AWS, Service Control Policies (SCPs) at the organization or OU level can deny calls to a service unless the request is routed through an approved VPC endpoint, using the <code>aws:sourceVpce</code> or <code>aws:SourceVpc</code> condition keys — this converts &quot;we built an endpoint&quot; into &quot;the endpoint is the only way in,&quot; enforced at the identity layer regardless of what any individual account&#39;s IAM policies allow. Pair this with VPC Flow Logs on the endpoint&#39;s ENIs (or on the subnets) so that every connection attempt, including denied ones, is auditable after the fact.</p>
+<p>On Azure, Azure Policy definitions can enforce <code>publicNetworkAccess: Disabled</code> on PaaS resources (Storage, Key Vault, SQL) at scale across a subscription or management group, rejecting deployments that leave the public endpoint open even if a Private Endpoint also exists alongside it. NSG flow logs, ideally routed through Traffic Analytics, give the same audit trail as VPC Flow Logs.</p>
+<p>On GCP, Organization Policy constraints — <code>compute.vmExternalIpAccess</code> to restrict external IPs, for example — apply the same &quot;structurally impossible to misconfigure&quot; enforcement. Teams increasingly pair Org Policy with PSC-only access patterns for specific services rather than relying on a single named constraint to do that job, and VPC Service Controls perimeters add a second, independent layer that holds even if an Organization Policy is misapplied or a resource is moved into an unexpected project.</p>
+<p>The common thread: policy-as-code enforcement is what makes &quot;private by convention&quot; into &quot;private by construction.&quot; A private endpoint that anyone can route around with a new public IP and a permissive IAM policy is documentation, not control.</p>
+<h2>A Decision Framework for Multi-Cloud Egress Control</h2>
+<p>Not every service needs the same treatment, and treating VPC Service Controls-grade isolation as the default for every managed service is its own kind of failure — operational cost with no corresponding risk reduction. Decide per service, using a short set of criteria:</p>
+<ul><li><strong>Service type</strong>: first-party cloud API (S3, Key Vault, Cloud Storage) vs. partner/marketplace service vs. a custom internal service you&#39;re publishing to other teams or tenants. First-party APIs usually justify the lightest-weight option (gateway endpoint, Service Endpoint, Private Google Access); custom cross-account/cross-project services need the producer/consumer model (PrivateLink, Private Link, PSC).</li><li><strong>Blast radius if exposed</strong>: a service holding secrets, PII, or financial data justifies interface/Private Endpoint plus a restrictive resource policy at minimum, and a service-control perimeter if the compliance framework demands defense against credential compromise, not just network compromise.</li><li><strong>Compliance/audit requirements</strong>: if an auditor needs to demonstrate that a data store was never reachable from the public internet, Service Endpoints and Private Google Access alone are insufficient evidence for stores requiring IP-level isolation — Private Endpoint/interface endpoints with flow logs make the stronger claim.</li><li><strong>Operational complexity budget</strong>: DNS zones, hub-spoke routing, and per-service policy tuning are ongoing maintenance, not one-time setup. A small platform team should not put every service behind a full private endpoint if same-VNet Service Endpoints or gateway endpoints cover the actual risk.</li></ul>
+<p>A workable per-service checklist: confirm whether the service supports a route-based option first (cheapest, least DNS overhead); if on-prem, cross-VNet, or cross-account reach is required, move to the interface/Private Endpoint/PSC tier; attach a resource-level policy scoped to the minimum actions and resources needed, never leave it default-open; verify DNS resolution from an actual workload, not a management console; and decide explicitly whether this service&#39;s data sensitivity warrants a perimeter control (VPC Service Controls or an SCP-enforced endpoint mandate) on top of the connectivity layer.</p>
+<p>That last decision is the one worth revisiting rather than filing away. Each provider&#39;s Well-Architected guidance frames this as a structural property of the environment, checked repeatedly as new resource types and services are adopted — not a migration project with a defined end date. Every new managed service a team adopts is a fresh instance of the same question: does this need a private path, and if so, which tier, and what policy actually constrains it once it exists.</p>
+<h2>What to Do Next</h2>
+<p>Audit one production VPC or VNet for <code>0.0.0.0/0</code> egress rules and cross-reference against which AWS/Azure/GCP managed services your workloads actually call — that list is usually shorter than expected and is the immediate candidate set for gateway/interface endpoints or Private Endpoints. Enable VPC Flow Logs or NSG flow logs on whatever egress path exists today before changing anything, so you have a before/after baseline to compare traffic patterns against. Check whether any endpoint you&#39;ve already deployed has a default (fully open) resource policy — this is the single most common gap and is usually a five-line Terraform fix once identified. Finally, if compliance requirements are driving this work, confirm with whoever owns the audit relationship whether IP-level private connectivity is sufficient evidence or whether a perimeter control (VPC Service Controls, or an SCP mandating endpoint-only access) is actually required — that answer changes the scope of the work substantially.</p>
+
+    <p class="mt-8 pt-8 border-t border-white/5 text-white/50 text-sm italic">
+      Working through this in production? Explore the
+      <a href="/#services" class="text-sky-light hover:underline">Cloud &amp; DevOps services</a>
+      or read more <a href="/about/" class="text-sky-light hover:underline">about UP2CLOUD</a>.
+    </p>
+
+  </div>
+</article>
+
+<!-- Blog Engagement: Likes + Comments -->
+<section class="max-w-3xl mx-auto px-6 py-2">
+  <div id="likes-mount"></div>
+  <div id="comments-mount"></div>
+</section>
+<script src="/assets/js/blog-engagement.js" defer></script>
+
+
+<!-- Related Posts -->
+<section class="py-12 border-t border-white/5" style="background:#0F172A">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="font-heading font-bold text-2xl text-white mb-8">Related Insights</h2>
+    <div class="grid sm:grid-cols-2 gap-6">
+
+      <a href="/blog/platform-engineering-finops-2026/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">Finops</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">Platform Engineering + FinOps in 2026: How Elite Cloud Teams Reduce Costs Without Slowing Developers</h3>
+      </a>
+
+      <a href="/blog/cloud-cost-anomaly-detection-ai/" class="group block bg-white/5 border border-white/10 rounded-xl p-6 hover:border-sky-light/50 transition-all">
+        <span class="text-sky-light text-xs font-bold uppercase tracking-wider mb-2 block">FinOps</span>
+        <h3 class="text-white font-heading font-semibold text-lg group-hover:text-sky-light transition-colors line-clamp-2">How AI Anomaly Detection Catches Cloud Cost Spikes Before They Hurt</h3>
+      </a>
+
+    </div>
+  </div>
+</section>
+<!-- CTA -->
+<section class="py-16" style="background:#020617">
+  <div class="max-w-3xl mx-auto px-6 reveal">
+    <div class="rounded-2xl p-10 text-center relative overflow-hidden" style="background:linear-gradient(135deg,rgba(3,105,161,.2),rgba(14,165,233,.15));border:1px solid rgba(14,165,233,.2)">
+      <div class="absolute w-64 h-64 rounded-full opacity-10 pointer-events-none" style="background:radial-gradient(circle,#0EA5E9,transparent);top:-20%;right:-10%;filter:blur(50px)"></div>
+      <span class="badge badge-sky inline-block mb-4">IaC Consulting</span>
+      <h2 class="font-heading font-bold text-3xl text-white mb-4">Need help scaling your Terraform codebase?</h2>
+      <p class="text-white/60 mb-8 leading-relaxed max-w-xl mx-auto">
+        We help teams design module libraries, implement policy-as-code guardrails, and build CI/CD pipelines that make infrastructure changes safe and fast.
+      </p>
+      <a href="/#contact" class="inline-flex items-center gap-2 font-semibold text-white px-8 py-3.5 rounded-xl transition-all hover:opacity-90" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        Let's Talk
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#020617;border-top:1px solid rgba(255,255,255,.07)" class="py-12 mt-0">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-white/40">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0369A1,#0EA5E9)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <span data-i18n="blog_footer_copy">© 2026 UP2CLOUD · Cesar A. Nogueira. All rights reserved.</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="/" class="hover:text-white/70 transition-colors">Home</a>
+      <a href="/blog/" class="hover:text-white/70 transition-colors">Blog</a>
+      <a href="/about/" class="hover:text-white/70 transition-colors">About</a>
+      <a href="/#contact" class="hover:text-white/70 transition-colors">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); ro.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-list').forEach(el => ro.observe(el));
+</script>
+<script>
+(function(){
+  const LANG_META = {
+    en:{flag:'🇺🇸',code:'EN'}, pt:{flag:'🇧🇷',code:'PT'},
+    es:{flag:'🇪🇸',code:'ES'}, fr:{flag:'🇫🇷',code:'FR'}
+  };
+  const cache = {};
+  async function loadLang(lang) {
+    if (cache[lang]) return cache[lang];
+    try {
+      const r = await fetch('/assets/i18n/' + lang + '.json');
+      if (!r.ok) throw 0;
+      cache[lang] = await r.json();
+    } catch(e) { cache[lang] = cache['en'] || {}; }
+    return cache[lang];
+  }
+  function applyLang(t) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      if (t[el.dataset.i18n] !== undefined) el.textContent = t[el.dataset.i18n];
+    });
+  }
+  const POST_SLUG = 'terraform-iac-best-practices';
+  const heroEl = document.getElementById('article-hero-title');
+  const bodyEl = document.getElementById('article-body-content');
+  const statEls = Array.from(document.querySelectorAll('.stat-label'));
+  const ORIGINAL_EN = { hero: heroEl ? heroEl.innerHTML : '', body: bodyEl ? bodyEl.innerHTML : '', stats: statEls.map(el => el ? el.textContent : '') };
+  let bodyCache = null;
+  async function loadBody() {
+    if (bodyCache) return bodyCache;
+    try {
+      const r = await fetch('/assets/i18n/blog/' + POST_SLUG + '.json');
+      if (!r.ok) throw 0;
+      bodyCache = await r.json();
+    } catch(e) { bodyCache = {}; }
+    return bodyCache;
+  }
+  function applyArticleContent(lang, data) {
+    const entry = lang === 'en' ? ORIGINAL_EN : (data && data[lang]);
+    if (!entry) return;
+    if (heroEl) heroEl.innerHTML = entry.hero;
+    if (bodyEl) bodyEl.innerHTML = entry.body;
+    statEls.forEach((el, i) => { if (el && entry.stats && entry.stats[i]) el.textContent = entry.stats[i]; });
+    document.querySelectorAll('.prose ul.reveal-list').forEach(ul => {
+      ul.classList.remove('visible');
+      ro.observe(ul);
+    });
+  }
+  async function setArticleLang(lang) {
+    document.getElementById('article-lang-menu')?.classList.add('hidden');
+    document.getElementById('article-lang-btn')?.setAttribute('aria-expanded','false');
+    const meta = LANG_META[lang];
+    if (!meta) return;
+    localStorage.setItem('up2cloud-lang', lang);
+    document.getElementById('article-lang-flag').textContent = meta.flag;
+    document.getElementById('article-lang-code').textContent = meta.code;
+    document.querySelectorAll('.article-lang-opt').forEach(b => {
+      b.style.background = b.dataset.lang === lang ? 'rgba(14,165,233,.15)':'';
+      b.style.color = b.dataset.lang === lang ? '#fff':'';
+    });
+    const t = await loadLang(lang);
+    applyLang(t);
+    const body = await loadBody();
+    applyArticleContent(lang, body);
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang;
+  }
+  function toggleArticleLang(e) {
+    e && e.stopPropagation();
+    const m = document.getElementById('article-lang-menu');
+    const open = m.classList.toggle('hidden');
+    document.getElementById('article-lang-btn').setAttribute('aria-expanded', String(!open));
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('article-lang-picker');
+    if (p && !p.contains(e.target)) document.getElementById('article-lang-menu')?.classList.add('hidden');
+  });
+  window.setArticleLang = setArticleLang;
+  window.toggleArticleLang = toggleArticleLang;
+  const saved = localStorage.getItem('up2cloud-lang') || 'en';
+  loadLang('en').then(() => setArticleLang(saved));
+})();
+</script>
+<script>const yearEl = document.getElementById("year"); if (yearEl) yearEl.textContent = new Date().getFullYear();</script></body>
+</html>
