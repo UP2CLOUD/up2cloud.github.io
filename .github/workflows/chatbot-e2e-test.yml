@@ -1,0 +1,50 @@
+name: Chatbot E2E Test
+
+# Daily smoke test of the live chatbot (https://up2cloud.tech/api/chat) using
+# the same SYSTEM_PROMPT and quick-reply questions real visitors send. Alerts
+# only — it never edits files or auto-fixes anything. For the model-
+# deprecation self-heal, see groq-model-healthcheck.yml.
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # daily, 09:00 UTC — offset from groq-model-healthcheck.yml's 08:00
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+
+      - name: Run chatbot E2E test
+        id: e2e
+        run: node scripts/chatbot-e2e-test.js
+        continue-on-error: true
+
+      - name: Open an alert issue on failure
+        if: steps.e2e.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAILURES: ${{ steps.e2e.outputs.failures }}
+        run: |
+          ISSUE_BODY=$(printf 'The daily chatbot E2E test (`.github/workflows/chatbot-e2e-test.yml`) failed against `https://up2cloud.tech/api/chat`.\n\n**Failures:**\n%s\n\nCheck the run for full output: %s/%s/actions/runs/%s\n\nIf this looks like a Groq model deprecation (e.g. `model_not_found`), `groq-model-healthcheck.yml` may already be handling it — check if it opened a fix PR before investigating further.' "$FAILURES" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID")
+          EXISTING=$(gh issue list --state open --search "Chatbot E2E test failing in:title" --json number --jq '.[0].number' || echo "")
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$ISSUE_BODY"
+          else
+            gh issue create --title "Chatbot E2E test failing" --body "$ISSUE_BODY"
+          fi
+
+      - name: Fail the job so the red X is visible
+        if: steps.e2e.outcome == 'failure'
+        run: exit 1
