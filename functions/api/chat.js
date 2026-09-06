@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
     : 0.7;
 
   const safeBody = {
-    model: "llama-3.1-8b-instant",
+    model: "openai/gpt-oss-20b",
     messages,
     max_tokens: maxTokens,
     temperature,

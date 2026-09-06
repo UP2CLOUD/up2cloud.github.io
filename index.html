@@ -7093,7 +7093,7 @@ Critical rules:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant', // Ensure this model is available and performant
+          model: 'openai/gpt-oss-20b',
           messages: [
             { role: 'system', content: SYSTEM_PROMPT },
             ...chatHistory
@@ -8044,7 +8044,7 @@ Critical rules:
       await wait(200);
 
       // AI indicator
-      const modelLabel = key === 'finops' ? 'Groq llama-3.1' : 'Claude claude-3-haiku';
+      const modelLabel = key === 'finops' ? 'Groq gpt-oss-20b' : 'Claude claude-3-haiku';
       addLine(`<span style="color:#C084FC">🤖 Analyzing with ${modelLabel}...</span>`);
       await wait(HAS_KEY ? 500 : 400);
 
@@ -8055,7 +8055,7 @@ Critical rules:
             signal: abort.signal,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              model: 'llama-3.1-8b-instant',
+              model: 'openai/gpt-oss-20b',
               messages: [
                 { role: 'system', content: s.sys },
                 { role: 'user',   content: `Analyze this infrastructure file:\n\`\`\`\n${s.code}\n\`\`\`` }
