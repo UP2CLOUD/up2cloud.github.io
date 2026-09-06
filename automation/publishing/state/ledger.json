@@ -1,9 +1,140 @@
 {
-  "version": 1889,
-  "updatedAt": "2026-09-05T19:58:49.257Z",
+  "version": 1906,
+  "updatedAt": "2026-09-06T02:12:51.456Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260906014404_992187",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-09-06T01:44:04.461Z",
+      "updatedAt": "2026-09-06T02:12:51.450Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-06T01:44:04.468Z",
+          "completedAt": "2026-09-06T01:44:04.478Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-06T01:44:04.497Z",
+          "completedAt": "2026-09-06T01:44:34.627Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 79803
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-06T01:44:34.631Z",
+          "completedAt": "2026-09-06T01:45:02.032Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 2887
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-06T01:45:02.036Z",
+          "completedAt": "2026-09-06T01:47:09.510Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 21552
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-06T01:47:09.514Z",
+          "completedAt": "2026-09-06T01:52:54.447Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 27383
+          }
+        },
+        "validate": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-09-06T01:52:54.452Z",
+          "completedAt": "2026-09-06T02:12:51.450Z",
+          "error": "Quality gates blocked publication:\n  [review] The RDS section claims flipping `multi_az` to true gives 'automatic failover in seconds.' AWS's own documentation states RDS Multi-AZ (non-Aurora) failover typically completes in 60–120 seconds, not 'seconds' in the sub-10-second sense the phrasing implies. This is a specific, checkable technical claim that's off by roughly an order of magnitude.",
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260905194007_b3902f",
       "mode": "draft",
@@ -7647,155 +7778,6 @@
           "startedAt": "2026-08-27T09:25:04.311Z",
           "completedAt": "2026-08-27T09:25:07.616Z",
           "error": "git fetch failed: Command failed: git -c http.https://github.com/.extraheader=Authorization: Basic eC1hY2Nlc3MtdG9rZW46Z2hzXzE1MzY4X2V5SmhiR2NpT2lKRlV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoZFdRaU9pSmhkWFJvYm1RaUxDSmpkSGdpT2lKS1JtWmhiVk50UzNaMlFYUlBVbWRQWlRjdFVEaHRhbTFxWjNsU1JUWktXakJTT0V4TFJIQnBlV2hvUkdwWlVVcElhRU51YURaRklpd2laWGh3SWpveE56ZzNPREkyTVRZM0xDSnBZWFFpT2pFM09EYzRNakkxTmpjc0ltbHpjeUk2SW1kcGRHaDFZaUlzSW1wMGFTSTZJamd5T0dWa01tVmhMVFJsWkdVdE5HSXdOQzFpWkdJNUxUQTFaamN4TURWbU5EZzRZaUlzSW5abGNpSTZNMzAubUFXUDZreGFETUFIajA2dzVTWG1yMHJBaE9GVmRnSmR2V2luQ1JCei1BT0QwWWlyaFZlVjdqbW84SEtZc2tPRFRuSEU4RTEtckNEVENodF9VWUl5M3c= fetch origin main",
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260827063135_1d4c02",
-      "mode": "review",
-      "trigger": "workflow_dispatch",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-27T06:31:35.299Z",
-      "updatedAt": "2026-08-27T06:33:52.154Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:31:35.306Z",
-          "completedAt": "2026-08-27T06:31:35.331Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 658
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:31:35.339Z",
-          "completedAt": "2026-08-27T06:31:50.191Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 100057
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:31:50.194Z",
-          "completedAt": "2026-08-27T06:31:59.794Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 1555
-          }
-        },
-        "draft": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:31:59.798Z",
-          "completedAt": "2026-08-27T06:33:33.013Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "outline",
-              "body"
-            ],
-            "size": 14688
-          }
-        },
-        "review": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:33:33.017Z",
-          "completedAt": "2026-08-27T06:33:43.863Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "findings",
-              "applied",
-              "body"
-            ],
-            "size": 14329
-          }
-        },
-        "validate": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:33:43.867Z",
-          "completedAt": "2026-08-27T06:33:44.959Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "passed",
-              "blocking",
-              "warnings",
-              "findings",
-              "contentHash",
-              "words",
-              "authoritativeCitations",
-              "recheckFindings"
-            ],
-            "size": 199
-          }
-        },
-        "localize": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:33:44.964Z",
-          "completedAt": "2026-08-27T06:33:48.810Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "bundle",
-              "problems"
-            ],
-            "size": 989
-          }
-        },
-        "publish_blog": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-27T06:33:48.813Z",
-          "completedAt": "2026-08-27T06:33:52.154Z",
-          "error": "git fetch failed: Command failed: git -c http.https://github.com/.extraheader=Authorization: Basic eC1hY2Nlc3MtdG9rZW46Z2hzXzE1MzY4X2V5SmhiR2NpT2lKRlV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoZFdRaU9pSmhkWFJvYm1RaUxDSmpkSGdpT2lKdVIwTjNlR3RSWjFOdFRrazJWVXB3ZERab1ozZ3hWVWQwUzFsUVVWVkxZM0ExUWpGNE5tWnVXV1YxVldSUE9USnFiamMyVW5ocklpd2laWGh3SWpveE56ZzNPREUxT0RreExDSnBZWFFpT2pFM09EYzRNVEl5T1RFc0ltbHpjeUk2SW1kcGRHaDFZaUlzSW1wMGFTSTZJams1WmprNVltVTVMV1ZqTVdZdE5HRTBaaTFpT0dVekxUWXpNMlF3WVRoaVlURmpOaUlzSW5abGNpSTZNMzAueWVnSjJZaFhGU3hrdFlLZTNiak4tZGpVRTNuOVJBZWx0eWxDN0J1Si1RS3RDNDh0VDRNRlJFLWhpaHNSZmZ5aXdHMkEtcm5mZDdfcDBFYmgzeXRQSHc= fetch origin main",
           "output": null
         },
         "verify_deployment": {
