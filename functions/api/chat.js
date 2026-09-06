@@ -1,5 +1,15 @@
 const ALLOWED_ORIGINS = ["https://up2cloud.tech", "https://up2cloud-tech.pages.dev"];
 
+// Kept as its own constant (rather than inline in safeBody below) so
+// scripts/groq-model-failover.js can find-and-replace it by exact string
+// match when Groq deprecates it.
+const MODEL = "openai/gpt-oss-20b";
+
+// Reasoning models (openai/gpt-oss-*) accept reasoning_effort/reasoning_format;
+// other models reject those fields with a 400. Keep this in sync with
+// whatever MODEL is set to, including when the failover script swaps it.
+const REASONING_MODELS = new Set(["openai/gpt-oss-20b", "openai/gpt-oss-120b"]);
+
 export async function onRequestPost(context) {
   const { env, request } = context;
   const apiKey = env.GROQ_API_KEY;
@@ -54,12 +64,23 @@ export async function onRequestPost(context) {
     : 0.7;
 
   const safeBody = {
-    model: "openai/gpt-oss-20b",
+    model: MODEL,
     messages,
     max_tokens: maxTokens,
     temperature,
     stream: false,
   };
+
+  if (REASONING_MODELS.has(MODEL)) {
+    // Reasoning models spend part of max_tokens thinking before writing the
+    // visible answer. "low" keeps that budget small so short max_tokens
+    // callers (e.g. the terminal demo's 220) still get a populated `content`
+    // instead of finish_reason "length" with nothing to show. "hidden" drops
+    // the reasoning trace from the response entirely — callers here only
+    // ever read `.content`.
+    safeBody.reasoning_effort = "low";
+    safeBody.reasoning_format = "hidden";
+  }
 
   try {
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
