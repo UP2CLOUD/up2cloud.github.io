@@ -1,0 +1,78 @@
+name: Groq Model Health Check
+
+# Groq deprecates free/developer-tier models without much warning — that's
+# what broke the chatbot on 2026-08-16 (llama-3.1-8b-instant was pulled and
+# every chat request failed silently until a human noticed). This probes the
+# live proxy daily and, if the configured model has been deprecated, rolls it
+# forward to the next entry in FALLBACK_MODELS (scripts/groq-model-failover.js)
+# automatically instead of waiting for a bug report.
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # daily, 08:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  check-and-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+
+      - name: Probe production and roll the model forward if it's broken
+        id: failover
+        run: node scripts/groq-model-failover.js
+        continue-on-error: true
+
+      - name: Open a fix PR
+        if: steps.failover.outputs.new_model != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OLD_MODEL: ${{ steps.failover.outputs.old_model }}
+          NEW_MODEL: ${{ steps.failover.outputs.new_model }}
+          ERROR_MESSAGE: ${{ steps.failover.outputs.error_message }}
+        run: |
+          set -euo pipefail
+          BRANCH="auto/groq-model-failover-$(date +%Y%m%d-%H%M%S)"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add functions/api/chat.js index.html
+
+          COMMIT_MSG=$(printf 'Auto-failover: Groq model %s -> %s\n\nScheduled health check found %s failing with:\n%s\n\nRolled forward to the next model in scripts/groq-model-failover.js'"'"'s FALLBACK_MODELS list.' "$OLD_MODEL" "$NEW_MODEL" "$OLD_MODEL" "$ERROR_MESSAGE")
+          git commit -m "$COMMIT_MSG"
+          git push origin "$BRANCH"
+
+          PR_BODY=$(printf 'Scheduled Groq model health check (`.github/workflows/groq-model-healthcheck.yml`) found the chatbot proxy failing.\n\n**Error from Groq:** `%s`\n\nRolled `functions/api/chat.js` and `index.html` forward from `%s` to `%s` — the next entry in `FALLBACK_MODELS` (scripts/groq-model-failover.js). Auto-merging once required checks pass; if that'"'"'s blocked, this PR is ready for manual review/merge.' "$ERROR_MESSAGE" "$OLD_MODEL" "$NEW_MODEL")
+          PR_URL=$(gh pr create \
+            --title "Auto-failover: Groq model $OLD_MODEL -> $NEW_MODEL" \
+            --body "$PR_BODY" \
+            --base main --head "$BRANCH")
+          echo "Opened $PR_URL"
+          gh pr merge --squash --auto "$PR_URL" || echo "Auto-merge not available — PR left open for manual merge."
+
+      - name: Open an issue if every fallback is exhausted
+        if: steps.failover.outcome == 'failure' && steps.failover.outputs.new_model == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OLD_MODEL: ${{ steps.failover.outputs.old_model }}
+          ERROR_MESSAGE: ${{ steps.failover.outputs.error_message }}
+        run: |
+          ISSUE_BODY=$(printf '`.github/workflows/groq-model-healthcheck.yml` found the chatbot proxy failing and every model in `FALLBACK_MODELS` (scripts/groq-model-failover.js) has already been tried.\n\n**Last error from Groq:** `%s`\n\nCheck https://console.groq.com/docs/models for currently available models, add one to `FALLBACK_MODELS`, and either wait for the next scheduled run or trigger this workflow manually (workflow_dispatch).' "$ERROR_MESSAGE")
+          gh issue create \
+            --title "Chatbot broken: all Groq fallback models exhausted (last tried: $OLD_MODEL)" \
+            --body "$ISSUE_BODY"
+
+      - name: Fail the job so the red X is visible (only when stuck, not when auto-fixed)
+        if: steps.failover.outcome == 'failure' && steps.failover.outputs.new_model == ''
+        run: exit 1
