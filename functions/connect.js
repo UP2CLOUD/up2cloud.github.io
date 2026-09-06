@@ -102,6 +102,120 @@ const TOOLS = [
   },
 ];
 
+// Landing-page-only UI strings (the JSON-RPC tool descriptions above stay in
+// English — that's protocol data read by AI clients, not page copy). Same 4
+// languages as the main site's i18n system (assets/i18n/*.json).
+const UI_TEXT = {
+  en: {
+    metaDescription: 'Remote MCP (Model Context Protocol) server for UP2CLOUD — add it to any MCP-compatible AI client.',
+    badge: '🤖 MCP · AI Connector',
+    backLink: '← Back to up2cloud.tech',
+    lead: 'A remote <a href="https://modelcontextprotocol.io" style="color:#7dd3fc">MCP</a> (Model Context Protocol) server for UP2CLOUD — add it to Claude or any MCP-compatible AI agent to give it read-only access to company info, services, contact details, and blog search.',
+    copy: 'Copy',
+    copied: 'Copied!',
+    tryCurl: 'Try it with curl',
+    explore: 'Explore UP2CLOUD',
+    availableTools: 'Available Tools',
+    quickTest: 'Quick Test',
+    copyCommand: 'Copy command',
+    metaLine: 'Transport: <code>Streamable HTTP</code> · Protocol version: <code>2025-06-18</code> (also accepts <code>2025-03-26</code> and <code>2024-11-05</code>) · No auth required — every tool is read-only.',
+    footerBlog: 'Blog',
+    footerPrivacy: 'Privacy',
+    tools: {
+      up2cloud_get_company_overview: 'Get a short overview of UP2CLOUD — founder, tagline, offices, and what the company does.',
+      up2cloud_list_services: "List UP2CLOUD's consulting service offerings (cloud migration, DevOps, FinOps, security, AI, offshore teams, digital transformation) with a short description of each.",
+      up2cloud_get_contact: "Get UP2CLOUD's contact channels — email, WhatsApp, LinkedIn, GitHub, and website.",
+      up2cloud_search_blog: "Search UP2CLOUD's blog posts by keyword across title, excerpt, and category. Returns matching posts with title, URL, excerpt, category, and publish date.",
+    },
+  },
+  pt: {
+    metaDescription: 'Servidor MCP (Model Context Protocol) remoto da UP2CLOUD — adicione a qualquer cliente de IA compatível com MCP.',
+    badge: '🤖 MCP · Conector de IA',
+    backLink: '← Voltar para up2cloud.tech',
+    lead: 'Um servidor <a href="https://modelcontextprotocol.io" style="color:#7dd3fc">MCP</a> (Model Context Protocol) remoto da UP2CLOUD — adicione ao Claude ou a qualquer agente de IA compatível com MCP para dar acesso somente leitura a informações da empresa, serviços, contatos e busca no blog.',
+    copy: 'Copiar',
+    copied: 'Copiado!',
+    tryCurl: 'Testar com curl',
+    explore: 'Conhecer a UP2CLOUD',
+    availableTools: 'Ferramentas Disponíveis',
+    quickTest: 'Teste Rápido',
+    copyCommand: 'Copiar comando',
+    metaLine: 'Transporte: <code>Streamable HTTP</code> · Versão do protocolo: <code>2025-06-18</code> (também aceita <code>2025-03-26</code> e <code>2024-11-05</code>) · Sem autenticação necessária — todas as ferramentas são somente leitura.',
+    footerBlog: 'Blog',
+    footerPrivacy: 'Privacidade',
+    tools: {
+      up2cloud_get_company_overview: 'Obtenha um resumo da UP2CLOUD — fundador, tagline, escritórios e o que a empresa faz.',
+      up2cloud_list_services: 'Liste os serviços de consultoria da UP2CLOUD (migração para nuvem, DevOps, FinOps, segurança, IA, times offshore, transformação digital) com uma breve descrição de cada um.',
+      up2cloud_get_contact: 'Obtenha os canais de contato da UP2CLOUD — email, WhatsApp, LinkedIn, GitHub e site.',
+      up2cloud_search_blog: 'Busque posts do blog da UP2CLOUD por palavra-chave em título, resumo e categoria. Retorna posts correspondentes com título, URL, resumo, categoria e data de publicação.',
+    },
+  },
+  es: {
+    metaDescription: 'Servidor MCP (Model Context Protocol) remoto de UP2CLOUD — añádelo a cualquier cliente de IA compatible con MCP.',
+    badge: '🤖 MCP · Conector de IA',
+    backLink: '← Volver a up2cloud.tech',
+    lead: 'Un servidor <a href="https://modelcontextprotocol.io" style="color:#7dd3fc">MCP</a> (Model Context Protocol) remoto de UP2CLOUD — añádelo a Claude o a cualquier agente de IA compatible con MCP para darle acceso de solo lectura a información de la empresa, servicios, datos de contacto y búsqueda en el blog.',
+    copy: 'Copiar',
+    copied: '¡Copiado!',
+    tryCurl: 'Probarlo con curl',
+    explore: 'Explorar UP2CLOUD',
+    availableTools: 'Herramientas Disponibles',
+    quickTest: 'Prueba Rápida',
+    copyCommand: 'Copiar comando',
+    metaLine: 'Transporte: <code>Streamable HTTP</code> · Versión del protocolo: <code>2025-06-18</code> (también acepta <code>2025-03-26</code> y <code>2024-11-05</code>) · No requiere autenticación — todas las herramientas son de solo lectura.',
+    footerBlog: 'Blog',
+    footerPrivacy: 'Privacidad',
+    tools: {
+      up2cloud_get_company_overview: 'Obtén un resumen breve de UP2CLOUD — fundador, eslogan, oficinas y qué hace la empresa.',
+      up2cloud_list_services: 'Lista los servicios de consultoría de UP2CLOUD (migración a la nube, DevOps, FinOps, seguridad, IA, equipos offshore, transformación digital) con una breve descripción de cada uno.',
+      up2cloud_get_contact: 'Obtén los canales de contacto de UP2CLOUD — email, WhatsApp, LinkedIn, GitHub y sitio web.',
+      up2cloud_search_blog: 'Busca artículos del blog de UP2CLOUD por palabra clave en título, extracto y categoría. Devuelve los artículos coincidentes con título, URL, extracto, categoría y fecha de publicación.',
+    },
+  },
+  fr: {
+    metaDescription: "Serveur MCP (Model Context Protocol) distant pour UP2CLOUD — ajoutez-le à n'importe quel client IA compatible MCP.",
+    badge: '🤖 MCP · Connecteur IA',
+    backLink: '← Retour à up2cloud.tech',
+    lead: 'Un serveur <a href="https://modelcontextprotocol.io" style="color:#7dd3fc">MCP</a> (Model Context Protocol) distant pour UP2CLOUD — ajoutez-le à Claude ou à tout agent IA compatible MCP pour lui donner un accès en lecture seule aux informations de l\'entreprise, aux services, aux coordonnées et à la recherche dans le blog.',
+    copy: 'Copier',
+    copied: 'Copié !',
+    tryCurl: 'Tester avec curl',
+    explore: 'Découvrir UP2CLOUD',
+    availableTools: 'Outils Disponibles',
+    quickTest: 'Test Rapide',
+    copyCommand: 'Copier la commande',
+    metaLine: 'Transport : <code>Streamable HTTP</code> · Version du protocole : <code>2025-06-18</code> (accepte aussi <code>2025-03-26</code> et <code>2024-11-05</code>) · Aucune authentification requise — chaque outil est en lecture seule.',
+    footerBlog: 'Blog',
+    footerPrivacy: 'Confidentialité',
+    tools: {
+      up2cloud_get_company_overview: "Obtenez un bref aperçu d'UP2CLOUD — fondateur, slogan, bureaux et activité de l'entreprise.",
+      up2cloud_list_services: "Listez les services de conseil d'UP2CLOUD (migration cloud, DevOps, FinOps, sécurité, IA, équipes offshore, transformation numérique) avec une brève description de chacun.",
+      up2cloud_get_contact: "Obtenez les canaux de contact d'UP2CLOUD — email, WhatsApp, LinkedIn, GitHub et site web.",
+      up2cloud_search_blog: 'Recherchez les articles du blog UP2CLOUD par mot-clé dans le titre, l\'extrait et la catégorie. Renvoie les articles correspondants avec titre, URL, extrait, catégorie et date de publication.',
+    },
+  },
+};
+
+const SUPPORTED_UI_LANGS = ['pt', 'es', 'fr', 'en'];
+
+// Same content-negotiation approach as the browser itself: parse
+// Accept-Language's weighted tags in priority order, take the first one this
+// page has a translation for, default to English.
+function pickLanguage(request) {
+  const header = request.headers.get('Accept-Language') || '';
+  const ranked = header
+    .split(',')
+    .map((part) => {
+      const [tag, qPart] = part.trim().split(';q=');
+      return { tag: (tag || '').split('-')[0].toLowerCase(), q: qPart ? parseFloat(qPart) : 1 };
+    })
+    .sort((a, b) => b.q - a.q);
+  for (const { tag } of ranked) {
+    if (SUPPORTED_UI_LANGS.includes(tag)) return tag;
+  }
+  return 'en';
+}
+
 function jsonResponse(body, { status = 200, headers = {} } = {}) {
   return new Response(JSON.stringify(body), {
     status,
@@ -304,6 +418,9 @@ export async function onRequestGet(context) {
     );
   }
 
+  const lang = pickLanguage(request);
+  const L = { ...UI_TEXT.en, ...UI_TEXT[lang], tools: { ...UI_TEXT.en.tools, ...(UI_TEXT[lang]?.tools || {}) } };
+
   const TOOL_ICONS = {
     up2cloud_get_company_overview: '<path d="M4 21V7a2 2 0 012-2h5a2 2 0 012 2v14M4 21h16M4 21H2m11-14h5a2 2 0 012 2v12m0 0h2m-2 0h-4M9 9h1m-1 4h1m-1 4h1"/>',
     up2cloud_list_services: '<path d="M9 5h11M9 12h11M9 19h11M5 5h.01M5 12h.01M5 19h.01"/>',
@@ -312,13 +429,13 @@ export async function onRequestGet(context) {
   };
 
   const html = `<!doctype html>
-<html lang="en">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UP2CLOUD MCP Connector</title>
 <meta name="robots" content="noindex">
-<meta name="description" content="Remote MCP (Model Context Protocol) server for UP2CLOUD — add it to any MCP-compatible AI client.">
+<meta name="description" content="${L.metaDescription}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -412,7 +529,7 @@ export async function onRequestGet(context) {
       <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg></span>
       <span class="logo-word">UP<span style="color:#F97316">2</span><span style="color:#0EA5E9">CLOUD</span></span>
     </a>
-    <a href="/" class="back-link">← Back to up2cloud.tech</a>
+    <a href="/" class="back-link">${L.backLink}</a>
   </div>
 </header>
 
@@ -424,33 +541,33 @@ export async function onRequestGet(context) {
     <span style="color:#7dd3fc">{ }</span> json-rpc 2.0
   </div>
   <div class="wrap">
-    <span class="ai-badge">🤖 MCP · AI Connector</span>
+    <span class="ai-badge">${L.badge}</span>
     <h1>UP2CLOUD MCP Connector</h1>
-    <p class="lead">A remote <a href="https://modelcontextprotocol.io" style="color:#7dd3fc">MCP</a> (Model Context Protocol) server for UP2CLOUD — add it to Claude or any MCP-compatible AI agent to give it read-only access to company info, services, contact details, and blog search.</p>
+    <p class="lead">${L.lead}</p>
 
     <div class="endpoint-pill glass">
       <code id="endpoint-url">https://up2cloud.tech/connect</code>
-      <button class="copy-btn" onclick="copyText('endpoint-url', this)">Copy</button>
+      <button class="copy-btn" data-copy-label="${L.copy}" data-copied-label="${L.copied}" onclick="copyText('endpoint-url', this)">${L.copy}</button>
     </div>
 
     <div class="cta-row">
       <a href="#test" class="btn-primary shine">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l6-6-6-6M12 19h8"/></svg>
-        Try it with curl
+        ${L.tryCurl}
       </a>
-      <a href="/" class="btn-outline">Explore UP2CLOUD</a>
+      <a href="/" class="btn-outline">${L.explore}</a>
     </div>
   </div>
 </section>
 
 <section class="tools">
   <div class="wrap">
-    <h2>Available Tools</h2>
+    <h2>${L.availableTools}</h2>
     <div class="tool-grid">
       ${TOOLS.map((t) => `<div class="tool-card glass reveal">
         <div class="tool-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${TOOL_ICONS[t.name] || ''}</svg></div>
         <h3>${t.name}</h3>
-        <p>${t.description}</p>
+        <p>${L.tools[t.name] || t.description}</p>
       </div>`).join('\n      ')}
     </div>
   </div>
@@ -458,15 +575,15 @@ export async function onRequestGet(context) {
 
 <section class="test" id="test">
   <div class="wrap">
-    <h2>Quick Test</h2>
+    <h2>${L.quickTest}</h2>
     <div class="code-block glass">
       <pre id="curl-example">curl -X POST https://up2cloud.tech/connect \\
   -H "Content-Type: application/json" \\
   -H "Accept: application/json" \\
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"1.0"}}}'</pre>
     </div>
-    <p style="margin-top:.85rem"><button class="copy-btn" onclick="copyText('curl-example', this)">Copy command</button></p>
-    <p class="meta-line">Transport: <code>Streamable HTTP</code> · Protocol version: <code>2025-06-18</code> (also accepts <code>2025-03-26</code> and <code>2024-11-05</code>) · No auth required — every tool is read-only.</p>
+    <p style="margin-top:.85rem"><button class="copy-btn" data-copy-label="${L.copyCommand}" data-copied-label="${L.copied}" onclick="copyText('curl-example', this)">${L.copyCommand}</button></p>
+    <p class="meta-line">${L.metaLine}</p>
   </div>
 </section>
 
@@ -475,8 +592,8 @@ export async function onRequestGet(context) {
     <span>© <span id="year"></span> UP2CLOUD · Cesar A. Nogueira</span>
     <div class="links">
       <a href="/">up2cloud.tech</a>
-      <a href="/blog/">Blog</a>
-      <a href="/privacy/">Privacy</a>
+      <a href="/blog/">${L.footerBlog}</a>
+      <a href="/privacy/">${L.footerPrivacy}</a>
       <a href="https://github.com/UP2CLOUD" target="_blank" rel="noopener noreferrer">GitHub</a>
     </div>
   </div>
@@ -489,7 +606,7 @@ export async function onRequestGet(context) {
     var text = document.getElementById(id).textContent;
     navigator.clipboard.writeText(text).then(function () {
       var original = btn.textContent;
-      btn.textContent = 'Copied!';
+      btn.textContent = btn.getAttribute('data-copied-label') || original;
       setTimeout(function () { btn.textContent = original; }, 1500);
     });
   }
