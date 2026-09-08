@@ -1,9 +1,159 @@
 {
-  "version": 2087,
-  "updatedAt": "2026-09-08T10:33:28.956Z",
+  "version": 2108,
+  "updatedAt": "2026-09-08T15:59:51.507Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260908153438_3c7b64",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-09-08T15:34:38.004Z",
+      "updatedAt": "2026-09-08T15:59:51.499Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:34:38.014Z",
+          "completedAt": "2026-09-08T15:34:38.029Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 666
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:34:38.039Z",
+          "completedAt": "2026-09-08T15:35:24.190Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 98241
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:35:24.197Z",
+          "completedAt": "2026-09-08T15:35:58.612Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 4744
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:35:58.618Z",
+          "completedAt": "2026-09-08T15:38:21.353Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 25633
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:38:21.359Z",
+          "completedAt": "2026-09-08T15:45:40.493Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 27602
+          }
+        },
+        "validate": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:45:40.499Z",
+          "completedAt": "2026-09-08T15:58:59.737Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "passed",
+              "blocking",
+              "warnings",
+              "findings",
+              "contentHash",
+              "words",
+              "authoritativeCitations",
+              "recheckFindings",
+              "body"
+            ],
+            "size": 31075
+          }
+        },
+        "localize": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:58:59.743Z",
+          "completedAt": "2026-09-08T15:59:48.659Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "bundle",
+              "problems"
+            ],
+            "size": 1117
+          }
+        },
+        "publish_blog": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-09-08T15:59:48.665Z",
+          "completedAt": "2026-09-08T15:59:51.499Z",
+          "error": "GitHub API POST /repos/UP2CLOUD/up2cloud.github.io/pulls → 403: {\"message\":\"GitHub Actions is not permitted to create or approve pull requests.\",\"documentation_url\":\"https://docs.github.com/rest/pulls/pulls#create-a-pull-request\",\"status\":\"403\"}",
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260908101343_15e6a5",
       "mode": "draft",
@@ -7938,137 +8088,6 @@
           "startedAt": "2026-08-28T09:25:59.292Z",
           "completedAt": "2026-08-28T09:27:34.194Z",
           "error": "Quality gates blocked publication:\n  [review] The article contains code samples that are for illustration purposes only and may not be accurate or up-to-date. This could lead to incorrect implementation and potential security risks.\n  [review] The article mentions specific private connectivity options (e.g., AWS Direct Connect, Azure ExpressRoute, Google Cloud Interconnect) without providing a clear comparison of their features, pricing, and compatibility. This could lead to incorrect choices and potential security risks.",
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260828062644_0518aa",
-      "mode": "review",
-      "trigger": "workflow_dispatch",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-28T06:26:44.108Z",
-      "updatedAt": "2026-08-28T06:29:54.014Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T06:26:44.113Z",
-          "completedAt": "2026-08-28T06:26:44.140Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 666
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T06:26:44.146Z",
-          "completedAt": "2026-08-28T06:26:57.321Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 99869
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T06:26:57.324Z",
-          "completedAt": "2026-08-28T06:27:05.838Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 1430
-          }
-        },
-        "draft": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T06:27:05.841Z",
-          "completedAt": "2026-08-28T06:28:58.221Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "outline",
-              "body"
-            ],
-            "size": 14578
-          }
-        },
-        "review": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T06:28:58.224Z",
-          "completedAt": "2026-08-28T06:29:40.879Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "findings",
-              "applied",
-              "body"
-            ],
-            "size": 14989
-          }
-        },
-        "validate": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-28T06:29:40.882Z",
-          "completedAt": "2026-08-28T06:29:54.014Z",
-          "error": "Quality gates blocked publication:\n  [review] The article mentions the Cloud Native Computing Foundation and the FinOps Foundation, but does not provide a clear explanation of how their guidelines and best practices relate to private connectivity and egress control.",
           "output": null
         },
         "localize": {
