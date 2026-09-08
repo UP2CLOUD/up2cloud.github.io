@@ -1,9 +1,140 @@
 {
-  "version": 2108,
-  "updatedAt": "2026-09-08T15:59:51.507Z",
+  "version": 2126,
+  "updatedAt": "2026-09-08T21:02:02.308Z",
   "lastSuccessfulPublicationAt": null,
   "lock": null,
   "runs": [
+    {
+      "runId": "run_20260908202608_c2efc5",
+      "mode": "draft",
+      "trigger": "schedule",
+      "status": "running",
+      "topic": "cloud-platforms",
+      "createdAt": "2026-09-08T20:26:08.149Z",
+      "updatedAt": "2026-09-08T21:02:02.299Z",
+      "completedAt": null,
+      "error": null,
+      "stages": {
+        "select_topic": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T20:26:08.159Z",
+          "completedAt": "2026-09-08T20:26:08.174Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "domainId",
+              "domain",
+              "angle",
+              "selectionReason"
+            ],
+            "size": 658
+          }
+        },
+        "research": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T20:26:08.185Z",
+          "completedAt": "2026-09-08T20:27:28.565Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "sources",
+              "rejected",
+              "context",
+              "authoritativeCount"
+            ],
+            "size": 97331
+          }
+        },
+        "brief": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T20:27:28.572Z",
+          "completedAt": "2026-09-08T20:27:56.200Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "workingTitle",
+              "thesis",
+              "readerProblem",
+              "keyFacts",
+              "outOfScope"
+            ],
+            "size": 3922
+          }
+        },
+        "draft": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T20:27:56.206Z",
+          "completedAt": "2026-09-08T20:29:59.787Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "outline",
+              "body"
+            ],
+            "size": 23125
+          }
+        },
+        "review": {
+          "status": "succeeded",
+          "attempts": 1,
+          "startedAt": "2026-09-08T20:29:59.793Z",
+          "completedAt": "2026-09-08T20:38:35.048Z",
+          "error": null,
+          "output": {
+            "keys": [
+              "findings",
+              "applied",
+              "body"
+            ],
+            "size": 27304
+          }
+        },
+        "validate": {
+          "status": "failed",
+          "attempts": 1,
+          "startedAt": "2026-09-08T20:38:35.054Z",
+          "completedAt": "2026-09-08T21:02:02.299Z",
+          "error": "Quality gates blocked publication:\n  [review] Factually wrong claim about Azure Advisor: the draft states 'no OperationalExcellence category exists in Advisor' and calls it 'a structural hole.' Azure Advisor has five recommendation categories — Cost, Security, Reliability (formerly HighAvailability), Operational Excellence, and Performance. Operational Excellence has been an Advisor category for years. The CLI comment '# (no OperationalExcellence category exists in Advisor)' is also wrong, and `az advisor recommendation list --category OperationalExcellence` is a valid invocation.\n  [review] The Advisor error propagates into the rest of the article: the YAML tracking example sources the `operations` pillar from the Well-Architected assessment specifically 'because Advisor lacks it,' and th",
+          "output": null
+        },
+        "localize": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_blog": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "verify_deployment": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        },
+        "publish_linkedin": {
+          "status": "pending",
+          "attempts": 0,
+          "startedAt": null,
+          "completedAt": null,
+          "error": null,
+          "output": null
+        }
+      }
+    },
     {
       "runId": "run_20260908153438_3c7b64",
       "mode": "draft",
@@ -7957,137 +8088,6 @@
           "startedAt": "2026-08-28T12:43:01.840Z",
           "completedAt": "2026-08-28T12:43:44.668Z",
           "error": "Groq API 402: {\"message\":\"Payment required to access this resource. Visit your billing tab.\",\"type\":\"payment_required_error\",\"param\":\"quota\",\"code\":\"payment_required\"}",
-          "output": null
-        },
-        "localize": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_blog": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "verify_deployment": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        },
-        "publish_linkedin": {
-          "status": "pending",
-          "attempts": 0,
-          "startedAt": null,
-          "completedAt": null,
-          "error": null,
-          "output": null
-        }
-      }
-    },
-    {
-      "runId": "run_20260828092325_2da73b",
-      "mode": "review",
-      "trigger": "workflow_dispatch",
-      "status": "running",
-      "topic": "cloud-platforms",
-      "createdAt": "2026-08-28T09:23:25.006Z",
-      "updatedAt": "2026-08-28T09:27:34.194Z",
-      "completedAt": null,
-      "error": null,
-      "stages": {
-        "select_topic": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T09:23:25.014Z",
-          "completedAt": "2026-08-28T09:23:25.287Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "domainId",
-              "domain",
-              "angle",
-              "selectionReason"
-            ],
-            "size": 666
-          }
-        },
-        "research": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T09:23:25.294Z",
-          "completedAt": "2026-08-28T09:23:38.584Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "sources",
-              "rejected",
-              "context",
-              "authoritativeCount"
-            ],
-            "size": 99879
-          }
-        },
-        "brief": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T09:23:38.587Z",
-          "completedAt": "2026-08-28T09:23:46.840Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "workingTitle",
-              "thesis",
-              "readerProblem",
-              "keyFacts",
-              "outOfScope"
-            ],
-            "size": 1430
-          }
-        },
-        "draft": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T09:23:46.843Z",
-          "completedAt": "2026-08-28T09:25:08.051Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "outline",
-              "body"
-            ],
-            "size": 13907
-          }
-        },
-        "review": {
-          "status": "succeeded",
-          "attempts": 1,
-          "startedAt": "2026-08-28T09:25:08.054Z",
-          "completedAt": "2026-08-28T09:25:59.289Z",
-          "error": null,
-          "output": {
-            "keys": [
-              "findings",
-              "applied",
-              "body"
-            ],
-            "size": 15397
-          }
-        },
-        "validate": {
-          "status": "failed",
-          "attempts": 1,
-          "startedAt": "2026-08-28T09:25:59.292Z",
-          "completedAt": "2026-08-28T09:27:34.194Z",
-          "error": "Quality gates blocked publication:\n  [review] The article contains code samples that are for illustration purposes only and may not be accurate or up-to-date. This could lead to incorrect implementation and potential security risks.\n  [review] The article mentions specific private connectivity options (e.g., AWS Direct Connect, Azure ExpressRoute, Google Cloud Interconnect) without providing a clear comparison of their features, pricing, and compatibility. This could lead to incorrect choices and potential security risks.",
           "output": null
         },
         "localize": {
